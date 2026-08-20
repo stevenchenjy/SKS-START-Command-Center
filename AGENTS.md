@@ -61,6 +61,15 @@ primary product; future automation may accelerate it but must not replace it.
   model context.
 - AI is optional acceleration: no autonomous Sheet/Drive writes, status changes,
   task claims, project decisions, or official START-tier mutation.
+- `askStartAssistant` is the only public AI endpoint. Its guard order is feature
+  flag, key, request validation, one dashboard read, active identity, context,
+  one provider call, validation, and server-owned hydration. Never expose a
+  dependency/provider override through a public function.
+- Keep the OpenAI transport isolated in `AssistantProvider.gs`, deterministic
+  selection in `AssistantContext.gs`, response validation in
+  `AssistantSchema.gs`, and versioned instructions in `AssistantPrompt.gs`.
+  New assistant modules must remain function-declaration-only so Apps Script
+  file order cannot execute cross-module initialization.
 - Keep facts, suggestions, and missing information distinct. Never invent
   approval, cost, metric, result, or carbon facts; never call Storm King carbon
   neutral or certified without verified human-provided evidence.
@@ -68,6 +77,10 @@ primary product; future automation may accelerate it but must not replace it.
   factual existing fields and must leave the decision to people.
 - Curated Drive knowledge, if later enabled, must be read-only, allowlisted to
   explicit configured folders, bounded, and unable to crawl arbitrary Drive.
+- The current Drive production loader is intentionally inert. Do not set
+  `FEATURE_DRIVE_KNOWLEDGE=true` until a separately reviewed read-only adapter
+  and minimum OAuth scopes exist; never add broad Drive access casually to an
+  execute-as-owner web app.
 
 ## Release discipline
 

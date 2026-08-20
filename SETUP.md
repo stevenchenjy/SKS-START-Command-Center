@@ -120,6 +120,13 @@ The command:
 It never calls `create-deployment`. Do not use **New deployment** for a normal
 release.
 
+The `future/ai-foundation` manifest adds only Apps Script's
+`script.external_request` scope. The first reviewed release containing that
+branch may ask the deployment owner to authorize the added scope even while Ask
+START remains disabled. It does not add a Google Drive scope. Leave the future
+branch unreleased until the committee deliberately chooses it; activation steps
+are separate in [FUTURE_FEATURES.md](FUTURE_FEATURES.md).
+
 ## Troubleshooting
 
 - **Not logged in / authorization error:** run `npm run gas:login` with the

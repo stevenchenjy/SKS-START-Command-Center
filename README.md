@@ -45,17 +45,42 @@ Future flags use exact, case-sensitive Script Property values:
 Only the usable `aiHelper` capability is exposed to browser code. Private
 configuration, folder IDs, model names, and API keys are never returned.
 
+## Dormant future foundation
+
+The `future/ai-foundation` branch adds a read-only Ask START service and hidden
+interface without enabling either for students. The server selects a small,
+deterministic slice of current Command Center records, sends at most one request
+to the OpenAI Responses API when explicitly activated, validates a strict
+structured response, and hydrates source references from server-owned records.
+It cannot change a task, project, Sheet, metric, or Drive file.
+
+The same branch includes:
+
+- a tested curated-knowledge interface and bounded selector, with the real
+  Google Drive extraction adapter deliberately left uninstalled;
+- factual project-decision comparison data with no score, rank, or automatic
+  decision;
+- bounded semester/reporting data that labels every recorded observed result as
+  reported and not independently verified;
+- a feature-gated Ask START view that is absent from navigation and inaccessible
+  while its server capability is false.
+
+See [FUTURE_FEATURES.md](FUTURE_FEATURES.md) for activation status and the exact
+future steps. Merging the platform branch does not add the external-request
+scope; that scope exists only on the future branch.
+
 ## Repository layout
 
 ```text
 apps-script/                 Apps Script runtime source and manifest
 scripts/gas-tooling.js       guarded local compare, push, and release workflow
 scripts/verify.js            static and safety checks
-tests/                       in-memory workflow, platform, snapshot, and tooling tests
+tests/                       workflow, platform, snapshot, assistant, and tooling tests
 .clasp.json.example          existing Apps Script project binding template
 .gas-deploy.example.json     existing permanent deployment template
 SETUP.md                     one-time local setup and release instructions
 AGENTS.md                    product and engineering constraints
+FUTURE_FEATURES.md           dormant capability status and activation notes
 ```
 
 ## Development and release commands
