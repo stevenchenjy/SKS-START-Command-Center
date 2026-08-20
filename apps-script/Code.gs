@@ -8,6 +8,10 @@ function getDashboardData(profileKey) {
   return buildDashboardData_(getSpreadsheet_(), profileKey);
 }
 
+function askStartAssistant(profileKey, request) {
+  return askStartAssistantWithDependencies_(profileKey, request, null);
+}
+
 function inspectStartSchema() {
   return inspectStartSchema_(getSpreadsheet_());
 }
