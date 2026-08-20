@@ -256,13 +256,14 @@ test('release tooling never pulls into the repository or creates a deployment', 
   assert.match(source, /['"]update-deployment['"]/);
 });
 
-test('declares only current Spreadsheet and email scopes on the platform manifest', () => {
+test('adds only the external-request scope for the dormant AI branch and no Drive access', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'apps-script', 'appsscript.json'), 'utf8'));
   assert.deepEqual(manifest.oauthScopes, [
     'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/userinfo.email'
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/script.external_request'
   ]);
-  assert.ok(!manifest.oauthScopes.some((scope) => /drive|external_request/.test(scope)));
+  assert.ok(!manifest.oauthScopes.some((scope) => /drive/i.test(scope)));
 });
 
 let passed = 0;
