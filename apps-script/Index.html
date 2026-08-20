@@ -233,10 +233,38 @@
       letter-spacing: 0.03em;
     }
 
-    .identity-name, .identity-email { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .identity-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .identity-name { font-size: 13px; font-weight: 750; }
-    .identity-email { color: #bfcdd3; font-size: 11px; }
     .identity-note { margin: 10px 0 0; color: #bfcdd3; font-size: 11px; line-height: 1.4; }
+
+    .identity-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .identity-switch {
+      min-height: 34px;
+      padding: 5px 8px;
+      border: 0;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.10);
+      color: #edf4f3;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 750;
+    }
+    .identity-switch:hover { background: rgba(255,255,255,0.17); }
+    .profile-picker { margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(255,255,255,0.12); }
+    .profile-picker[hidden] { display: none; }
+    .display-name-form { margin-top: 10px; }
+    .display-name-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+    .identity-save {
+      min-height: 40px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--forest-700);
+      color: white;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer;
+    }
 
     .identity-card label { display: block; margin: 8px 0 5px; color: #dae4e6; font-size: 12px; font-weight: 700; }
     .identity-card select,
@@ -325,7 +353,7 @@
     .generated-at { color: var(--muted); font-size: 12px; white-space: nowrap; }
 
     .eyebrow { color: var(--forest-700); margin-bottom: 7px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 25px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 25px; }
     .stat-card {
       position: relative;
       min-height: 139px;
@@ -488,9 +516,9 @@
 
     .status-open { background: var(--forest-100); color: var(--forest-800); }
     .status-waiting { background: var(--gold-soft); color: #7a5312; }
+    .status-blocked { background: var(--gold-soft); color: #7a5312; }
     .status-done { background: #e8ecea; color: #53605a; }
-    .status-in-progress { background: var(--blue-soft); color: var(--navy-700); }
-    .status-claimed { background: #ece7f5; color: #5d477d; }
+    .status-doing { background: var(--blue-soft); color: var(--navy-700); }
     .task-context { margin: 0; color: var(--muted); font-size: 13px; }
     .task-context strong { color: var(--ink); font-weight: 700; }
 
@@ -536,23 +564,17 @@
     .button-primary:hover { border-color: var(--forest-800); background: var(--forest-800); color: white; }
     .button-subtle { background: var(--cream-50); }
     .button-done { border-color: #aac8ba; color: var(--forest-800); }
+    .button-warning { border-color: #dfc381; background: #fff9eb; color: #765016; }
+    .button-release { min-height: 34px; border-color: transparent; background: transparent; color: var(--muted); }
+    .button-release:hover { border-color: transparent; background: #f2f4f1; color: var(--navy-900); }
     .button[disabled] { opacity: 0.52; cursor: not-allowed; }
     .action-note { max-width: 170px; margin: 3px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
     .owned-by { max-width: 180px; margin: 2px 0; color: var(--muted); font-size: 11px; text-align: right; }
     .owned-by strong { display: block; color: var(--ink); font-size: 12px; }
 
-    .update-details { grid-column: 1 / -1; border-top: 1px solid #edf0ed; padding-top: 2px; }
-    .update-details summary {
-      width: fit-content;
-      margin-top: 10px;
-      padding: 8px 2px;
-      color: var(--forest-700);
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 760;
-    }
-
-    .task-update-form { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(190px, 0.7fr); gap: 12px; padding: 10px 0 2px; }
+    .task-composer { grid-column: 1 / -1; padding-top: 14px; border-top: 1px solid #edf0ed; }
+    .task-composer-title { margin: 0 0 10px; color: var(--navy-900); font-size: 13px; font-weight: 780; }
+    .task-update-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: end; padding: 0 0 2px; }
     .form-field { display: grid; gap: 5px; }
     .form-field label { color: #4d5a64; font-size: 11px; font-weight: 750; }
     .form-field textarea, .form-field input, .form-field select {
@@ -566,7 +588,6 @@
     }
 
     .form-field textarea { min-height: 78px; resize: vertical; }
-    .form-side { display: grid; gap: 10px; align-content: start; }
     .form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 
     .projects-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
@@ -599,6 +620,236 @@
     .project-more-grid strong { display: block; color: var(--ink); font-size: 12px; }
     .project-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 17px; }
     .project-id { color: var(--muted); font-size: 10px; }
+
+    .projects-shell { display: grid; gap: 18px; }
+    .project-setup-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 18px;
+      border: 1px solid #dfc381;
+      border-radius: var(--radius-md);
+      background: var(--gold-soft);
+      color: #644512;
+    }
+    .project-setup-banner strong { color: #53380e; }
+    .project-setup-banner p { margin: 2px 0 0; font-size: 12px; }
+    .project-board-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .new-idea-button { min-width: 132px; font-size: 13px; }
+    .project-sections, .project-secondary-sections { display: grid; gap: 15px; }
+    .project-section {
+      scroll-margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.60);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .project-section:focus { outline-offset: 4px; }
+    .project-section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 17px 19px 14px;
+      border-bottom: 1px solid #edf0ed;
+      background: rgba(252,250,244,0.7);
+    }
+    .project-section-header h2 { margin: 0; color: var(--navy-900); font-size: 17px; letter-spacing: -0.02em; }
+    .project-section-header p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .project-count {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      min-width: 30px;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 99px;
+      background: var(--forest-100);
+      color: var(--forest-800);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .project-card-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 14px; }
+    .project-summary-card { min-width: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--white); overflow: hidden; }
+    .project-summary-card > button {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      height: 100%;
+      min-height: 208px;
+      padding: 16px;
+      border: 0;
+      border-top: 4px solid var(--navy-700);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+    }
+    .project-summary-card > button:hover { background: #fbfcf9; }
+    .project-summary-card.project-stage-idea > button { border-top-color: var(--forest-700); }
+    .project-summary-card.project-stage-validation > button { border-top-color: #527aa0; }
+    .project-summary-card.project-stage-school-review > button { border-top-color: var(--gold); }
+    .project-summary-card.project-stage-active > button { border-top-color: var(--navy-700); }
+    .project-summary-card.project-stage-completed > button { border-top-color: #77877f; }
+    .project-summary-card.project-stage-paused > button { border-top-color: #9b7b42; }
+    .project-summary-card.project-stage-rejected > button { border-top-color: #9b5955; }
+    .status-badge.project-stage-idea { background: var(--forest-100); color: var(--forest-800); }
+    .status-badge.project-stage-validation { background: var(--blue-soft); color: var(--navy-700); }
+    .status-badge.project-stage-school-review { background: var(--gold-soft); color: #7a5312; }
+    .status-badge.project-stage-active { background: #dce9f2; color: var(--navy-700); }
+    .status-badge.project-stage-completed { background: #e8ecea; color: #53605a; }
+    .status-badge.project-stage-paused { background: #f3ead7; color: #765016; }
+    .status-badge.project-stage-rejected { background: var(--red-soft); color: var(--red); }
+    .project-card-top { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+    .project-card-name { display: block; margin-top: 12px; color: var(--navy-900); font-size: 16px; line-height: 1.3; }
+    .project-card-problem {
+      display: -webkit-box;
+      margin-top: 7px;
+      overflow: hidden;
+      color: #52606c;
+      font-size: 12px;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+    .project-card-next {
+      display: -webkit-box;
+      margin-top: 12px;
+      padding: 9px 10px;
+      overflow: hidden;
+      border-radius: 9px;
+      background: #f2f6f3;
+      color: #41505a;
+      font-size: 11px;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+    .project-card-next small { display: block; margin-bottom: 2px; color: var(--forest-700); font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    .project-card-meta { display: flex; flex-wrap: wrap; gap: 5px 10px; margin-top: 11px; color: var(--muted); font-size: 10px; }
+    .project-open-label { margin-top: auto; padding-top: 13px; color: var(--forest-700); font-size: 11px; font-weight: 780; }
+    .project-section-empty { margin: 0; padding: 22px 19px; color: var(--muted); font-size: 12px; }
+    .project-secondary-control { display: flex; justify-content: center; padding: 2px 0 6px; }
+    .project-board-empty { padding: 28px; border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); text-align: center; }
+    .project-board-empty h2 { margin: 0; color: var(--navy-900); font-size: 18px; }
+    .project-board-empty p { max-width: 540px; margin: 6px auto 0; color: var(--muted); font-size: 13px; }
+
+    .project-screen { max-width: 1180px; margin: 0 auto; }
+    .project-form-screen { max-width: 760px; }
+    .project-back {
+      min-height: 38px;
+      padding: 6px 2px;
+      border: 0;
+      background: transparent;
+      color: var(--forest-700);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 780;
+    }
+    .project-back:hover { color: var(--forest-800); text-decoration: underline; }
+    .project-form-intro { margin: 18px 0 20px; }
+    .project-form-intro h2, .project-detail-heading h2 { margin: 0; color: var(--navy-900); font-size: clamp(27px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.04em; }
+    .project-form-intro p:not(.eyebrow), .project-detail-heading p { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+    .workflow-form {
+      display: grid;
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--white);
+    }
+    .workflow-form .form-field textarea { min-height: 96px; }
+    .new-idea-form { box-shadow: var(--shadow-sm); }
+    .field-optional { color: var(--muted); font-size: 10px; font-weight: 560; }
+    .field-help { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .project-detail-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .project-detail-heading { margin: 16px 0 18px; }
+    .project-detail-heading .status-badge { margin-bottom: 9px; }
+    .project-next-hero {
+      position: relative;
+      margin-bottom: 17px;
+      padding: 21px 23px;
+      overflow: hidden;
+      border: 1px solid #b9d4c8;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, #e8f3ed, #f8fbf8);
+    }
+    .project-next-hero::after { content: "→"; position: absolute; right: 20px; bottom: -20px; color: rgba(23,84,68,0.09); font-size: 86px; font-weight: 900; }
+    .project-next-hero h3 { position: relative; z-index: 1; max-width: 880px; margin: 0; color: var(--navy-900); font-size: clamp(18px, 2.4vw, 26px); line-height: 1.32; letter-spacing: -0.025em; }
+    .project-workflow-panel, .project-workflow-form-panel, .active-project-hub {
+      margin-bottom: 18px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+    .project-workflow-panel { display: flex; align-items: center; justify-content: space-between; gap: 22px; }
+    .project-workflow-panel h3, .workflow-panel-heading h3, .active-project-form h4 { margin: 0; color: var(--navy-900); font-size: 17px; }
+    .project-workflow-panel p, .workflow-panel-heading p, .active-project-form > p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .workflow-finished { border-color: #c8d4ce; background: #f7faf8; }
+    .workflow-paused { border-color: #e5d3aa; background: #fffaf0; }
+    .workflow-rejected { border-color: #e7cbc8; background: #fff9f8; }
+    .project-workflow-form-panel > .workflow-panel-heading, .active-project-hub > .workflow-panel-heading { margin-bottom: 15px; }
+    .project-workflow-form-panel .workflow-form, .active-project-form .workflow-form { padding: 0; border: 0; box-shadow: none; }
+    .question-group, .metric-picker { display: grid; gap: 13px; min-width: 0; margin: 0; padding: 15px; border: 1px solid #e4e8e4; border-radius: 12px; background: #fbfcf9; }
+    .question-group legend, .metric-picker legend { padding: 0 6px; color: var(--navy-900); font-size: 13px; font-weight: 780; }
+    .workflow-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .pause-reason-field { padding: 13px; border-left: 3px solid var(--gold); border-radius: 8px; background: #fffaf0; }
+    .workflow-outcomes { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; padding-top: 3px; }
+    .workflow-unavailable { margin: 0; color: var(--red); font-size: 11px; font-weight: 680; }
+    .waiting-banner { display: flex; align-items: center; gap: 12px; margin: -4px -4px 16px; padding: 13px; border-radius: 12px; background: var(--gold-soft); color: #644512; }
+    .waiting-banner > span { font-size: 22px; }
+    .waiting-banner strong { color: #53380e; }
+    .waiting-banner p { margin: 1px 0 0; font-size: 11px; }
+    .metric-search { max-width: 420px; }
+    .metric-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; max-height: 260px; overflow-y: auto; padding: 2px; }
+    .metric-option { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: flex-start; gap: 9px; padding: 10px; border: 1px solid var(--line); border-radius: 9px; background: white; cursor: pointer; }
+    .metric-option:hover { border-color: #aac4b7; }
+    .metric-option input { width: 17px; height: 17px; margin: 2px 0 0; accent-color: var(--forest-700); }
+    .metric-option strong, .metric-option small { display: block; }
+    .metric-option strong { color: var(--ink); font-size: 11px; }
+    .metric-option small { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .project-action-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .project-action-card { min-height: 84px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: #fbfcf9; cursor: pointer; text-align: left; }
+    .project-action-card:hover { border-color: #aac4b7; background: white; }
+    .project-action-card.primary { border-color: #8db8a4; background: var(--forest-100); }
+    .project-action-card strong, .project-action-card span { display: block; }
+    .project-action-card strong { color: var(--navy-900); font-size: 12px; }
+    .project-action-card span { margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .project-action-card[disabled] { opacity: 0.52; cursor: not-allowed; }
+    .active-project-form { margin-top: 16px; padding: 17px; border: 1px solid #cbd8d1; border-radius: 14px; background: #f8fbf9; }
+    .active-project-form .workflow-form { margin-top: 13px; background: transparent; }
+    .project-detail-layout { display: grid; grid-template-columns: minmax(0, 1.42fr) minmax(280px, 0.78fr); gap: 17px; align-items: start; }
+    .project-detail-main, .project-detail-side { display: grid; gap: 17px; }
+    .project-info-panel { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .project-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 0; padding: 5px 20px 17px; }
+    .project-info-field { min-width: 0; padding: 13px 12px 11px 0; border-bottom: 1px solid #edf0ed; }
+    .project-info-field:nth-last-child(-n+2) { border-bottom: 0; }
+    .project-info-field.project-info-wide { grid-column: 1 / -1; }
+    .project-info-field dt { margin-bottom: 4px; color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+    .project-info-field dd { margin: 0; color: var(--ink); font-size: 12px; overflow-wrap: anywhere; white-space: pre-line; }
+    .project-tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .related-task-list, .project-update-list { list-style: none; margin: 0; padding: 0; }
+    .related-task-list li, .project-update-list li { border-bottom: 1px solid #edf0ed; }
+    .related-task-list li:last-child, .project-update-list li:last-child { border-bottom: 0; }
+    .related-task-list button { display: flex; align-items: center; justify-content: space-between; gap: 13px; width: 100%; padding: 14px 20px; border: 0; background: transparent; cursor: pointer; text-align: left; }
+    .related-task-list button:hover { background: #fafbf8; }
+    .related-task-list strong, .related-task-list small { display: block; }
+    .related-task-list strong { color: var(--ink); font-size: 12px; }
+    .related-task-list small { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .related-task-meta { display: grid; justify-items: end; flex: 0 0 auto; }
+    .project-panel-empty { padding: 23px 20px; color: var(--muted); font-size: 12px; }
+    .project-panel-empty p { margin: 0; }
+    .project-panel-empty p + p { margin-top: 5px; }
+    .project-update-list li { padding: 14px 18px; }
+    .project-update-top { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+    .project-update-top strong { color: var(--forest-700); font-size: 11px; }
+    .project-update-top time { color: var(--muted); font-size: 9px; }
+    .project-update-list p { margin: 5px 0 0; color: var(--ink); font-size: 12px; overflow-wrap: anywhere; }
+    .project-update-list a { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 720; }
+    .project-update-next { margin-top: 7px; padding: 7px 8px; border-radius: 7px; background: var(--forest-100); color: #31594b; font-size: 10px; }
 
     .empty-state, .error-state {
       display: grid;
@@ -677,10 +928,14 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 1100px) {
-      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .home-grid { grid-template-columns: 1fr; }
       .home-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .projects-grid { grid-template-columns: 1fr; }
+      .project-card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .project-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .project-detail-layout { grid-template-columns: 1fr; }
+      .project-detail-side { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 820px) {
@@ -731,7 +986,7 @@
 
     @media (max-width: 620px) {
       .sidebar { grid-template-columns: 1fr; }
-      .identity-card.is-locked { display: none; }
+      .identity-card.is-locked:not(.needs-name) { display: none; }
       .page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 20px; }
       .page-heading h1 { font-size: 31px; }
       .generated-at { white-space: normal; }
@@ -746,11 +1001,22 @@
       .task-card.is-mine { padding-left: 15px; }
       .task-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
       .task-actions .button-primary, .task-actions .action-note, .owned-by { grid-column: 1 / -1; max-width: none; text-align: left; }
+      .task-actions .button-release { grid-column: 1 / -1; }
       .task-update-form { grid-template-columns: 1fr; }
       .project-card { padding: 18px; }
       .project-card.waiting { padding-top: 15px; }
       .project-details { grid-template-columns: 1fr; }
       .project-detail.wide { grid-column: auto; }
+      .project-card-list { grid-template-columns: 1fr; }
+      .project-board-toolbar, .project-setup-banner, .project-workflow-panel { align-items: stretch; flex-direction: column; }
+      .project-board-toolbar .new-idea-button, .project-setup-banner .button, .project-workflow-panel .button { width: 100%; }
+      .project-action-grid, .workflow-form-grid, .metric-options, .project-info-grid { grid-template-columns: 1fr; }
+      .project-info-field, .project-info-field:nth-last-child(-n+2) { border-bottom: 1px solid #edf0ed; }
+      .project-info-field:last-child { border-bottom: 0; }
+      .project-info-field.project-info-wide { grid-column: auto; }
+      .workflow-outcomes { align-items: stretch; flex-direction: column; }
+      .workflow-outcomes .button { width: 100%; }
+      .related-task-list button { align-items: flex-start; }
     }
 
     @media (max-width: 390px) {
@@ -836,7 +1102,7 @@
             <div>
               <p class="eyebrow">Sustainability work</p>
               <h1 id="projects-title">Projects</h1>
-              <p>See each initiative’s stage, next action, lead, and school feedback.</p>
+              <p>Turn a student idea into validated, approved, practical work.</p>
             </div>
           </div>
           <div id="projects-content" aria-live="polite"></div>
@@ -857,10 +1123,11 @@
     (function () {
       'use strict';
 
-      var STORAGE_KEY = 'sks-start-member-name';
+      var STORAGE_KEY = 'sks-start-profile-key';
+      var LEGACY_STORAGE_KEY = 'sks-start-member-name';
       var VIEWS = ['home', 'tasks', 'projects'];
       var TASK_FILTERS = ['open', 'mine', 'all'];
-      var TASK_STATUSES = ['Open', 'Claimed', 'In Progress', 'Waiting', 'Done'];
+      var PROJECT_STAGES = ['Idea', 'Validation', 'School Review', 'Active', 'Completed', 'Paused', 'Rejected'];
 
       var state = {
         view: viewFromHash(),
@@ -871,15 +1138,31 @@
         error: '',
         busyKey: '',
         taskDrafts: {},
+        projectDrafts: {},
         viewer: {},
         identityLocked: false,
         currentMember: readStoredMember(),
+        currentDisplayName: '',
+        viewerIsActive: true,
         requestedMember: readStoredMember(),
+        needsDisplayName: false,
+        profilePickerOpen: false,
+        displayNameEditorOpen: false,
+        displayNameDraft: '',
         members: [],
+        membersSource: '',
+        membersSheetMissing: false,
         tasks: [],
         projects: [],
+        metrics: [],
         updates: [],
         summary: {},
+        projectWorkflow: {},
+        projectWorkflowSetupNeeded: false,
+        projectScreen: 'board',
+        selectedProjectKey: '',
+        projectSecondaryVisible: false,
+        projectFocusStage: '',
         generatedAt: ''
       };
 
@@ -896,14 +1179,19 @@
       }
 
       function readStoredMember() {
-        try { return String(window.localStorage.getItem(STORAGE_KEY) || '').trim(); }
+        try {
+          return String(window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem(LEGACY_STORAGE_KEY) || '').trim();
+        }
         catch (error) { return ''; }
       }
 
       function storeMember(name) {
         try {
           if (name) window.localStorage.setItem(STORAGE_KEY, name);
-          else window.localStorage.removeItem(STORAGE_KEY);
+          else {
+            window.localStorage.removeItem(STORAGE_KEY);
+            window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+          }
         } catch (error) {
           // Storage can be unavailable in privacy-restricted browsers; selection still works for this session.
         }
@@ -977,24 +1265,82 @@
       function normalizeStatus(value) {
         var raw = text(value) || 'Open';
         var lower = raw.toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ');
-        for (var index = 0; index < TASK_STATUSES.length; index += 1) {
-          if (TASK_STATUSES[index].toLowerCase() === lower) return TASK_STATUSES[index];
-        }
+        if (['open', 'unclaimed', 'todo', 'not started'].indexOf(lower) >= 0) return 'Open';
+        if (['doing', 'claimed', 'assigned', 'in progress', 'started', 'active'].indexOf(lower) >= 0) return 'Doing';
+        if (['blocked', 'waiting', 'waiting on school', 'on hold'].indexOf(lower) >= 0) return 'Blocked';
+        if (['done', 'complete', 'completed', 'closed'].indexOf(lower) >= 0) return 'Done';
         return raw;
       }
 
-      function normalizeMember(value) {
-        if (typeof value === 'string' || typeof value === 'number') return text(value);
-        return text(first(value, ['name', 'member', 'memberName', 'identity', 'email']));
+      function normalizeProjectStage(value) {
+        var raw = text(value) || 'Idea';
+        var lower = raw.toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ');
+        if (['idea', 'ideas', 'suggestion', 'suggested', 'proposed'].indexOf(lower) >= 0) return 'Idea';
+        if (['validation', 'validate', 'needs work', 'needs more information', 'more info'].indexOf(lower) >= 0) return 'Validation';
+        if (['school review', 'proposal ready', 'approval', 'pending approval', 'waiting on school', 'review'].indexOf(lower) >= 0) return 'School Review';
+        if (['active', 'pilot', 'piloting', 'in progress', 'started'].indexOf(lower) >= 0) return 'Active';
+        if (['completed', 'complete', 'done', 'closed'].indexOf(lower) >= 0) return 'Completed';
+        if (['paused', 'pause', 'on hold', 'parked'].indexOf(lower) >= 0) return 'Paused';
+        if (['rejected', 'declined', 'not approved'].indexOf(lower) >= 0) return 'Rejected';
+        return raw;
+      }
+
+      function stringList(value) {
+        if (Array.isArray(value)) {
+          return value.map(function (item) {
+            return typeof item === 'object'
+              ? text(first(item, ['name', 'metric', 'metricName', 'title', 'id', 'key']))
+              : text(item);
+          }).filter(Boolean);
+        }
+        var raw = text(value);
+        if (!raw) return [];
+        return raw.split(/\s*(?:\||;|\n)\s*|\s*,\s*/).map(text).filter(Boolean);
+      }
+
+      function uniqueStrings(values) {
+        return values.filter(function (value, index, array) {
+          return array.findIndex(function (candidate) { return equalName(candidate, value); }) === index;
+        });
+      }
+
+      function displayNameFromIdentity(value) {
+        var raw = text(value);
+        var local = raw.indexOf('@') >= 0 ? raw.split('@')[0] : raw;
+        var words = local.replace(/[._-]+/g, ' ').split(/\s+/).filter(Boolean);
+        if (!words.length) return 'Committee member';
+        return words.map(function (word) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }).join(' ');
+      }
+
+      function normalizeMember(value, index) {
+        if (typeof value === 'string' || typeof value === 'number') {
+          var legacyName = text(value);
+          return { profileKey: legacyName, displayName: legacyName, isActive: true, renderKey: 'profile-' + index };
+        }
+        value = value && typeof value === 'object' ? value : {};
+        var profileKey = text(first(value, ['profileKey', 'key', 'id', 'email', 'identity']));
+        var displayName = text(first(value, ['displayName', 'name', 'memberName'])) || displayNameFromIdentity(profileKey);
+        return {
+          profileKey: profileKey || displayName,
+          displayName: displayName,
+          isActive: bool(first(value, ['isActive', 'active'], true), true),
+          renderKey: profileKey || displayName || 'profile-' + index
+        };
       }
 
       function normalizeTask(task, index) {
         task = task && typeof task === 'object' ? task : {};
-        var claimedBy = text(first(task, ['claimedBy', 'claimed_by', 'owner', 'assignee']));
+        var claimedByRaw = text(first(task, ['claimedBy', 'claimed_by', 'owner', 'assignee']));
+        var claimedByDisplay = text(first(task, ['claimedByDisplay', 'claimedByDisplayName', 'ownerDisplayName'])) || claimedByRaw;
+        var claimedByProfileKey = text(first(task, ['claimedByProfileKey', 'ownerProfileKey', 'assignedToProfileKey']));
         var status = normalizeStatus(first(task, ['status', 'taskStatus'], 'Open'));
         var explicitOpen = bool(first(task, ['isOpen', 'open'], ''), null);
         var explicitMine = bool(first(task, ['isMine', 'mine'], ''), null);
-        var mineByName = equalName(claimedBy, state.currentMember);
+        var mineByIdentity = equalName(claimedByProfileKey, state.currentMember) ||
+          equalName(claimedByRaw, state.currentMember) || equalName(claimedByRaw, state.currentDisplayName) ||
+          equalName(claimedByDisplay, state.currentDisplayName);
         var key = text(first(task, ['key', 'taskKey', 'rowKey', 'id', 'taskId']));
         return {
           renderKey: (key ? key + '-' : 'row-') + index,
@@ -1007,31 +1353,37 @@
           estimatedTime: text(first(task, ['estimatedTime', 'timeEstimate', 'time'])),
           dueDate: first(task, ['dueDate', 'due', 'deadline'], ''),
           status: status,
-          claimedBy: claimedBy,
+          claimedBy: claimedByDisplay,
+          claimedByRaw: claimedByRaw,
+          claimedByProfileKey: claimedByProfileKey,
           lastUpdate: text(first(task, ['lastUpdate', 'update', 'latestUpdate'])),
           blocker: text(first(task, ['blocker', 'blockedBy', 'blockers'])),
           supportingLink: text(first(task, ['supportingLink', 'link', 'url'])),
-          isOpen: explicitOpen === null ? status === 'Open' && !claimedBy : explicitOpen,
-          isMine: explicitMine === true || mineByName
+          isOpen: explicitOpen === null ? status === 'Open' && !claimedByRaw : explicitOpen,
+          isMine: explicitMine === null ? mineByIdentity : explicitMine
         };
       }
 
       function normalizeProject(project, index) {
         project = project && typeof project === 'object' ? project : {};
-        var stage = text(first(project, ['stage', 'status', 'projectStage'], 'Stage not set'));
+        var stage = normalizeProjectStage(first(project, ['stage', 'status', 'projectStage'], 'Idea'));
         var feedback = text(first(project, ['schoolFeedback', 'feedback', 'staffFeedback']));
         var explicitWaiting = bool(first(project, ['isWaitingOnSchool', 'waitingOnSchool'], ''), null);
-        var waiting = explicitWaiting === null
-          ? /wait|pending|approval|review/i.test(stage + ' ' + feedback)
-          : explicitWaiting;
+        var waiting = explicitWaiting === null ? stage === 'School Review' : explicitWaiting;
         var explicitActive = bool(first(project, ['isActive', 'active'], ''), null);
-        var active = explicitActive === null ? !/complete|done|closed|archived/i.test(stage) : explicitActive;
+        var active = explicitActive === null ? stage === 'Active' : explicitActive;
+        var id = text(first(project, ['id', 'projectId']));
+        var projectKey = text(first(project, ['projectKey', 'key', 'rowKey', 'id', 'projectId']));
+        var metricNames = uniqueStrings(stringList(first(project, ['linkedMetricNames', 'linkedStartMetrics', 'linkedMetrics', 'linkedMetric', 'metrics', 'relatedMetric'])));
         return {
-          renderKey: text(first(project, ['id', 'projectId', 'name', 'projectName'])) || 'project-' + index,
-          id: text(first(project, ['id', 'projectId'])),
+          renderKey: (projectKey || id || text(first(project, ['name', 'projectName'])) || 'project') + '-' + index,
+          projectKey: projectKey,
+          id: id,
           name: text(first(project, ['name', 'projectName', 'project'], 'Untitled project')),
           problem: text(first(project, ['problem', 'problemOpportunity', 'problemStatement', 'description'])),
-          linkedMetrics: text(first(project, ['linkedMetrics', 'linkedStartMetrics', 'linkedMetric', 'metrics', 'relatedMetric'])),
+          ideaNote: text(first(project, ['ideaNote', 'note', 'submissionNote', 'creationNote'])),
+          linkedMetrics: metricNames.join(' | '),
+          linkedMetricNames: metricNames,
           carbonTrack: text(first(project, ['carbonTrack', 'carbon', 'carbonCategory'])),
           stage: stage,
           startImpact: text(first(project, ['startImpact', 'impact'])),
@@ -1039,12 +1391,44 @@
           startCost: text(first(project, ['startCost', 'cost'])),
           localFeasibility: text(first(project, ['localFeasibility', 'feasibility'])),
           recommendation: text(first(project, ['recommendation', 'recommendedAction'])),
+          validationEvidence: text(first(project, ['validationEvidence', 'evidence', 'problemEvidence', 'evidenceObservation'])),
+          successMeasure: text(first(project, ['successMeasure', 'measureOfSuccess', 'howWeKnow', 'successIndicator'])),
+          schoolContact: text(first(project, ['schoolContact', 'schoolContacts', 'peopleToConsult', 'consulted', 'departmentConsulted'])),
+          knownConcerns: text(first(project, ['knownConcerns', 'concerns', 'risks', 'meaningfulConcerns'])),
           schoolFeedback: feedback,
           nextAction: text(first(project, ['nextAction', 'nextStep'])),
-          projectLead: text(first(project, ['projectLead', 'lead', 'owner'])),
+          projectLead: text(first(project, ['projectLead', 'projectLeadDisplay', 'lead', 'owner'])),
+          projectLeadProfileKey: text(first(project, ['projectLeadProfileKey', 'leadProfileKey', 'ownerProfileKey'])),
+          submittedBy: text(first(project, ['submittedByDisplay', 'submittedBy', 'createdByDisplay', 'createdBy'])),
+          pauseReason: text(first(project, ['pauseReason', 'pausedReason', 'reasonPaused'])),
+          rejectionReason: text(first(project, ['rejectionReason', 'declineReason', 'rejectedReason'])),
+          completedWork: text(first(project, ['completedWork', 'workCompleted', 'completionSummary'])),
+          observedResult: text(first(project, ['observedResult', 'resultObserved', 'results', 'result'])),
           resultsLink: text(first(project, ['resultsLink', 'link', 'url'])),
+          relatedTasks: list(first(project, ['relatedTasks', 'tasks'], [])).map(normalizeTask),
+          recentUpdates: list(first(project, ['recentUpdates', 'projectUpdates'], [])).map(normalizeUpdate),
           isActive: active,
           isWaitingOnSchool: waiting
+        };
+      }
+
+      function normalizeMetric(metric, index) {
+        if (typeof metric === 'string' || typeof metric === 'number') {
+          return { key: text(metric), name: text(metric), detail: '', renderKey: 'metric-' + index };
+        }
+        metric = metric && typeof metric === 'object' ? metric : {};
+        var name = text(first(metric, ['metric', 'metricName', 'name', 'title', 'label', 'id']));
+        var key = text(first(metric, ['metricKey', 'key', 'id', 'metricId'])) || name;
+        var detailParts = [
+          text(first(metric, ['category', 'carbonTrack', 'track'])),
+          text(first(metric, ['unit', 'measurementUnit'])),
+          text(first(metric, ['description', 'definition']))
+        ].filter(Boolean);
+        return {
+          key: key,
+          name: name || key || 'Unnamed metric',
+          detail: detailParts.join(' · '),
+          renderKey: (key || name || 'metric') + '-' + index
         };
       }
 
@@ -1055,6 +1439,9 @@
           timestamp: first(update, ['timestamp', 'date', 'createdAt'], ''),
           member: text(first(update, ['member', 'memberName', 'author'], 'Committee member')),
           context: text(first(update, ['taskProject', 'taskOrProject', 'task', 'project', 'context'])),
+          projectKey: text(first(update, ['projectKey', 'relatedProjectKey'])),
+          projectId: text(first(update, ['projectId', 'relatedProjectId'])),
+          taskKey: text(first(update, ['taskKey', 'relatedTaskKey'])),
           update: text(first(update, ['update', 'updateText', 'progress', 'note'])),
           blocker: text(first(update, ['blocker', 'blockedBy'])),
           nextStep: text(first(update, ['nextStep', 'nextAction'])),
@@ -1064,36 +1451,60 @@
 
       function ingest(payload) {
         payload = payload && typeof payload === 'object' ? payload : {};
+        if (payload.dashboard && typeof payload.dashboard === 'object') {
+          var mutation = payload.mutation;
+          payload = payload.dashboard;
+          if (mutation && !payload.mutation) payload.mutation = mutation;
+        }
         state.viewer = payload.viewer && typeof payload.viewer === 'object' ? payload.viewer : {};
         var email = text(first(state.viewer, ['email']));
-        var viewerIdentity = text(first(state.viewer, ['identity', 'name', 'memberName']));
-        state.identityLocked = !!email;
+        var authMode = text(first(state.viewer, ['authMode'])).toLowerCase();
+        var viewerProfileKey = text(first(state.viewer, ['profileKey', 'identity', 'key', 'email']));
+        var viewerDisplayName = text(first(state.viewer, ['displayName', 'name', 'memberName']));
+        state.identityLocked = /google|email/.test(authMode);
+        state.viewerIsActive = bool(first(state.viewer, ['isActive', 'active'], true), true);
+        state.needsDisplayName = bool(first(state.viewer, ['needsDisplayName', 'displayNameNeeded'], ''), !!email && !viewerDisplayName);
 
-        state.members = list(payload.members).map(normalizeMember).filter(Boolean).filter(function (name, index, array) {
-          return array.findIndex(function (candidate) { return equalName(candidate, name); }) === index;
+        state.members = list(payload.members).map(normalizeMember).filter(function (member) {
+          return member.profileKey && member.isActive;
+        }).filter(function (member, index, array) {
+          return array.findIndex(function (candidate) { return equalName(candidate.profileKey, member.profileKey); }) === index;
         });
+        state.membersSource = text(first(payload, ['membersSource']));
+        state.membersSheetMissing = bool(first(payload, ['membersSheetMissing'], false), false);
 
         if (state.identityLocked) {
-          state.currentMember = viewerIdentity || email;
+          state.currentMember = viewerProfileKey || email;
+          state.currentDisplayName = viewerDisplayName || displayNameFromIdentity(state.currentMember);
         } else {
-          var requestedIsConfigured = state.members.some(function (member) {
-            return equalName(member, state.requestedMember);
+          var requestedProfile = state.members.find(function (member) {
+            return equalName(member.profileKey, state.requestedMember) || equalName(member.displayName, state.requestedMember);
           });
-          var viewerIsConfigured = state.members.some(function (member) {
-            return equalName(member, viewerIdentity);
+          var viewerProfile = state.members.find(function (member) {
+            return equalName(member.profileKey, viewerProfileKey) || equalName(member.displayName, viewerProfileKey);
           });
-          state.currentMember = viewerIsConfigured ? viewerIdentity : requestedIsConfigured ? state.requestedMember : '';
+          var selectedProfile = viewerProfile || requestedProfile || null;
+          state.currentMember = selectedProfile ? selectedProfile.profileKey : '';
+          state.currentDisplayName = selectedProfile ? selectedProfile.displayName : '';
         }
 
         state.tasks = list(payload.tasks).map(normalizeTask);
         state.projects = list(payload.projects).map(normalizeProject);
+        state.metrics = list(payload.metrics).map(normalizeMetric).filter(function (metric) { return metric.name; });
         state.updates = list(payload.updates).map(normalizeUpdate).sort(function (left, right) {
           var leftTime = new Date(left.timestamp).getTime();
           var rightTime = new Date(right.timestamp).getTime();
           return (Number.isFinite(rightTime) ? rightTime : 0) - (Number.isFinite(leftTime) ? leftTime : 0);
         });
         state.summary = payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
+        state.projectWorkflow = payload.projectWorkflow && typeof payload.projectWorkflow === 'object' ? payload.projectWorkflow : {};
+        state.projectWorkflowSetupNeeded = bool(first(payload, ['projectWorkflowSetupNeeded'], ''),
+          bool(first(state.projectWorkflow, ['setupNeeded'], false), false));
         state.generatedAt = first(payload, ['generatedAt'], '');
+        if (state.projectScreen === 'detail' && state.selectedProjectKey && !findProject(state.selectedProjectKey)) {
+          state.projectScreen = 'board';
+          state.selectedProjectKey = '';
+        }
         if (!state.identityLocked) storeMember(state.currentMember);
       }
 
@@ -1103,16 +1514,18 @@
 
       function counts() {
         var open = state.tasks.filter(function (task) { return task.isOpen; }).length;
-        var claimed = state.tasks.filter(function (task) { return !!task.claimedBy && task.status !== 'Done'; }).length;
+        var doing = state.tasks.filter(function (task) { return task.status === 'Doing'; }).length;
         var mine = state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; }).length;
-        var active = state.projects.filter(function (project) { return project.isActive; }).length;
-        var waiting = waitingItems().length;
+        var active = state.projects.filter(function (project) { return project.stage === 'Active'; }).length;
+        var waitingProjects = state.projects.filter(function (project) { return project.stage === 'School Review'; }).length;
+        var ideas = state.projects.filter(function (project) { return project.stage === 'Idea'; }).length;
         return {
           open: summaryCount('openTasks', open),
-          claimed: summaryCount('claimedTasks', claimed),
-          mine: summaryCount('myTasks', mine),
+          doing: summaryCount('doingTasks', doing),
+          mine: mine,
           active: summaryCount('activeProjects', active),
-          waiting: summaryCount('waitingOnSchool', waiting)
+          waitingProjects: summaryCount('waitingOnSchoolProjects', waitingProjects),
+          ideas: summaryCount('ideasNeedingValidation', ideas)
         };
       }
 
@@ -1133,9 +1546,9 @@
         if (hasProvidedList) return provided;
 
         var taskItems = state.tasks.filter(function (task) {
-          return task.status === 'Waiting';
+          return task.status === 'Blocked';
         }).map(function (task) {
-          return { key: 'task-' + task.renderKey, title: task.title, detail: task.blocker || 'Task is marked Waiting', type: 'Task' };
+          return { key: 'task-' + task.renderKey, title: task.title, detail: task.blocker || 'Task is marked Blocked', type: 'Task' };
         });
         var projectItems = state.projects.filter(function (project) {
           return project.isWaitingOnSchool;
@@ -1158,7 +1571,23 @@
             });
           if (method === 'getDashboardData') runner.getDashboardData(args[0]);
           else if (method === 'claimTask') runner.claimTask(args[0], args[1]);
-          else if (method === 'updateTask') runner.updateTask(args[0], args[1], args[2], args[3], args[4]);
+          else if (method === 'addTaskUpdate') runner.addTaskUpdate(args[0], args[1], args[2]);
+          else if (method === 'blockTask') runner.blockTask(args[0], args[1], args[2]);
+          else if (method === 'resumeTask') runner.resumeTask(args[0], args[1]);
+          else if (method === 'completeTask') runner.completeTask(args[0], args[1]);
+          else if (method === 'releaseTask') runner.releaseTask(args[0], args[1]);
+          else if (method === 'saveMyDisplayName') runner.saveMyDisplayName(args[0]);
+          else if (method === 'createProjectIdea') runner.createProjectIdea(args[0], args[1]);
+          else if (method === 'startProjectValidation') runner.startProjectValidation(args[0], args[1]);
+          else if (method === 'saveProjectValidation') runner.saveProjectValidation(args[0], args[1], args[2]);
+          else if (method === 'recordSchoolReview') runner.recordSchoolReview(args[0], args[1], args[2]);
+          else if (method === 'setProjectLead') runner.setProjectLead(args[0], args[1], args[2]);
+          else if (method === 'addProjectTask') runner.addProjectTask(args[0], args[1], args[2]);
+          else if (method === 'addProjectUpdate') runner.addProjectUpdate(args[0], args[1], args[2], args[3]);
+          else if (method === 'editProjectNextAction') runner.editProjectNextAction(args[0], args[1], args[2]);
+          else if (method === 'completeProject') runner.completeProject(args[0], args[1], args[2]);
+          else if (method === 'pauseProject') runner.pauseProject(args[0], args[1], args[2], args[3]);
+          else if (method === 'setupProjectWorkflow') runner.setupProjectWorkflow();
           else reject(new Error('Unknown server action.'));
         });
       }
@@ -1166,8 +1595,8 @@
       function loadDashboard(options) {
         options = options || {};
         var requestToken = ++state.loadToken;
-        if (options.memberName !== undefined) {
-          state.requestedMember = text(options.memberName);
+        if (options.profileKey !== undefined) {
+          state.requestedMember = text(options.profileKey);
           if (!state.identityLocked) state.currentMember = state.requestedMember;
         }
         state.error = '';
@@ -1197,36 +1626,28 @@
       }
 
       function claimTask(key) {
-        if (!requireIdentity()) return;
-        if (!key || state.busyKey || state.refreshing) return;
-        state.busyKey = 'claim:' + key;
-        render();
-        focusTaskCard(key);
-        serverCall('claimTask', [key, state.currentMember])
-          .then(function (payload) {
-            ingest(payload);
-            showToast('Task claimed. It is now in My tasks.');
-          })
-          .catch(function (error) { showToast(error.message || 'Could not claim this task.', true); })
-          .finally(function () { state.busyKey = ''; render(); focusTaskCard(key); });
+        runTaskAction('claimTask', key, [], {
+          successMessage: 'Task claimed. It is now in My tasks.',
+          errorMessage: 'Could not claim this task.'
+        });
       }
 
-      function updateTask(key, status, updateText, blocker) {
-        var options = arguments.length > 4 && arguments[4] ? arguments[4] : {};
+      function runTaskAction(method, key, extraArgs, options) {
+        options = options || {};
         if (!requireIdentity()) return;
         if (!key || state.busyKey || state.refreshing) return;
         var succeeded = false;
-        state.busyKey = 'update:' + key;
+        state.busyKey = method + ':' + key;
         render();
         focusTaskCard(key);
-        serverCall('updateTask', [key, state.currentMember, status, updateText, blocker])
+        serverCall(method, [key, state.currentMember].concat(extraArgs || []))
           .then(function (payload) {
             succeeded = true;
             delete state.taskDrafts[key];
             ingest(payload);
-            showToast(status === 'Done' ? 'Task marked Done. Nice work.' : 'Task updated.');
+            showToast(options.successMessage || 'Task updated.');
           })
-          .catch(function (error) { showToast(error.message || 'Could not update this task.', true); })
+          .catch(function (error) { showToast(error.message || options.errorMessage || 'Could not update this task.', true); })
           .finally(function () {
             state.busyKey = '';
             render();
@@ -1235,9 +1656,124 @@
           });
       }
 
+      function saveDisplayName(displayName) {
+        var cleanName = text(displayName);
+        if (!cleanName || state.busyKey) return;
+        var succeeded = false;
+        state.displayNameDraft = cleanName;
+        state.busyKey = 'profile:display-name';
+        render();
+        serverCall('saveMyDisplayName', [cleanName])
+          .then(function (payload) {
+            succeeded = true;
+            state.displayNameDraft = '';
+            state.displayNameEditorOpen = false;
+            ingest(payload);
+            showToast('Display name saved.');
+          })
+          .catch(function (error) { showToast(error.message || 'Could not save your display name.', true); })
+          .finally(function () {
+            state.busyKey = '';
+            render();
+            if (!succeeded) focusDisplayNameEditor();
+          });
+      }
+
+      function findProject(projectKey) {
+        return state.projects.find(function (project) {
+          return equalName(project.projectKey, projectKey) || equalName(project.id, projectKey) || equalName(project.renderKey, projectKey);
+        }) || null;
+      }
+
+      function projectDraftKey(projectKey) {
+        return (state.currentMember || 'no-profile') + '::' + (projectKey || 'new');
+      }
+
+      function mutationProjectKey(payload, fallback) {
+        payload = payload && typeof payload === 'object' ? payload : {};
+        var mutation = payload.mutation && typeof payload.mutation === 'object' ? payload.mutation : {};
+        if (payload.dashboard && payload.dashboard.mutation && typeof payload.dashboard.mutation === 'object') mutation = payload.dashboard.mutation;
+        return text(first(mutation, ['projectKey', 'projectId'])) || fallback;
+      }
+
+      function runProjectAction(method, projectKey, extraArgs, options) {
+        options = options || {};
+        if (!requireIdentity()) return;
+        if (!projectKey || state.busyKey || state.refreshing) return;
+        var draftKey = projectDraftKey(projectKey);
+        var succeeded = false;
+        state.busyKey = 'project:' + method + ':' + projectKey;
+        render();
+        serverCall(method, [projectKey, state.currentMember].concat(extraArgs || []))
+          .then(function (payload) {
+            succeeded = true;
+            var nextKey = mutationProjectKey(payload, projectKey);
+            if (options.clearDraft !== false) delete state.projectDrafts[draftKey];
+            ingest(payload);
+            state.projectScreen = 'detail';
+            state.selectedProjectKey = nextKey;
+            showToast(options.successMessage || 'Project updated.');
+          })
+          .catch(function (error) {
+            showToast(error.message || options.errorMessage || 'Could not update this project.', true);
+          })
+          .finally(function () {
+            state.busyKey = '';
+            render();
+            if (!succeeded && options.fromForm) focusProjectForm(projectKey);
+            else focusProjectDetail(projectKey);
+          });
+      }
+
+      function createProjectIdea(idea) {
+        if (!requireIdentity() || state.busyKey || state.refreshing) return;
+        var draftKey = projectDraftKey('new');
+        var succeeded = false;
+        state.busyKey = 'project:createProjectIdea:new';
+        render();
+        serverCall('createProjectIdea', [state.currentMember, idea])
+          .then(function (payload) {
+            succeeded = true;
+            var nextKey = mutationProjectKey(payload, '');
+            delete state.projectDrafts[draftKey];
+            ingest(payload);
+            state.projectScreen = nextKey ? 'detail' : 'board';
+            state.selectedProjectKey = nextKey;
+            showToast('Idea added. The committee can start validation when ready.');
+          })
+          .catch(function (error) { showToast(error.message || 'Could not add this idea.', true); })
+          .finally(function () {
+            state.busyKey = '';
+            render();
+            if (!succeeded) focusProjectForm('new');
+            else if (state.selectedProjectKey) focusProjectDetail(state.selectedProjectKey);
+          });
+      }
+
+      function runProjectSetup() {
+        if (state.busyKey || state.refreshing) return;
+        state.busyKey = 'project:setupProjectWorkflow:setup';
+        render();
+        serverCall('setupProjectWorkflow', [])
+          .then(function (payload) {
+            ingest(payload);
+            showToast('Project workflow fields are ready. Existing project rows were left unchanged.');
+          })
+          .catch(function (error) { showToast(error.message || 'Could not finish project workflow setup.', true); })
+          .finally(function () {
+            state.busyKey = '';
+            render();
+            focusProjectBoard();
+          });
+      }
+
       function requireIdentity() {
-        if (state.currentMember) return true;
-        showToast('Choose your name before changing a task.', true);
+        if (state.currentMember && state.viewerIsActive) return true;
+        if (state.currentMember && !state.viewerIsActive) {
+          showToast('This member profile is inactive. Ask the Student Lead for help.', true);
+          return false;
+        }
+        showToast('Choose a member profile before making changes.', true);
         focusIdentity();
         return false;
       }
@@ -1327,42 +1863,60 @@
         var copy = {
           home: ['Committee overview', 'What needs attention across START right now'],
           tasks: ['Task board', 'Claim work, record progress, and finish the next step'],
-          projects: ['Project portfolio', 'Current sustainability initiatives at a glance']
+          projects: ['Project workflow', 'Move an idea from suggestion to real school action']
         }[state.view];
         document.getElementById('topbar-title').textContent = copy[0];
         document.getElementById('topbar-subtitle').textContent = copy[1];
-        memberChip.textContent = state.currentMember || 'Choose member';
+        memberChip.textContent = state.currentDisplayName || 'Choose profile';
         memberChip.disabled = state.identityLocked || state.loading || state.refreshing || !!state.busyKey;
         memberChip.setAttribute('aria-label', state.identityLocked
-          ? 'Signed in as ' + state.currentMember
-          : (state.currentMember ? 'Change committee member; currently ' + state.currentMember : 'Choose committee member'));
+          ? 'Signed in as ' + (state.currentDisplayName || 'committee member')
+          : (state.currentMember ? 'Switch profile; currently ' + state.currentDisplayName : 'Choose member profile'));
         refreshButton.disabled = state.loading || state.refreshing || !!state.busyKey;
         refreshButton.classList.toggle('is-refreshing', state.refreshing);
       }
 
       function renderIdentity() {
-        var email = text(first(state.viewer, ['email']));
         if (state.identityLocked) {
-          identityPanel.innerHTML = '<div class="identity-card is-locked">' +
-            '<div class="identity-topline"><span class="identity-label">Signed in</span><span class="temp-label">Google account</span></div>' +
-            '<div class="identity-person"><span class="avatar" aria-hidden="true">' + h(initials(state.currentMember)) + '</span><span>' +
-            '<strong class="identity-name">' + h(state.currentMember) + '</strong>' +
-            (!equalName(state.currentMember, email) ? '<span class="identity-email">' + h(email) + '</span>' : '') + '</span></div>' +
-            '<p class="identity-note">Your school Google identity is locked for task changes.</p></div>';
+          var editingName = state.displayNameEditorOpen || state.needsDisplayName;
+          var displayNameValue = state.displayNameDraft || state.currentDisplayName;
+          identityPanel.innerHTML = '<div class="identity-card is-locked' + (state.needsDisplayName ? ' needs-name' : '') + '">' +
+            '<div class="identity-topline"><span class="identity-label">Working as</span><span class="temp-label">Google profile</span></div>' +
+            '<div class="identity-person"><span class="avatar" aria-hidden="true">' + h(initials(state.currentDisplayName)) + '</span><span>' +
+            '<strong class="identity-name">' + h(state.currentDisplayName || 'Committee member') + '</strong></span></div>' +
+            (state.needsDisplayName && !state.displayNameEditorOpen
+              ? '<div class="identity-actions"><button class="identity-switch" type="button" data-edit-display-name>Set display name</button></div>'
+              : '') +
+            (editingName && state.displayNameEditorOpen
+              ? '<form class="display-name-form" data-display-name-form><label for="display-name-input">Display name</label><div class="display-name-row">' +
+                '<input id="display-name-input" name="displayName" maxlength="120" value="' + h(displayNameValue) + '" required' + (state.busyKey ? ' disabled' : '') + '>' +
+                '<button class="identity-save" type="submit"' + (state.busyKey ? ' disabled' : '') + '>Save</button></div></form>'
+              : '') +
+            '<p class="identity-note">' + (state.viewerIsActive
+              ? 'Using your school Google profile for task changes.'
+              : 'This Google profile is inactive. Ask the Student Lead for help.') + '</p></div>';
           return;
         }
 
-        var options = '<option value="">Choose your name</option>' + state.members.map(function (member) {
-          return '<option value="' + h(member) + '"' + (equalName(member, state.currentMember) ? ' selected' : '') + '>' + h(member) + '</option>';
+        var options = '<option value="">Choose a profile</option>' + state.members.map(function (member) {
+          return '<option value="' + h(member.profileKey) + '"' + (equalName(member.profileKey, state.currentMember) ? ' selected' : '') + '>' + h(member.displayName) + '</option>';
         }).join('');
+        var hasCurrentProfile = !!(state.currentMember && state.currentDisplayName);
+        var showPicker = !hasCurrentProfile || state.profilePickerOpen;
         identityPanel.innerHTML = '<div class="identity-card">' +
-          '<div class="identity-topline"><span class="identity-label">Working as</span><span class="temp-label">Temporary selector</span></div>' +
-          '<label for="member-select">Committee member</label><select id="member-select"' + (!state.members.length || state.loading || state.refreshing || !!state.busyKey ? ' disabled' : '') + '>' + options + '</select>' +
+          '<div class="identity-topline"><span class="identity-label">Working as</span><span class="temp-label">Local profile</span></div>' +
+          (hasCurrentProfile ? '<div class="identity-person"><span class="avatar" aria-hidden="true">' + h(initials(state.currentDisplayName)) + '</span><span>' +
+            '<strong class="identity-name">' + h(state.currentDisplayName) + '</strong></span></div>' +
+            '<div class="identity-actions"><button class="identity-switch" type="button" data-switch-profile>Switch profile</button></div>' : '') +
+          '<div class="profile-picker"' + (showPicker ? '' : ' hidden') + '><label for="profile-select">Member profile</label>' +
+          '<select id="profile-select"' + (!state.members.length || state.loading || state.refreshing || !!state.busyKey ? ' disabled' : '') + '>' + options + '</select></div>' +
           '<p class="identity-note">' + (state.loading && !state.members.length
-            ? 'Loading committee members…'
+            ? 'Loading member profiles…'
             : state.members.length
-            ? 'Names come from Settings. This identifies who is making changes; it is not sign-in.'
-            : 'No committee members are configured. Ask the Student Lead to add your name in Settings.') + '</p></div>';
+            ? (state.membersSheetMissing || state.membersSource === 'settings'
+              ? 'Profiles are temporarily coming from Settings until the Members sheet is ready.'
+              : 'Profiles come from active entries in Members and are remembered on this browser.')
+            : 'No active member profiles are configured. Ask the Student Lead to add you in Members.') + '</p></div>';
       }
 
       function renderHome() {
@@ -1372,18 +1926,20 @@
         if (state.error) { target.innerHTML = errorState(); return; }
 
         var tally = counts();
-        var personal = !!state.currentMember;
         var stats = [
           { label: 'Open tasks', value: tally.open, note: tally.open === 1 ? 'Ready for someone to claim' : 'Ready for someone to claim', view: 'tasks', filter: 'open' },
-          { label: personal ? 'My tasks' : 'Claimed tasks', value: personal ? tally.mine : tally.claimed, note: personal ? 'Assigned to ' + state.currentMember : 'Currently owned by members', view: personal ? 'tasks' : '', filter: personal ? 'mine' : '' },
-          { label: 'Active projects', value: tally.active, note: 'Sustainability initiatives underway', view: 'projects', filter: '' },
-          { label: 'Waiting on school', value: tally.waiting, note: 'Needs staff input or approval', view: '', filter: '', scrollTarget: 'waiting-panel' }
+          { label: 'My tasks', value: tally.mine, note: state.currentMember ? 'Assigned to ' + state.currentDisplayName : 'Choose a profile to see your work', view: 'tasks', filter: 'mine' },
+          { label: 'Active projects', value: tally.active, note: 'Work the committee is carrying out', view: 'projects', projectStage: 'Active' },
+          { label: 'Waiting on school', value: tally.waitingProjects, note: 'Projects ready for school input', view: 'projects', projectStage: 'School Review' },
+          { label: 'Ideas to validate', value: tally.ideas, note: 'Suggestions ready for a closer look', view: 'projects', projectStage: 'Idea' }
         ];
         var html = '<div class="stats-grid">' + stats.map(function (stat) {
           var content = '<span class="stat-label">' + h(stat.label) + '</span><span class="stat-value">' + h(stat.value) + '</span><span class="stat-note">' + h(stat.note) + '</span>';
           if (!stat.view && !stat.scrollTarget) return '<div class="stat-card stat-card-static">' + content + '</div>';
           return '<button class="stat-card" type="button"' + (stat.view ? ' data-view-target="' + h(stat.view) + '"' : '') +
-            (stat.filter ? ' data-set-task-filter="' + h(stat.filter) + '"' : '') + (stat.scrollTarget ? ' data-scroll-target="' + h(stat.scrollTarget) + '"' : '') + '>' + content + '</button>';
+            (stat.filter ? ' data-set-task-filter="' + h(stat.filter) + '"' : '') +
+            (stat.projectStage ? ' data-project-stage="' + h(stat.projectStage) + '"' : '') +
+            (stat.scrollTarget ? ' data-scroll-target="' + h(stat.scrollTarget) + '"' : '') + '>' + content + '</button>';
         }).join('') + '</div>';
 
         var queue = state.currentMember
@@ -1391,7 +1947,7 @@
           : state.tasks.filter(function (task) { return task.isOpen; });
         queue = sortTasks(queue).slice(0, 5);
         var queueTitle = state.currentMember ? 'Your next tasks' : 'Ready to claim';
-        var queueSubtitle = state.currentMember ? 'Work assigned to ' + state.currentMember : 'Choose your name, then pick something useful';
+        var queueSubtitle = state.currentMember ? 'Work assigned to ' + state.currentDisplayName : 'Choose a profile, then pick something useful';
         html += '<div class="home-grid"><section class="panel"><div class="panel-header"><div><h2 class="panel-title">' + h(queueTitle) + '</h2>' +
           '<p class="panel-subtitle">' + h(queueSubtitle) + '</p></div><button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="' + (state.currentMember ? 'mine' : 'open') + '">View all →</button></div>' +
           (queue.length ? '<ul class="queue-list">' + queue.map(renderQueueItem).join('') + '</ul>' : emptyState(
@@ -1437,12 +1993,14 @@
       }
 
       function renderWaitingPanel() {
-        var items = waitingItems().slice(0, 5);
-        return '<section class="panel" id="waiting-panel" tabindex="-1"><div class="panel-header"><div><h2 class="panel-title">Waiting on school</h2><p class="panel-subtitle">Items needing staff input or approval</p></div></div>' +
-          (items.length ? '<ul class="waiting-list">' + items.map(function (item) {
-            return '<li class="waiting-item"><span class="waiting-mark" aria-hidden="true">!</span><div><p class="waiting-title">' + h(item.title) + '</p>' +
-              '<p class="waiting-detail">' + h(item.detail || item.type) + '</p></div></li>';
-          }).join('') + '</ul>' : emptyState('Nothing is waiting', 'No task or project is currently flagged for school follow-up.', '', '', true)) + '</section>';
+        var items = state.projects.filter(function (project) { return project.stage === 'School Review'; }).slice(0, 5);
+        return '<section class="panel" id="waiting-panel" tabindex="-1"><div class="panel-header"><div><h2 class="panel-title">Waiting on school</h2><p class="panel-subtitle">Projects ready for feedback or a decision</p></div>' +
+          (items.length ? '<button class="text-button" type="button" data-view-target="projects" data-project-stage="School Review">View all →</button>' : '') + '</div>' +
+          (items.length ? '<ul class="waiting-list">' + items.map(function (project) {
+            return '<li class="waiting-item"><span class="waiting-mark" aria-hidden="true">!</span><div><p class="waiting-title">' + h(project.name) + '</p>' +
+              '<p class="waiting-detail">' + h(project.nextAction || project.schoolFeedback || 'School feedback is the next step.') + '</p>' +
+              '<button class="text-button" type="button" data-project-open="' + h(project.projectKey || project.id || project.renderKey) + '">Open project →</button></div></li>';
+          }).join('') + '</ul>' : emptyState('Nothing is waiting on school', 'Projects will appear here when they reach School Review.', '', '', true)) + '</section>';
       }
 
       function renderTasks() {
@@ -1462,7 +2020,7 @@
         if (!state.tasks.length) {
           html += emptyState('No tasks have been added yet', 'When the Tasks sheet has rows, they will appear here automatically.', '', '', false);
         } else if (!filtered.length && state.taskFilter === 'mine' && !state.currentMember) {
-          html += emptyState('Choose your name to see your work', 'Use the temporary member selector above, then My tasks will show assignments claimed by you.', '', '', false);
+          html += emptyState('Choose a profile to see your work', 'Select your active member profile above, then My tasks will show work owned by you.', '', '', false);
         } else if (!filtered.length) {
           html += emptyState(
             state.taskFilter === 'open' ? 'No open tasks right now' : state.taskFilter === 'mine' ? 'No tasks assigned to you' : 'No tasks to show',
@@ -1479,6 +2037,7 @@
         var due = dueInfo(task.dueDate, task.status === 'Done');
         var link = safeUrl(task.supportingLink);
         var busy = !!state.busyKey && state.busyKey.split(':').slice(1).join(':') === task.key;
+        var busyMethod = busy ? state.busyKey.split(':')[0] : '';
         var unavailable = !!state.busyKey || state.refreshing;
         var draft = state.taskDrafts[task.key] || null;
         var taskDomId = 'task-' + (text(task.renderKey).toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'item');
@@ -1490,122 +2049,495 @@
 
         var actions = '';
         if (task.isOpen) {
-          actions = '<button class="button button-primary" type="button" data-task-action="claim" data-task-key="' + h(task.key) + '" aria-label="Claim task: ' + h(task.title) + '"' + (!state.currentMember || !task.key || unavailable ? ' disabled' : '') + '>' + (busy ? 'Claiming…' : 'Claim task') + '</button>' +
-            (!state.currentMember ? '<p class="action-note">Choose your name first</p>' : !task.key ? '<p class="action-note">Task ID is missing</p>' : '');
-        } else if (task.isMine && task.status !== 'Done') {
-          actions = ['In Progress', 'Waiting', 'Done'].map(function (status) {
-            if (status === task.status) return '';
-            return '<button class="button ' + (status === 'Done' ? 'button-done' : 'button-subtle') + '" type="button" data-task-action="status" data-status="' + h(status) + '" data-task-key="' + h(task.key) + '" aria-label="' + h((status === 'Done' ? 'Mark Done' : 'Set ' + status) + ': ' + task.title) + '"' + (!task.key || unavailable ? ' disabled' : '') + '>' +
-              (busy ? 'Saving…' : status === 'Done' ? 'Mark Done' : 'Set ' + status) + '</button>';
-          }).join('');
+          actions = '<button class="button button-primary" type="button" data-task-action="claim" data-task-key="' + h(task.key) + '" aria-label="Claim Task: ' + h(task.title) + '"' + (!state.currentMember || !state.viewerIsActive || !task.key || unavailable ? ' disabled' : '') + '>' + (busy ? 'Claiming…' : 'Claim Task') + '</button>' +
+            (!state.currentMember ? '<p class="action-note">Choose a profile first</p>' : !state.viewerIsActive ? '<p class="action-note">This profile is inactive</p>' : !task.key ? '<p class="action-note">Task ID is missing</p>' : '');
+        } else if (task.isMine && task.status === 'Doing') {
+          actions = '<button class="button button-primary" type="button" data-task-action="show-update" data-task-key="' + h(task.key) + '" aria-label="Add update: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Add Update</button>' +
+            '<button class="button button-warning" type="button" data-task-action="show-blocker" data-task-key="' + h(task.key) + '" aria-label="Mark blocked: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Mark Blocked</button>' +
+            '<button class="button button-done" type="button" data-task-action="complete" data-task-key="' + h(task.key) + '" aria-label="Mark done: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'completeTask' ? 'Finishing…' : 'Mark Done') + '</button>' +
+            '<button class="button button-release" type="button" data-task-action="release" data-task-key="' + h(task.key) + '" aria-label="Release task: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'releaseTask' ? 'Releasing…' : 'Release Task') + '</button>';
+        } else if (task.isMine && task.status === 'Blocked') {
+          actions = '<button class="button button-primary" type="button" data-task-action="resume" data-task-key="' + h(task.key) + '" aria-label="Resume work: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'resumeTask' ? 'Resuming…' : 'Resume Work') + '</button>' +
+            '<button class="button button-subtle" type="button" data-task-action="show-update" data-task-key="' + h(task.key) + '" aria-label="Add update: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Add Update</button>' +
+            '<button class="button button-done" type="button" data-task-action="complete" data-task-key="' + h(task.key) + '" aria-label="Mark done: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'completeTask' ? 'Finishing…' : 'Mark Done') + '</button>';
         } else if (task.status === 'Done') {
           actions = '<span class="status-badge status-done">Completed</span>';
         } else if (task.claimedBy) {
-          actions = '<p class="owned-by">Claimed by<strong>' + h(task.claimedBy) + '</strong></p>';
+          actions = '<p class="owned-by">Owned by<strong>' + h(task.claimedBy) + '</strong></p>';
         }
 
-        var updateForm = task.isMine && task.status !== 'Done' && task.key ? '<details class="update-details"' + (draft ? ' open' : '') + '><summary>Add progress or a blocker<span class="sr-only"> for ' + h(task.title) + '</span></summary>' +
-          '<form class="task-update-form" data-update-form data-task-key="' + h(task.key) + '">' +
-          '<div class="form-field"><label for="update-' + h(taskDomId) + '">Short progress update</label><textarea id="update-' + h(taskDomId) + '" name="updateText" maxlength="500" placeholder="What changed? What did you learn?"' + (unavailable ? ' disabled' : '') + '>' + h(draft ? draft.updateText : '') + '</textarea></div>' +
-          '<div class="form-side"><div class="form-field"><label for="blocker-' + h(taskDomId) + '">Blocker, if any</label><input id="blocker-' + h(taskDomId) + '" name="blocker" maxlength="300" value="' + h(draft ? draft.blocker : task.blocker) + '" placeholder="What help do you need?"' + (unavailable ? ' disabled' : '') + '></div>' +
-          '<div class="form-field"><label for="status-' + h(taskDomId) + '">Status after saving</label><select id="status-' + h(taskDomId) + '" name="status"' + (unavailable ? ' disabled' : '') + '>' + TASK_STATUSES.filter(function (status) { return status !== 'Open'; }).map(function (status) {
-            return '<option value="' + h(status) + '"' + (status === (draft ? draft.status : task.status) ? ' selected' : '') + '>' + h(status) + '</option>';
-          }).join('') + '</select></div><div class="form-actions"><button class="button button-primary" type="submit" aria-label="Save update for ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Save update</button></div></div></form></details>' : '';
+        var composer = '';
+        if (task.isMine && task.status !== 'Done' && task.key && draft) {
+          if (draft.kind === 'block') {
+            composer = '<section class="task-composer" aria-labelledby="composer-' + h(taskDomId) + '"><h3 class="task-composer-title" id="composer-' + h(taskDomId) + '">Mark this task blocked</h3>' +
+              '<form class="task-update-form" data-task-composer-form="block" data-task-key="' + h(task.key) + '">' +
+              '<div class="form-field"><label for="blocker-' + h(taskDomId) + '">What are you waiting for?</label><textarea id="blocker-' + h(taskDomId) + '" name="blocker" maxlength="500" placeholder="Briefly name the person, decision, or resource you need." required' + (unavailable ? ' disabled' : '') + '>' + h(draft.blocker || '') + '</textarea></div>' +
+              '<div class="form-actions"><button class="button button-subtle" type="button" data-task-action="cancel-composer" data-task-key="' + h(task.key) + '"' + (unavailable ? ' disabled' : '') + '>Cancel</button>' +
+              '<button class="button button-warning" type="submit" aria-label="Mark blocked: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'blockTask' ? 'Marking Blocked…' : 'Mark Blocked') + '</button></div></form></section>';
+          } else {
+            composer = '<section class="task-composer" aria-labelledby="composer-' + h(taskDomId) + '"><h3 class="task-composer-title" id="composer-' + h(taskDomId) + '">Add a progress update</h3>' +
+              '<form class="task-update-form" data-task-composer-form="update" data-task-key="' + h(task.key) + '">' +
+              '<div class="form-field"><label for="update-' + h(taskDomId) + '">What did you do?</label><textarea id="update-' + h(taskDomId) + '" name="updateText" maxlength="1000" placeholder="Share a short, useful progress note." required' + (unavailable ? ' disabled' : '') + '>' + h(draft.updateText || '') + '</textarea></div>' +
+              '<div class="form-actions"><button class="button button-subtle" type="button" data-task-action="cancel-composer" data-task-key="' + h(task.key) + '"' + (unavailable ? ' disabled' : '') + '>Cancel</button>' +
+              '<button class="button button-primary" type="submit" aria-label="Save update for ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'addTaskUpdate' ? 'Saving…' : 'Save Update') + '</button></div></form></section>';
+          }
+        }
 
         return '<article class="task-card' + (task.isMine ? ' is-mine' : '') + '" data-task-card-key="' + h(task.key) + '" tabindex="-1" aria-labelledby="' + h(taskDomId) + '"><div class="task-main"><div class="task-topline">' +
           '<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' + (task.id ? '<span class="task-key">' + h(task.id) + '</span>' : '') + '</div>' +
           '<h2 class="task-title" id="' + h(taskDomId) + '">' + h(task.title) + '</h2>' +
           (task.relatedProject ? '<p class="task-context">Project: <strong>' + h(task.relatedProject) + '</strong></p>' : '') +
           (meta.length ? '<div class="meta-list">' + meta.join('') + '</div>' : '') +
-          ((task.lastUpdate || task.blocker) ? '<div class="task-notes">' +
+          ((task.lastUpdate || task.status === 'Blocked') ? '<div class="task-notes">' +
             (task.lastUpdate ? '<div class="task-note"><strong>Latest:</strong> ' + h(task.lastUpdate) + '</div>' : '') +
-            (task.blocker ? '<div class="task-note blocker"><strong>Blocker:</strong> ' + h(task.blocker) + '</div>' : '') + '</div>' : '') +
+            (task.status === 'Blocked' ? '<div class="task-note blocker"><strong>Waiting for:</strong> ' + h(task.blocker || 'No blocker reason recorded.') + '</div>' : '') + '</div>' : '') +
           (link ? '<a class="task-link" href="' + h(link) + '" target="_blank" rel="noopener noreferrer">Supporting link ↗</a>' : '') +
-          '</div><div class="task-actions">' + actions + '</div>' + updateForm + '</article>';
+          '</div><div class="task-actions">' + actions + '</div>' + composer + '</article>';
       }
 
       function renderProjects() {
         var target = document.getElementById('projects-content');
         if (state.loading) { target.innerHTML = loadingState(); return; }
         if (state.error) { target.innerHTML = errorState(); return; }
-        if (!state.projects.length) {
-          target.innerHTML = emptyState('No projects have been added yet', 'When the Projects sheet has rows, current initiatives will appear here automatically.', '', '', false);
-          return;
+        if (state.projectScreen === 'new') target.innerHTML = renderNewIdeaScreen();
+        else if (state.projectScreen === 'detail') {
+          var project = findProject(state.selectedProjectKey);
+          if (project) target.innerHTML = renderProjectDetail(project);
+          else {
+            state.projectScreen = 'board';
+            state.selectedProjectKey = '';
+            target.innerHTML = renderProjectBoard();
+          }
+        } else target.innerHTML = renderProjectBoard();
+
+      }
+
+      function projectStageClass(stage) {
+        return 'project-stage-' + text(stage).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      }
+
+      function projectNextCopy(project) {
+        if (project.nextAction) return project.nextAction;
+        if (project.stage === 'Idea') return 'Start validation to check whether this is useful and realistic for Storm King.';
+        if (project.stage === 'Validation') return 'Answer the validation questions, then choose whether this is ready for school review.';
+        if (project.stage === 'School Review') return 'Record the school conversation and the decision when it arrives.';
+        if (project.stage === 'Active') return 'Add an open task or a short update so everyone can see the next useful step.';
+        if (project.stage === 'Completed') return project.observedResult || 'The project is complete. Its tasks and history remain available below.';
+        if (project.stage === 'Paused') return project.pauseReason || 'Keep the reason visible until the committee is ready to reconsider it.';
+        if (project.stage === 'Rejected') return project.rejectionReason || project.schoolFeedback || 'The decision and project history are preserved for future reference.';
+        return 'Review the project details and decide on the next useful step.';
+      }
+
+      function projectIdentifier(project) {
+        return project.projectKey || project.id || project.renderKey;
+      }
+
+      function renderProjectBoard() {
+        var setup = state.projectWorkflowSetupNeeded
+          ? '<div class="project-setup-banner" role="status"><div><strong>One-time project setup is needed</strong><p>Add the supported workflow fields and stage options without changing any existing project rows.</p></div>' +
+            '<button class="button button-subtle" type="button" data-project-action="setup"' + (state.busyKey ? ' disabled' : '') + '>' +
+            (state.busyKey.indexOf('setupProjectWorkflow') >= 0 ? 'Preparing…' : 'Finish setup') + '</button></div>'
+          : '';
+        var toolbar = '<div class="project-board-toolbar"><div><p class="results-count">' + state.projects.length + ' ' + (state.projects.length === 1 ? 'project' : 'projects') + ' across the full workflow</p></div>' +
+          '<button class="button button-primary new-idea-button" type="button" data-project-action="new-idea"' + (state.busyKey || state.refreshing ? ' disabled' : '') + '>+ New Idea</button></div>';
+        var primary = [
+          ['Idea', 'Ideas', 'New suggestions ready for a quick look'],
+          ['Validation', 'Needs Work / Validation', 'Checking whether an idea is useful and realistic'],
+          ['School Review', 'Waiting on School', 'Ready for feedback or a simple decision'],
+          ['Active', 'Active', 'Approved work now moving through tasks and updates'],
+          ['Completed', 'Completed', 'Finished projects with their results and history']
+        ].map(function (section) { return renderProjectSection(section[0], section[1], section[2]); }).join('');
+        var legacyProjects = state.projects.filter(function (project) { return PROJECT_STAGES.indexOf(project.stage) < 0; });
+        if (legacyProjects.length) primary += renderProjectSection('Needs stage review', 'Needs Stage Review', 'Legacy projects kept visible until a supported stage is chosen', legacyProjects);
+        var secondaryProjects = state.projects.filter(function (project) { return project.stage === 'Paused' || project.stage === 'Rejected'; });
+        var secondary = '<div class="project-secondary-control"><button class="text-button" type="button" data-project-action="toggle-secondary" aria-expanded="' + (state.projectSecondaryVisible ? 'true' : 'false') + '">' +
+          (state.projectSecondaryVisible ? 'Hide' : 'Show') + ' Paused / Rejected (' + secondaryProjects.length + ')</button></div>' +
+          (state.projectSecondaryVisible
+            ? '<div class="project-secondary-sections">' + renderProjectSection('Paused', 'Paused', 'Saved for reconsideration later') + renderProjectSection('Rejected', 'Rejected', 'Decisions and reasons kept for future reference') + '</div>'
+            : '');
+        var empty = !state.projects.length
+          ? '<div class="project-board-empty"><div class="empty-icon" aria-hidden="true">◇</div><h2>No project ideas yet</h2><p>Add the first lightweight idea. You only need a name and the problem or opportunity you noticed.</p></div>'
+          : '';
+        return '<div class="projects-shell">' + setup + toolbar + empty + '<div class="project-sections">' + primary + '</div>' + secondary + '</div>';
+      }
+
+      function renderProjectSection(stage, title, description, providedProjects) {
+        var projects = Array.isArray(providedProjects) ? providedProjects : state.projects.filter(function (project) { return project.stage === stage; });
+        var domId = 'project-section-' + stage.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        return '<section class="project-section" data-project-section="' + h(stage) + '" tabindex="-1" aria-labelledby="' + h(domId) + '"><div class="project-section-header"><div><h2 id="' + h(domId) + '">' + h(title) + '</h2><p>' + h(description) + '</p></div><span class="project-count" aria-label="' + projects.length + ' projects">' + projects.length + '</span></div>' +
+          (projects.length ? '<div class="project-card-list">' + projects.map(renderProjectSummaryCard).join('') + '</div>' : '<p class="project-section-empty">Nothing here right now.</p>') + '</section>';
+      }
+
+      function renderProjectSummaryCard(project) {
+        var key = projectIdentifier(project);
+        var metricCopy = project.linkedMetricNames.slice(0, 2).join(' · ');
+        var bottom = project.stage === 'Completed'
+          ? project.observedResult
+          : project.stage === 'School Review'
+          ? project.nextAction || project.schoolContact
+          : project.nextAction;
+        return '<article class="project-summary-card ' + h(projectStageClass(project.stage)) + '"><button type="button" data-project-open="' + h(key) + '" aria-label="Open project: ' + h(project.name) + '"><span class="project-card-top"><span class="status-badge">' + h(project.stage) + '</span>' + (project.id ? '<span class="project-id">' + h(project.id) + '</span>' : '') + '</span>' +
+          '<strong class="project-card-name">' + h(project.name) + '</strong>' +
+          (project.problem ? '<span class="project-card-problem">' + h(project.problem) + '</span>' : '') +
+          (bottom ? '<span class="project-card-next"><small>' + (project.stage === 'Completed' ? 'Result' : 'Next') + '</small>' + h(bottom) + '</span>' : '') +
+          ((project.projectLead || metricCopy) ? '<span class="project-card-meta">' + (project.projectLead ? '<span>Lead: ' + h(project.projectLead) + '</span>' : '') + (metricCopy ? '<span>' + h(metricCopy) + '</span>' : '') + '</span>' : '') +
+          '<span class="project-open-label">Open project <span aria-hidden="true">→</span></span></button></article>';
+      }
+
+      function renderNewIdeaScreen() {
+        var draft = state.projectDrafts[projectDraftKey('new')];
+        var values = draft && draft.kind === 'new' ? draft.values : {};
+        var unavailable = !!state.busyKey || state.refreshing;
+        return '<div class="project-screen project-form-screen"><button class="project-back" type="button" data-project-action="back-board">← All projects</button>' +
+          '<div class="project-form-intro"><p class="eyebrow">Share a possibility</p><h2>New project idea</h2><p>Keep it lightweight. The committee can work out cost, scores, approvals, and a detailed plan later.</p></div>' +
+          '<form class="workflow-form new-idea-form" data-project-form="new" data-project-key="new">' +
+          '<div class="form-field"><label for="idea-name">Project name</label><input id="idea-name" name="projectName" maxlength="160" value="' + h(values.projectName || '') + '" required' + (unavailable ? ' disabled' : '') + '></div>' +
+          '<div class="form-field"><label for="idea-problem">What problem or opportunity did you notice?</label><textarea id="idea-problem" name="problemOpportunity" maxlength="1500" required' + (unavailable ? ' disabled' : '') + '>' + h(values.problemOpportunity || '') + '</textarea></div>' +
+          '<div class="form-field"><label for="idea-note">Optional short note <span class="field-optional">Optional</span></label><textarea id="idea-note" name="note" maxlength="600"' + (unavailable ? ' disabled' : '') + '>' + h(values.note || '') + '</textarea></div>' +
+          '<div class="form-actions"><button class="button button-subtle" type="button" data-project-action="back-board"' + (unavailable ? ' disabled' : '') + '>Cancel</button><button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>' +
+          (state.busyKey.indexOf('createProjectIdea') >= 0 ? 'Adding idea…' : 'Add Idea') + '</button></div></form></div>';
+      }
+
+      function renderProjectDetail(project) {
+        var key = projectIdentifier(project);
+        var resultLink = safeUrl(project.resultsLink);
+        var fields = [
+          ['Problem / opportunity', project.problem],
+          ['Idea note', project.ideaNote],
+          ['Local feasibility', project.localFeasibility],
+          ['Evidence / observation', project.validationEvidence],
+          ['How success will be measured', project.successMeasure],
+          ['Who at school needs to help', project.schoolContact],
+          ['Known concerns', project.knownConcerns],
+          ['School feedback', project.schoolFeedback],
+          ['Project lead', project.projectLead],
+          ['START impact', project.startImpact],
+          ['START difficulty', project.startDifficulty],
+          ['START cost', project.startCost],
+          ['Carbon track', project.carbonTrack],
+          ['Recommendation', project.recommendation],
+          ['Reason paused', project.pauseReason],
+          ['Reason declined', project.rejectionReason],
+          ['Work completed', project.completedWork],
+          ['Observed result', project.observedResult]
+        ].filter(function (field) { return field[1]; });
+        var metricBlock = project.linkedMetricNames.length
+          ? '<div class="project-info-field project-info-wide"><dt>Linked START metrics</dt><dd class="project-tag-list">' + project.linkedMetricNames.map(function (metric) { return '<span class="meta-chip">' + h(metric) + '</span>'; }).join('') + '</dd></div>'
+          : '';
+        var info = fields.length || metricBlock || resultLink
+          ? '<section class="project-info-panel" aria-labelledby="project-details-heading"><div class="panel-header"><div><h3 class="panel-title" id="project-details-heading">Project details</h3><p class="panel-subtitle">Only information recorded for this project is shown</p></div></div><dl class="project-info-grid">' +
+            fields.map(function (field) { return '<div class="project-info-field"><dt>' + h(field[0]) + '</dt><dd>' + h(field[1]) + '</dd></div>'; }).join('') + metricBlock +
+            (resultLink ? '<div class="project-info-field project-info-wide"><dt>Results link</dt><dd><a href="' + h(resultLink) + '" target="_blank" rel="noopener noreferrer">Open project results ↗</a></dd></div>' : '') + '</dl></section>'
+          : '';
+        return '<div class="project-screen" data-project-detail="' + h(key) + '" tabindex="-1"><div class="project-detail-toolbar"><button class="project-back" type="button" data-project-action="back-board">← All projects</button>' +
+          (project.id ? '<span class="project-id">' + h(project.id) + '</span>' : '') + '</div>' +
+          '<header class="project-detail-heading"><div><span class="status-badge ' + h(projectStageClass(project.stage)) + '">' + h(project.stage) + '</span><h2>' + h(project.name) + '</h2>' +
+          (project.submittedBy ? '<p>Suggested by ' + h(project.submittedBy) + '</p>' : '') + '</div></header>' +
+          '<section class="project-next-hero" aria-labelledby="project-next-heading"><p class="eyebrow">What happens next?</p><h3 id="project-next-heading">' + h(projectNextCopy(project)) + '</h3></section>' +
+          renderProjectWorkflow(project) +
+          '<div class="project-detail-layout"><div class="project-detail-main">' + info + renderRelatedTasks(project) + '</div><aside class="project-detail-side">' + renderProjectUpdates(project) + '</aside></div></div>';
+      }
+
+      function projectMutationKey(project) {
+        return project.projectKey || project.id;
+      }
+
+      function projectDomId(project) {
+        return text(project.renderKey).toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'project';
+      }
+
+      function projectControlsUnavailable(project) {
+        return !!state.busyKey || state.refreshing || !state.currentMember || !state.viewerIsActive || !projectMutationKey(project);
+      }
+
+      function projectUnavailableNote(project) {
+        if (!state.currentMember) return 'Choose a member profile before changing this project.';
+        if (!state.viewerIsActive) return 'This member profile is inactive.';
+        if (!projectMutationKey(project)) return 'This legacy row needs a Project ID before workflow actions can be used.';
+        return '';
+      }
+
+      function renderProjectWorkflow(project) {
+        var key = projectMutationKey(project);
+        var unavailable = projectControlsUnavailable(project);
+        var note = projectUnavailableNote(project);
+        if (project.stage === 'Idea') {
+          return '<section class="project-workflow-panel"><div><h3>Ready to look closer?</h3><p>Validation asks four concise questions about usefulness and feasibility. It does not require a full plan.</p></div>' +
+            '<button class="button button-primary" type="button" data-project-action="start-validation" data-project-key="' + h(key) + '"' + (unavailable ? ' disabled' : '') + '>' +
+            (state.busyKey.indexOf('startProjectValidation') >= 0 ? 'Starting…' : 'Start Validation') + '</button>' +
+            (note ? '<p class="workflow-unavailable">' + h(note) + '</p>' : '') + '</section>';
         }
-        target.innerHTML = '<div class="projects-grid">' + state.projects.map(renderProjectCard).join('') + '</div>';
+        if (project.stage === 'Validation') return renderValidationForm(project, unavailable, note);
+        if (project.stage === 'School Review') return renderSchoolReviewForm(project, unavailable, note);
+        if (project.stage === 'Active') return renderActiveProjectHub(project, unavailable, note);
+        if (project.stage === 'Completed') {
+          return '<section class="project-workflow-panel workflow-finished"><div><h3>Project completed</h3><p>No prominent actions remain. Related tasks, updates, and recorded results are preserved below.</p></div></section>';
+        }
+        if (project.stage === 'Paused') {
+          return '<section class="project-workflow-panel workflow-paused"><div><h3>Project paused</h3><p>The reason and any reconsideration step remain visible. Paused projects are never deleted.</p></div></section>';
+        }
+        if (project.stage === 'Rejected') {
+          return '<section class="project-workflow-panel workflow-rejected"><div><h3>Project not moving forward</h3><p>The school or committee reason and full history remain available for future reference.</p></div></section>';
+        }
+        return '<section class="project-workflow-panel"><div><h3>Legacy project stage</h3><p>This project can still be read safely. Ask the Student Lead to move it into a supported workflow stage before editing.</p></div></section>';
       }
 
-      function detail(label, value, className) {
-        if (!value) return '';
-        return '<div class="project-detail' + (className ? ' ' + className : '') + '"><dt>' + h(label) + '</dt><dd>' + h(value) + '</dd></div>';
+      function feasibilityOptions(selected) {
+        return '<option value="">Choose one</option>' + ['Ready', 'Needs Conversation', 'Blocked'].map(function (value) {
+          return '<option value="' + h(value) + '"' + (equalName(value, selected) ? ' selected' : '') + '>' + h(value) + '</option>';
+        }).join('');
       }
 
-      function renderProjectCard(project) {
-        var link = safeUrl(project.resultsLink);
-        var details = detail('Next action', project.nextAction || 'Not set', 'wide next-action') +
-          detail('Project lead', project.projectLead || 'Not assigned', '') +
-          detail('Local feasibility', project.localFeasibility || 'Not assessed', '') +
-          detail('Linked START metrics', project.linkedMetrics, 'wide') +
-          detail('School feedback', project.schoolFeedback, 'wide');
-        var extras = [
-          ['Carbon track', project.carbonTrack], ['START impact', project.startImpact], ['Difficulty', project.startDifficulty],
-          ['Cost', project.startCost], ['Recommendation', project.recommendation]
-        ].filter(function (item) { return item[1]; });
-        return '<article class="project-card' + (project.isWaitingOnSchool ? ' waiting' : '') + '"><div class="project-header"><div>' +
-          '<h2 class="project-title">' + h(project.name) + '</h2>' +
-          (project.problem ? '<p class="project-problem">' + h(project.problem) + '</p>' : '') + '</div>' +
-          '<span class="status-badge ' + (project.isWaitingOnSchool ? 'status-waiting' : '') + '">' + h(project.stage) + '</span></div>' +
-          '<div class="project-meta">' + (project.isActive ? '<span class="meta-chip">Active project</span>' : '') +
-          (project.isWaitingOnSchool ? '<span class="meta-chip due-soon">Waiting on school</span>' : '') + '</div>' +
-          '<dl class="project-details">' + details + '</dl>' +
-          (extras.length ? '<details class="project-more"><summary>More project context</summary><div class="project-more-grid">' + extras.map(function (item) {
-            return '<div>' + h(item[0]) + '<strong>' + h(item[1]) + '</strong></div>';
-          }).join('') + '</div></details>' : '') +
-          '<div class="project-footer"><span class="project-id">' + (project.id ? 'Project ' + h(project.id) : '') + '</span>' +
-          (link ? '<a class="button button-subtle" href="' + h(link) + '" target="_blank" rel="noopener noreferrer">View results ↗</a>' : '') + '</div></article>';
+      function renderMetricSelector(selectedMetrics, domId, unavailable) {
+        selectedMetrics = uniqueStrings(stringList(selectedMetrics));
+        if (!state.metrics.length) {
+          return '<fieldset class="metric-picker"><legend>Linked START metrics <span class="field-optional">Optional</span></legend>' +
+            (selectedMetrics.length ? '<div class="project-tag-list">' + selectedMetrics.map(function (metric) {
+              return '<span class="meta-chip">' + h(metric) + '</span><input type="hidden" name="linkedStartMetrics" value="' + h(metric) + '">';
+            }).join('') + '</div><p class="field-help">Existing links are kept. The Metrics list is not available to change them right now.</p>'
+              : '<p class="field-help">No Metrics rows are available. You can continue without linking one.</p>') + '</fieldset>';
+        }
+        return '<fieldset class="metric-picker"><legend>Linked START metrics <span class="field-optional">Optional</span></legend>' +
+          '<div class="form-field metric-search"><label for="metric-search-' + h(domId) + '">Search metrics</label><input id="metric-search-' + h(domId) + '" type="search" data-metric-search placeholder="Type to narrow the list"' + (unavailable ? ' disabled' : '') + '></div>' +
+          '<div class="metric-options" data-metric-options>' + state.metrics.map(function (metric, index) {
+            var checked = selectedMetrics.some(function (selected) { return equalName(selected, metric.name); });
+            var optionId = 'metric-' + domId + '-' + index;
+            return '<label class="metric-option" data-metric-option data-metric-label="' + h((metric.name + ' ' + metric.detail).toLowerCase()) + '" for="' + h(optionId) + '">' +
+              '<input id="' + h(optionId) + '" type="checkbox" name="linkedStartMetrics" value="' + h(metric.name) + '"' + (checked ? ' checked' : '') + (unavailable ? ' disabled' : '') + '><span><strong>' + h(metric.name) + '</strong>' +
+              (metric.detail ? '<small>' + h(metric.detail) + '</small>' : '') + '</span></label>';
+          }).join('') + '</div><p class="field-help">Metrics are optional. Select only the ones this project directly supports.</p></fieldset>';
       }
 
-      function navigate(view, filter) {
+      function renderValidationForm(project, unavailable, note) {
+        var key = projectMutationKey(project);
+        var draft = state.projectDrafts[projectDraftKey(key)];
+        var values = draft && draft.kind === 'validation' ? draft.values : {
+          validationEvidence: project.validationEvidence,
+          successMeasure: project.successMeasure,
+          schoolContact: project.schoolContact,
+          knownConcerns: project.knownConcerns,
+          localFeasibility: project.localFeasibility,
+          linkedStartMetrics: project.linkedMetricNames,
+          nextAction: equalName(project.nextAction, 'Complete validation questions') ? '' : project.nextAction,
+          pauseReason: project.pauseReason
+        };
+        var domId = projectDomId(project);
+        var saving = state.busyKey.indexOf('saveProjectValidation') >= 0;
+        return '<section class="project-workflow-form-panel" aria-labelledby="validation-heading-' + h(domId) + '"><div class="workflow-panel-heading"><p class="eyebrow">Validation</p><h3 id="validation-heading-' + h(domId) + '">Two questions, four short answers</h3><p>Use observations and practical school knowledge. A concise answer is enough.</p></div>' +
+          '<form class="workflow-form validation-form" data-project-form="validation" data-project-key="' + h(key) + '">' +
+          '<fieldset class="question-group"><legend>A. Is this a real and useful opportunity?</legend>' +
+          '<div class="form-field"><label for="evidence-' + h(domId) + '">What evidence or observation supports the problem?</label><textarea id="evidence-' + h(domId) + '" name="validationEvidence" maxlength="1500"' + (unavailable ? ' disabled' : '') + '>' + h(values.validationEvidence || '') + '</textarea></div>' +
+          '<div class="form-field"><label for="success-' + h(domId) + '">How would we know whether the project worked?</label><textarea id="success-' + h(domId) + '" name="successMeasure" maxlength="1000"' + (unavailable ? ' disabled' : '') + '>' + h(values.successMeasure || '') + '</textarea></div></fieldset>' +
+          '<fieldset class="question-group"><legend>B. Can Storm King realistically do it?</legend>' +
+          '<div class="form-field"><label for="contact-' + h(domId) + '">Who at school needs to help, approve, or provide information?</label><textarea id="contact-' + h(domId) + '" name="schoolContact" maxlength="500"' + (unavailable ? ' disabled' : '') + '>' + h(values.schoolContact || '') + '</textarea></div>' +
+          '<div class="form-field"><label for="concerns-' + h(domId) + '">What meaningful cost, burden, disruption, privacy, or safety issue is known?</label><textarea id="concerns-' + h(domId) + '" name="knownConcerns" maxlength="1500"' + (unavailable ? ' disabled' : '') + '>' + h(values.knownConcerns || '') + '</textarea></div></fieldset>' +
+          '<div class="workflow-form-grid"><div class="form-field"><label for="feasibility-' + h(domId) + '">Local feasibility <span class="field-optional">Optional</span></label><select id="feasibility-' + h(domId) + '" name="localFeasibility"' + (unavailable ? ' disabled' : '') + '>' + feasibilityOptions(values.localFeasibility) + '</select></div>' +
+          '<div class="form-field"><label for="validation-next-' + h(domId) + '">What information or action comes next? <span class="field-optional">Needed for More Information</span></label><textarea id="validation-next-' + h(domId) + '" name="nextAction" maxlength="600"' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || '') + '</textarea></div></div>' +
+          renderMetricSelector(values.linkedStartMetrics, domId, unavailable) +
+          '<div class="form-field pause-reason-field"><label for="validation-pause-' + h(domId) + '">If pausing, why? <span class="field-optional">Required only for Pause</span></label><textarea id="validation-pause-' + h(domId) + '" name="pauseReason" maxlength="1000"' + (unavailable ? ' disabled' : '') + '>' + h(values.pauseReason || '') + '</textarea></div>' +
+          (note ? '<p class="workflow-unavailable">' + h(note) + '</p>' : '') +
+          '<div class="workflow-outcomes" role="group" aria-label="Validation outcome"><button class="button button-primary" type="submit" name="outcome" value="school_review"' + (unavailable ? ' disabled' : '') + '>' + (saving ? 'Saving…' : 'Ready for School Review') + '</button>' +
+          '<button class="button button-subtle" type="submit" name="outcome" value="more_info"' + (unavailable ? ' disabled' : '') + '>Needs More Information</button>' +
+          '<button class="button button-warning" type="submit" name="outcome" value="pause"' + (unavailable ? ' disabled' : '') + '>Pause Project</button></div></form></section>';
+      }
+
+      function renderSchoolReviewForm(project, unavailable, note) {
+        var key = projectMutationKey(project);
+        var draft = state.projectDrafts[projectDraftKey(key)];
+        var values = draft && draft.kind === 'school-review' ? draft.values : {
+          consulted: project.schoolContact,
+          schoolFeedback: project.schoolFeedback,
+          nextAction: '',
+          localFeasibility: project.localFeasibility
+        };
+        var domId = projectDomId(project);
+        var saving = state.busyKey.indexOf('recordSchoolReview') >= 0;
+        return '<section class="project-workflow-form-panel school-review-panel" aria-labelledby="school-review-heading-' + h(domId) + '"><div class="waiting-banner"><span aria-hidden="true">⌛</span><div><strong>Waiting on School</strong><p>Keep the conversation and decision simple and visible.</p></div></div>' +
+          '<form class="workflow-form" data-project-form="school-review" data-project-key="' + h(key) + '"><div class="workflow-panel-heading"><h3 id="school-review-heading-' + h(domId) + '">Record school feedback</h3></div>' +
+          '<div class="form-field"><label for="consulted-' + h(domId) + '">Who or which department was consulted?</label><input id="consulted-' + h(domId) + '" name="consulted" maxlength="500" value="' + h(values.consulted || '') + '" required' + (unavailable ? ' disabled' : '') + '></div>' +
+          '<div class="form-field"><label for="feedback-' + h(domId) + '">What feedback did the school give?</label><textarea id="feedback-' + h(domId) + '" name="schoolFeedback" maxlength="1500" required' + (unavailable ? ' disabled' : '') + '>' + h(values.schoolFeedback || '') + '</textarea></div>' +
+          '<div class="workflow-form-grid"><div class="form-field"><label for="review-next-' + h(domId) + '">What happens next? <span class="field-optional">Needed for Approved or Needs Revision</span></label><textarea id="review-next-' + h(domId) + '" name="nextAction" maxlength="600"' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || '') + '</textarea></div>' +
+          '<div class="form-field"><label for="review-feasibility-' + h(domId) + '">Local feasibility <span class="field-optional">Optional</span></label><select id="review-feasibility-' + h(domId) + '" name="localFeasibility"' + (unavailable ? ' disabled' : '') + '>' + feasibilityOptions(values.localFeasibility) + '</select></div></div>' +
+          (note ? '<p class="workflow-unavailable">' + h(note) + '</p>' : '') +
+          '<div class="workflow-outcomes" role="group" aria-label="School review outcome"><button class="button button-primary" type="submit" name="outcome" value="approved"' + (unavailable ? ' disabled' : '') + '>' + (saving ? 'Saving…' : 'Approved') + '</button>' +
+          '<button class="button button-subtle" type="submit" name="outcome" value="revision"' + (unavailable ? ' disabled' : '') + '>Needs Revision</button>' +
+          '<button class="button button-warning" type="submit" name="outcome" value="declined"' + (unavailable ? ' disabled' : '') + '>Declined</button></div></form></section>';
+      }
+
+      function renderActiveProjectHub(project, unavailable, note) {
+        var key = projectMutationKey(project);
+        var draft = state.projectDrafts[projectDraftKey(key)];
+        return '<section class="active-project-hub" aria-labelledby="active-tools-' + h(projectDomId(project)) + '"><div class="workflow-panel-heading"><p class="eyebrow">Project hub</p><h3 id="active-tools-' + h(projectDomId(project)) + '">Move the work forward</h3><p>Add practical open tasks and short updates. A project lead is optional.</p></div>' +
+          '<div class="project-action-grid">' +
+          activeProjectAction('task', 'Add Task', 'Create an unassigned task in the open pool', key, unavailable, true) +
+          activeProjectAction('update', 'Add Project Update', 'Share what changed and what happens next', key, unavailable, false) +
+          activeProjectAction('next-action', 'Edit Next Action', 'Keep the next useful step obvious', key, unavailable, false) +
+          activeProjectAction('lead', project.projectLead ? 'Change Project Lead' : 'Set Project Lead', 'Optional owner for the overall project', key, unavailable, false) +
+          activeProjectAction('complete', 'Complete Project', 'Record the work and observed result', key, unavailable, false) +
+          activeProjectAction('pause', 'Pause Project', 'Save the reason and reconsideration step', key, unavailable, false) + '</div>' +
+          (note ? '<p class="workflow-unavailable">' + h(note) + '</p>' : '') +
+          (draft ? renderActiveProjectForm(project, draft, unavailable) : '') + '</section>';
+      }
+
+      function activeProjectAction(kind, label, description, key, unavailable, primary) {
+        return '<button class="project-action-card' + (primary ? ' primary' : '') + '" type="button" data-project-action="show-form" data-project-form-kind="' + h(kind) + '" data-project-key="' + h(key) + '"' + (unavailable ? ' disabled' : '') + '><strong>' + h(label) + '</strong><span>' + h(description) + '</span></button>';
+      }
+
+      function renderActiveProjectForm(project, draft, unavailable) {
+        var key = projectMutationKey(project);
+        var values = draft.values || {};
+        var domId = projectDomId(project) + '-' + draft.kind;
+        var close = '<button class="button button-subtle" type="button" data-project-action="cancel-form" data-project-key="' + h(key) + '"' + (unavailable ? ' disabled' : '') + '>Cancel</button>';
+        if (draft.kind === 'task') {
+          return '<div class="active-project-form"><h4>Add an open task</h4><p>The task will not be assigned. Any active member can claim it from the Task Pool.</p><form class="workflow-form" data-project-form="task" data-project-key="' + h(key) + '">' +
+            '<div class="form-field"><label for="project-task-' + h(domId) + '">Task</label><input id="project-task-' + h(domId) + '" name="task" maxlength="500" value="' + h(values.task || '') + '" required' + (unavailable ? ' disabled' : '') + '></div>' +
+            '<div class="workflow-form-grid compact-grid"><div class="form-field"><label for="project-interest-' + h(domId) + '">Interest tag</label><input id="project-interest-' + h(domId) + '" name="interestTag" maxlength="120" value="' + h(values.interestTag || '') + '" required' + (unavailable ? ' disabled' : '') + '></div>' +
+            '<div class="form-field"><label for="project-time-' + h(domId) + '">Estimated time</label><input id="project-time-' + h(domId) + '" name="estimatedTime" maxlength="120" value="' + h(values.estimatedTime || '') + '" placeholder="For example, 30 minutes" required' + (unavailable ? ' disabled' : '') + '></div>' +
+            '<div class="form-field"><label for="project-due-' + h(domId) + '">Due date <span class="field-optional">Optional</span></label><input id="project-due-' + h(domId) + '" type="date" name="dueDate" value="' + h(values.dueDate || '') + '"' + (unavailable ? ' disabled' : '') + '></div>' +
+            '<div class="form-field"><label for="project-link-' + h(domId) + '">Supporting link <span class="field-optional">Optional</span></label><input id="project-link-' + h(domId) + '" type="url" name="supportingLink" maxlength="500" value="' + h(values.supportingLink || '') + '" placeholder="https://"' + (unavailable ? ' disabled' : '') + '></div></div>' +
+            '<div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>' + (state.busyKey.indexOf('addProjectTask') >= 0 ? 'Adding…' : 'Add Open Task') + '</button></div></form></div>';
+        }
+        if (draft.kind === 'update') {
+          return '<div class="active-project-form"><h4>Add project update</h4><form class="workflow-form" data-project-form="update" data-project-key="' + h(key) + '"><div class="form-field"><label for="project-update-' + h(domId) + '">What changed?</label><textarea id="project-update-' + h(domId) + '" name="updateText" maxlength="1000" required' + (unavailable ? ' disabled' : '') + '>' + h(values.updateText || '') + '</textarea></div>' +
+            '<div class="form-field"><label for="update-next-' + h(domId) + '">What happens next? <span class="field-optional">Optional</span></label><textarea id="update-next-' + h(domId) + '" name="nextAction" maxlength="600"' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || '') + '</textarea></div>' +
+            '<div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>' + (state.busyKey.indexOf('addProjectUpdate') >= 0 ? 'Saving…' : 'Save Project Update') + '</button></div></form></div>';
+        }
+        if (draft.kind === 'next-action') {
+          return '<div class="active-project-form"><h4>Edit next action</h4><form class="workflow-form" data-project-form="next-action" data-project-key="' + h(key) + '"><div class="form-field"><label for="next-action-' + h(domId) + '">What is the next useful step?</label><textarea id="next-action-' + h(domId) + '" name="nextAction" maxlength="600" required' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || project.nextAction || '') + '</textarea></div><div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>Save Next Action</button></div></form></div>';
+        }
+        if (draft.kind === 'lead') {
+          var options = '<option value="">No project lead</option>' + state.members.map(function (member) {
+            return '<option value="' + h(member.profileKey) + '"' + (equalName(member.profileKey, values.leadProfileKey || project.projectLeadProfileKey) ? ' selected' : '') + '>' + h(member.displayName) + '</option>';
+          }).join('');
+          return '<div class="active-project-form"><h4>Project lead</h4><p>This is optional. Tasks stay individually claimable by every active member.</p><form class="workflow-form" data-project-form="lead" data-project-key="' + h(key) + '"><div class="form-field"><label for="project-lead-' + h(domId) + '">Choose an active member</label><select id="project-lead-' + h(domId) + '" name="leadProfileKey"' + (unavailable ? ' disabled' : '') + '>' + options + '</select></div><div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>Save Project Lead</button></div></form></div>';
+        }
+        if (draft.kind === 'complete') {
+          return '<div class="active-project-form"><h4>Complete project</h4><p>A short record is enough; no formal report is required.</p><form class="workflow-form" data-project-form="complete" data-project-key="' + h(key) + '"><div class="form-field"><label for="completed-work-' + h(domId) + '">What was actually completed?</label><textarea id="completed-work-' + h(domId) + '" name="completedWork" maxlength="1500" required' + (unavailable ? ' disabled' : '') + '>' + h(values.completedWork || '') + '</textarea></div><div class="form-field"><label for="observed-result-' + h(domId) + '">What result did we observe?</label><textarea id="observed-result-' + h(domId) + '" name="observedResult" maxlength="1500" required' + (unavailable ? ' disabled' : '') + '>' + h(values.observedResult || '') + '</textarea></div><div class="form-field"><label for="results-link-' + h(domId) + '">Results link <span class="field-optional">Optional</span></label><input id="results-link-' + h(domId) + '" type="url" name="resultsLink" maxlength="500" value="' + h(values.resultsLink || '') + '" placeholder="https://"' + (unavailable ? ' disabled' : '') + '></div><div class="form-actions">' + close + '<button class="button button-done" type="submit"' + (unavailable ? ' disabled' : '') + '>Complete Project</button></div></form></div>';
+        }
+        return '<div class="active-project-form"><h4>Pause project</h4><form class="workflow-form" data-project-form="pause" data-project-key="' + h(key) + '"><div class="form-field"><label for="pause-reason-' + h(domId) + '">Why are we pausing?</label><textarea id="pause-reason-' + h(domId) + '" name="reason" maxlength="1000" required' + (unavailable ? ' disabled' : '') + '>' + h(values.reason || '') + '</textarea></div><div class="form-field"><label for="pause-next-' + h(domId) + '">What should happen when we reconsider it? <span class="field-optional">Optional</span></label><textarea id="pause-next-' + h(domId) + '" name="nextAction" maxlength="600"' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || '') + '</textarea></div><div class="form-actions">' + close + '<button class="button button-warning" type="submit"' + (unavailable ? ' disabled' : '') + '>Pause Project</button></div></form></div>';
+      }
+
+      function projectContextMatches(value, project) {
+        var candidate = text(value);
+        if (!candidate) return false;
+        if (equalName(candidate, project.id) || equalName(candidate, project.projectKey)) return true;
+        var exactLabel = project.id && project.name ? project.id + ': ' + project.name : '';
+        if (exactLabel && equalName(candidate, exactLabel)) return true;
+        var uniqueName = state.projects.filter(function (other) { return equalName(other.name, project.name); }).length === 1;
+        return uniqueName && equalName(candidate, project.name);
+      }
+
+      function relatedTasksForProject(project) {
+        var combined = project.relatedTasks.concat(state.tasks.filter(function (task) {
+          return projectContextMatches(task.relatedProject, project);
+        }));
+        return combined.filter(function (task, index, array) {
+          var identity = task.key || task.id || (task.title + '::' + text(task.dueDate));
+          return array.findIndex(function (candidate) {
+            return equalName(candidate.key || candidate.id || (candidate.title + '::' + text(candidate.dueDate)), identity);
+          }) === index;
+        });
+      }
+
+      function renderRelatedTasks(project) {
+        var tasks = relatedTasksForProject(project);
+        return '<section class="project-info-panel related-tasks-panel" aria-labelledby="related-tasks-heading"><div class="panel-header"><div><h3 class="panel-title" id="related-tasks-heading">Related tasks</h3><p class="panel-subtitle">Tasks created for this project stay in the shared Task Pool</p></div><span class="project-count">' + tasks.length + '</span></div>' +
+          (tasks.length ? '<ul class="related-task-list">' + tasks.map(function (task) {
+            var due = dueInfo(task.dueDate, task.status === 'Done');
+            return '<li><button type="button" data-open-task="' + h(task.key || task.id) + '"><span><strong>' + h(task.title) + '</strong>' + (task.claimedBy ? '<small>Owned by ' + h(task.claimedBy) + '</small>' : '<small>Unclaimed</small>') + '</span><span class="related-task-meta"><span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' + (due ? '<small>' + h(due.label) + '</small>' : '') + '</span></button></li>';
+          }).join('') + '</ul>' : '<div class="project-panel-empty"><p>No related tasks yet.</p>' + (project.stage === 'Active' ? '<p>Use <strong>Add Task</strong> above to create practical work for members to claim.</p>' : '') + '</div>') + '</section>';
+      }
+
+      function projectUpdatesFor(project) {
+        var combined = project.recentUpdates.concat(state.updates.filter(function (update) {
+          return equalName(update.projectKey, project.projectKey) || equalName(update.projectId, project.id) || projectContextMatches(update.context, project);
+        }));
+        return combined.sort(function (left, right) {
+          return (new Date(right.timestamp).getTime() || 0) - (new Date(left.timestamp).getTime() || 0);
+        }).filter(function (update, index, array) {
+          var identity = [text(update.timestamp), update.member, update.update, update.context, update.nextStep].join('::');
+          return array.findIndex(function (candidate) {
+            return [text(candidate.timestamp), candidate.member, candidate.update, candidate.context, candidate.nextStep].join('::') === identity;
+          }) === index;
+        }).slice(0, 8);
+      }
+
+      function renderProjectUpdates(project) {
+        var updates = projectUpdatesFor(project);
+        return '<section class="project-info-panel project-updates-panel" aria-labelledby="project-updates-heading"><div class="panel-header"><div><h3 class="panel-title" id="project-updates-heading">Recent project updates</h3><p class="panel-subtitle">History recorded in the shared Updates sheet</p></div></div>' +
+          (updates.length ? '<ul class="project-update-list">' + updates.map(function (update) {
+            var link = safeUrl(update.link);
+            return '<li><div class="project-update-top"><strong>' + h(update.member) + '</strong>' + (update.timestamp ? '<time>' + h(formatDate(update.timestamp, false)) + '</time>' : '') + '</div>' +
+              '<p>' + h(update.update || 'Project workflow updated') + '</p>' + (update.nextStep ? '<div class="project-update-next"><strong>Next:</strong> ' + h(update.nextStep) + '</div>' : '') +
+              (link ? '<a href="' + h(link) + '" target="_blank" rel="noopener noreferrer">Open link ↗</a>' : '') + '</li>';
+          }).join('') + '</ul>' : '<div class="project-panel-empty"><p>No project updates yet.</p></div>') + '</section>';
+      }
+
+      function navigate(view, filter, projectStage) {
         if (VIEWS.indexOf(view) < 0) return;
         if (filter && TASK_FILTERS.indexOf(filter) >= 0) state.taskFilter = filter;
+        if (view === 'projects') {
+          state.projectScreen = 'board';
+          state.selectedProjectKey = '';
+          state.projectFocusStage = PROJECT_STAGES.indexOf(projectStage) >= 0 ? projectStage : '';
+        }
         var changed = state.view !== view;
         state.view = view;
         if (window.location.hash !== '#' + view) window.location.hash = view;
         render();
-        if (changed) {
+        if (changed || state.projectFocusStage) {
           window.requestAnimationFrame(function () {
-            var heading = document.querySelector('#view-' + view + ' h1');
-            if (heading) {
-              heading.setAttribute('tabindex', '-1');
-              heading.focus({ preventScroll: true });
+            var section = state.projectFocusStage ? document.querySelector('[data-project-section="' + state.projectFocusStage.replace(/"/g, '') + '"]') : null;
+            var target = section || document.querySelector('#view-' + view + ' h1');
+            if (target) {
+              target.setAttribute('tabindex', '-1');
+              target.focus({ preventScroll: true });
             }
-            window.scrollTo({ top: 0, behavior: 'auto' });
+            if (section) section.scrollIntoView({ behavior: 'auto', block: 'start' });
+            else window.scrollTo({ top: 0, behavior: 'auto' });
+            state.projectFocusStage = '';
           });
         }
       }
 
-      function chooseMember(name) {
-        name = text(name);
-        if (name && !state.members.some(function (member) { return equalName(member, name); })) {
-          showToast('Ask the Student Lead to add your name in Settings.', true);
+      function chooseProfile(profileKey) {
+        profileKey = text(profileKey);
+        var selectedProfile = state.members.find(function (member) { return equalName(member.profileKey, profileKey); });
+        if (profileKey && !selectedProfile) {
+          showToast('Ask the Student Lead to add your profile in Members.', true);
           return;
         }
         state.taskDrafts = {};
-        state.requestedMember = name;
-        state.currentMember = name;
-        storeMember(name);
+        state.projectDrafts = {};
+        state.projectScreen = 'board';
+        state.selectedProjectKey = '';
+        state.profilePickerOpen = false;
+        state.requestedMember = profileKey;
+        state.currentMember = profileKey;
+        state.currentDisplayName = selectedProfile ? selectedProfile.displayName : '';
+        storeMember(profileKey);
         loadDashboard({
-          memberName: name,
+          profileKey: profileKey,
           silent: false,
           restoreIdentityFocus: true,
-          announce: name ? 'Now showing tasks for ' + name + '.' : 'Member selection cleared.'
+          announce: selectedProfile ? 'Now showing tasks for ' + selectedProfile.displayName + '.' : 'Profile selection cleared.'
         });
       }
 
       function restoreIdentityFocus() {
         window.requestAnimationFrame(function () {
-          var select = document.getElementById('member-select');
-          if (select && !select.disabled) select.focus({ preventScroll: true });
+          var select = document.getElementById('profile-select');
+          var switchButton = document.querySelector('[data-switch-profile]');
+          if (select && !select.disabled && select.offsetParent !== null) select.focus({ preventScroll: true });
+          else if (switchButton) switchButton.focus({ preventScroll: true });
+          else if (!memberChip.disabled) memberChip.focus({ preventScroll: true });
+        });
+      }
+
+      function focusDisplayNameEditor() {
+        window.requestAnimationFrame(function () {
+          var input = document.getElementById('display-name-input');
+          if (input && !input.disabled) input.focus({ preventScroll: true });
         });
       }
 
@@ -1628,20 +2560,218 @@
 
       function focusTaskDraft(key) {
         window.requestAnimationFrame(function () {
-          var form = Array.prototype.find.call(document.querySelectorAll('[data-update-form]'), function (candidate) {
+          var form = Array.prototype.find.call(document.querySelectorAll('[data-task-composer-form]'), function (candidate) {
             return candidate.getAttribute('data-task-key') === key;
           });
-          var field = form ? form.querySelector('[name="updateText"]') : null;
+          var field = form ? form.querySelector('[name="updateText"], [name="blocker"]') : null;
           if (field) field.focus({ preventScroll: true });
           else focusTaskCard(key);
         });
       }
 
+      function focusProjectBoard() {
+        window.requestAnimationFrame(function () {
+          var button = document.querySelector('[data-project-action="new-idea"]');
+          if (button && !button.disabled) button.focus({ preventScroll: true });
+          else {
+            var section = document.querySelector('[data-project-section]');
+            if (section) section.focus({ preventScroll: true });
+          }
+        });
+      }
+
+      function focusProjectDetail(key) {
+        window.requestAnimationFrame(function () {
+          var detail = Array.prototype.find.call(document.querySelectorAll('[data-project-detail]'), function (candidate) {
+            return candidate.getAttribute('data-project-detail') === key || !!findProject(key);
+          });
+          if (detail) detail.focus({ preventScroll: true });
+          else focusProjectBoard();
+        });
+      }
+
+      function focusProjectForm(key) {
+        window.requestAnimationFrame(function () {
+          var form = Array.prototype.find.call(document.querySelectorAll('[data-project-form]'), function (candidate) {
+            return candidate.getAttribute('data-project-key') === key;
+          });
+          var field = form ? form.querySelector('input:not([type="hidden"]):not([type="checkbox"]), textarea, select') : null;
+          if (field && !field.disabled) field.focus({ preventScroll: true });
+          else focusProjectDetail(key);
+        });
+      }
+
+      function openProject(key) {
+        var project = findProject(key);
+        if (!project) {
+          showToast('That project is no longer available. Refresh and try again.', true);
+          return;
+        }
+        state.view = 'projects';
+        state.projectScreen = 'detail';
+        state.selectedProjectKey = projectIdentifier(project);
+        state.projectFocusStage = '';
+        if (window.location.hash !== '#projects') window.location.hash = 'projects';
+        render();
+        focusProjectDetail(state.selectedProjectKey);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+
+      function openNewIdea() {
+        if (!requireIdentity()) return;
+        var key = projectDraftKey('new');
+        if (!state.projectDrafts[key] || state.projectDrafts[key].kind !== 'new') {
+          state.projectDrafts[key] = { kind: 'new', values: {} };
+        }
+        state.projectScreen = 'new';
+        state.selectedProjectKey = '';
+        renderProjects();
+        focusProjectForm('new');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+
+      function openProjectForm(key, kind) {
+        if (!requireIdentity()) return;
+        var project = findProject(key);
+        if (!project) return;
+        var mutationKey = projectMutationKey(project);
+        if (!mutationKey) {
+          showToast('This legacy project needs a Project ID before it can be changed.', true);
+          return;
+        }
+        var draftKey = projectDraftKey(mutationKey);
+        var existing = state.projectDrafts[draftKey];
+        if (!existing || existing.kind !== kind) state.projectDrafts[draftKey] = { kind: kind, values: {} };
+        renderProjects();
+        focusProjectForm(mutationKey);
+      }
+
+      function projectFormValues(formData, names) {
+        var values = {};
+        names.forEach(function (name) { values[name] = text(formData.get(name)); });
+        return values;
+      }
+
+      function focusNamedField(form, name) {
+        var field = form.querySelector('[name="' + name + '"]');
+        if (field) field.focus({ preventScroll: true });
+      }
+
+      function handleProjectFormSubmit(event) {
+        var form = event.target;
+        var kind = form.getAttribute('data-project-form');
+        var key = form.getAttribute('data-project-key');
+        var data = new FormData(form);
+        var draftKey = projectDraftKey(key);
+        if (kind === 'new') {
+          var idea = projectFormValues(data, ['projectName', 'problemOpportunity', 'note']);
+          state.projectDrafts[draftKey] = { kind: 'new', values: idea };
+          createProjectIdea(idea);
+          return;
+        }
+        var project = findProject(key);
+        if (!project) { showToast('That project is no longer available. Refresh and try again.', true); return; }
+        var outcome = event.submitter ? text(event.submitter.value) : '';
+        if (kind === 'validation') {
+          var validation = projectFormValues(data, ['validationEvidence', 'successMeasure', 'schoolContact', 'knownConcerns', 'localFeasibility', 'nextAction', 'pauseReason']);
+          validation.linkedStartMetrics = data.getAll('linkedStartMetrics').map(text).filter(Boolean);
+          validation.outcome = outcome;
+          state.projectDrafts[draftKey] = { kind: 'validation', values: validation };
+          if (outcome === 'school_review') {
+            var missingValidation = ['validationEvidence', 'successMeasure', 'schoolContact', 'knownConcerns'].find(function (name) { return !validation[name]; });
+            if (missingValidation) {
+              showToast('Complete all four short answers before sending this project to School Review.', true);
+              focusNamedField(form, missingValidation);
+              return;
+            }
+          }
+          if (outcome === 'more_info' && !validation.nextAction) {
+            showToast('Name the missing information as the next action.', true);
+            focusNamedField(form, 'nextAction');
+            return;
+          }
+          if (outcome === 'pause' && !validation.pauseReason) {
+            showToast('Add a short reason before pausing this project.', true);
+            focusNamedField(form, 'pauseReason');
+            return;
+          }
+          runProjectAction('saveProjectValidation', key, [validation], {
+            fromForm: true,
+            successMessage: outcome === 'school_review' ? 'Project moved to School Review.' : outcome === 'pause' ? 'Project paused with its reason saved.' : 'Validation saved. The next missing information is now visible.',
+            errorMessage: 'Could not save project validation.'
+          });
+          return;
+        }
+        if (kind === 'school-review') {
+          var review = projectFormValues(data, ['consulted', 'schoolFeedback', 'nextAction', 'localFeasibility']);
+          review.outcome = outcome;
+          state.projectDrafts[draftKey] = { kind: 'school-review', values: review };
+          if ((outcome === 'approved' || outcome === 'revision') && !review.nextAction) {
+            showToast(outcome === 'approved' ? 'Name the first active next action before approving this project.' : 'Name the revision or missing information as the next action.', true);
+            focusNamedField(form, 'nextAction');
+            return;
+          }
+          runProjectAction('recordSchoolReview', key, [review], {
+            fromForm: true,
+            successMessage: outcome === 'approved' ? 'Project approved and moved to Active.' : outcome === 'declined' ? 'Project declined. The reason and history were preserved.' : 'Project returned to Validation with the school feedback saved.',
+            errorMessage: 'Could not record the school review.'
+          });
+          return;
+        }
+        if (kind === 'task') {
+          var task = projectFormValues(data, ['task', 'interestTag', 'estimatedTime', 'dueDate', 'supportingLink']);
+          state.projectDrafts[draftKey] = { kind: 'task', values: task };
+          runProjectAction('addProjectTask', key, [task], { fromForm: true, successMessage: 'Open task added. Any active member can claim it.', errorMessage: 'Could not add this task.' });
+          return;
+        }
+        if (kind === 'update') {
+          var projectUpdate = projectFormValues(data, ['updateText', 'nextAction']);
+          state.projectDrafts[draftKey] = { kind: 'update', values: projectUpdate };
+          runProjectAction('addProjectUpdate', key, [projectUpdate.updateText, projectUpdate.nextAction], { fromForm: true, successMessage: 'Project update saved.', errorMessage: 'Could not save this project update.' });
+          return;
+        }
+        if (kind === 'next-action') {
+          var nextAction = text(data.get('nextAction'));
+          state.projectDrafts[draftKey] = { kind: 'next-action', values: { nextAction: nextAction } };
+          runProjectAction('editProjectNextAction', key, [nextAction], { fromForm: true, successMessage: 'Next action updated.', errorMessage: 'Could not update the next action.' });
+          return;
+        }
+        if (kind === 'lead') {
+          var leadProfileKey = text(data.get('leadProfileKey'));
+          state.projectDrafts[draftKey] = { kind: 'lead', values: { leadProfileKey: leadProfileKey } };
+          runProjectAction('setProjectLead', key, [leadProfileKey], { fromForm: true, successMessage: leadProfileKey ? 'Project lead updated.' : 'Project lead cleared.', errorMessage: 'Could not update the project lead.' });
+          return;
+        }
+        if (kind === 'complete') {
+          var completion = projectFormValues(data, ['completedWork', 'observedResult', 'resultsLink']);
+          state.projectDrafts[draftKey] = { kind: 'complete', values: completion };
+          runProjectAction('completeProject', key, [completion], { fromForm: true, successMessage: 'Project completed. Its results and history are saved.', errorMessage: 'Could not complete this project.' });
+          return;
+        }
+        var pause = projectFormValues(data, ['reason', 'nextAction']);
+        state.projectDrafts[draftKey] = { kind: 'pause', values: pause };
+        runProjectAction('pauseProject', key, [pause.reason, pause.nextAction], { fromForm: true, successMessage: 'Project paused. Its reason and next reconsideration step were saved.', errorMessage: 'Could not pause this project.' });
+      }
+
+      function openTaskComposer(key, kind) {
+        var existing = state.taskDrafts[key];
+        if (!existing || existing.kind !== kind) {
+          state.taskDrafts[key] = kind === 'block'
+            ? { kind: 'block', blocker: '' }
+            : { kind: 'update', updateText: '' };
+        }
+        renderTasks();
+        focusTaskDraft(key);
+      }
+
       function focusIdentity() {
+        if (state.identityLocked) return;
+        state.profilePickerOpen = true;
+        renderIdentity();
         var panel = document.getElementById('identity-panel');
         if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
         window.setTimeout(function () {
-          var control = document.getElementById('member-select');
+          var control = document.getElementById('profile-select');
           if (control) control.focus();
         }, 180);
       }
@@ -1664,9 +2794,55 @@
           }
           return;
         }
+        var projectOpen = event.target.closest('[data-project-open]');
+        if (projectOpen) {
+          openProject(projectOpen.getAttribute('data-project-open'));
+          return;
+        }
+        var taskOpen = event.target.closest('[data-open-task]');
+        if (taskOpen) {
+          var taskKey = taskOpen.getAttribute('data-open-task');
+          navigate('tasks', 'all');
+          if (taskKey) window.setTimeout(function () { focusTaskCard(taskKey); }, 0);
+          return;
+        }
+        var projectAction = event.target.closest('[data-project-action]');
+        if (projectAction) {
+          var projectActionName = projectAction.getAttribute('data-project-action');
+          var projectKey = projectAction.getAttribute('data-project-key');
+          if (projectActionName === 'new-idea') openNewIdea();
+          else if (projectActionName === 'setup') runProjectSetup();
+          else if (projectActionName === 'back-board') {
+            if (state.projectScreen === 'new') delete state.projectDrafts[projectDraftKey('new')];
+            state.projectScreen = 'board';
+            state.selectedProjectKey = '';
+            renderProjects();
+            focusProjectBoard();
+            window.scrollTo({ top: 0, behavior: 'auto' });
+          } else if (projectActionName === 'toggle-secondary') {
+            state.projectSecondaryVisible = !state.projectSecondaryVisible;
+            renderProjects();
+            window.requestAnimationFrame(function () {
+              var toggle = document.querySelector('[data-project-action="toggle-secondary"]');
+              if (toggle) toggle.focus({ preventScroll: true });
+            });
+          } else if (projectActionName === 'start-validation') {
+            runProjectAction('startProjectValidation', projectKey, [], {
+              successMessage: 'Validation started. Answer the four short questions when you are ready.',
+              errorMessage: 'Could not start validation.'
+            });
+          } else if (projectActionName === 'show-form') {
+            openProjectForm(projectKey, projectAction.getAttribute('data-project-form-kind'));
+          } else if (projectActionName === 'cancel-form') {
+            delete state.projectDrafts[projectDraftKey(projectKey)];
+            renderProjects();
+            focusProjectDetail(projectKey);
+          }
+          return;
+        }
         var viewButton = event.target.closest('[data-view-target]');
         if (viewButton) {
-          navigate(viewButton.getAttribute('data-view-target'), viewButton.getAttribute('data-set-task-filter'));
+          navigate(viewButton.getAttribute('data-view-target'), viewButton.getAttribute('data-set-task-filter'), viewButton.getAttribute('data-project-stage'));
           return;
         }
         var filterButton = event.target.closest('[data-task-filter]');
@@ -1684,39 +2860,107 @@
           focusIdentity();
           return;
         }
+        if (event.target.closest('[data-switch-profile]')) {
+          state.profilePickerOpen = true;
+          renderIdentity();
+          restoreIdentityFocus();
+          return;
+        }
+        if (event.target.closest('[data-edit-display-name]')) {
+          state.displayNameEditorOpen = true;
+          state.displayNameDraft = state.currentDisplayName;
+          renderIdentity();
+          focusDisplayNameEditor();
+          return;
+        }
         var action = event.target.closest('[data-task-action]');
         if (action) {
           var key = action.getAttribute('data-task-key');
-          if (action.getAttribute('data-task-action') === 'claim') claimTask(key);
-          else {
-            var task = state.tasks.find(function (candidate) { return candidate.key === key; });
-            var nextStatus = action.getAttribute('data-status');
-            updateTask(key, nextStatus, '', task ? task.blocker : '');
+          var actionName = action.getAttribute('data-task-action');
+          if (actionName === 'claim') claimTask(key);
+          else if (actionName === 'show-update') openTaskComposer(key, 'update');
+          else if (actionName === 'show-blocker') openTaskComposer(key, 'block');
+          else if (actionName === 'cancel-composer') {
+            delete state.taskDrafts[key];
+            renderTasks();
+            focusTaskCard(key);
+          } else if (actionName === 'resume') {
+            runTaskAction('resumeTask', key, [], { successMessage: 'Task resumed and moved back to Doing.', errorMessage: 'Could not resume this task.' });
+          } else if (actionName === 'complete') {
+            runTaskAction('completeTask', key, [], { successMessage: 'Task marked Done. Nice work.', errorMessage: 'Could not complete this task.' });
+          } else if (actionName === 'release') {
+            runTaskAction('releaseTask', key, [], { successMessage: 'Task released and returned to Open.', errorMessage: 'Could not release this task.' });
           }
+          return;
         }
       });
 
       document.addEventListener('change', function (event) {
-        if (event.target.id !== 'member-select') return;
-        chooseMember(event.target.value);
+        if (event.target.id !== 'profile-select') return;
+        chooseProfile(event.target.value);
+      });
+
+      document.addEventListener('input', function (event) {
+        if (!event.target.matches('[data-metric-search]')) return;
+        var query = text(event.target.value).toLowerCase();
+        var picker = event.target.closest('.metric-picker');
+        if (!picker) return;
+        picker.querySelectorAll('[data-metric-option]').forEach(function (option) {
+          option.hidden = !!query && option.getAttribute('data-metric-label').indexOf(query) < 0;
+        });
       });
 
       document.addEventListener('submit', function (event) {
-        if (event.target.matches('[data-update-form]')) {
+        if (event.target.matches('[data-display-name-form]')) {
+          event.preventDefault();
+          var displayName = text(new FormData(event.target).get('displayName'));
+          if (!displayName) {
+            showToast('Enter the name you want the committee to see.', true);
+            focusDisplayNameEditor();
+            return;
+          }
+          saveDisplayName(displayName);
+          return;
+        }
+        if (event.target.matches('[data-project-form]')) {
+          event.preventDefault();
+          handleProjectFormSubmit(event);
+          return;
+        }
+        if (event.target.matches('[data-task-composer-form]')) {
           event.preventDefault();
           var formData = new FormData(event.target);
           var key = event.target.getAttribute('data-task-key');
           var task = state.tasks.find(function (candidate) { return candidate.key === key; });
-          if (!task || !task.isMine) { showToast('Only the member who claimed this task can update it.', true); return; }
-          var status = normalizeStatus(formData.get('status'));
-          var updateText = text(formData.get('updateText'));
-          var blocker = text(formData.get('blocker'));
-          if (!updateText && !blocker && status === task.status) {
-            showToast('Add a progress note, a blocker, or change the status.', true);
+          if (!task || !task.isMine) { showToast('Only the member who owns this task can change it.', true); return; }
+          var composerKind = event.target.getAttribute('data-task-composer-form');
+          if (composerKind === 'block') {
+            var blocker = text(formData.get('blocker'));
+            if (!blocker) {
+              showToast('Explain what you are waiting for before marking this task Blocked.', true);
+              focusTaskDraft(key);
+              return;
+            }
+            state.taskDrafts[key] = { kind: 'block', blocker: blocker };
+            runTaskAction('blockTask', key, [blocker], {
+              fromForm: true,
+              successMessage: 'Task marked Blocked.',
+              errorMessage: 'Could not mark this task Blocked.'
+            });
             return;
           }
-          state.taskDrafts[key] = { status: status, updateText: updateText, blocker: blocker };
-          updateTask(key, status, updateText, blocker, { fromForm: true });
+          var updateText = text(formData.get('updateText'));
+          if (!updateText) {
+            showToast('Write a short progress update before saving.', true);
+            focusTaskDraft(key);
+            return;
+          }
+          state.taskDrafts[key] = { kind: 'update', updateText: updateText };
+          runTaskAction('addTaskUpdate', key, [updateText], {
+            fromForm: true,
+            successMessage: 'Progress update saved.',
+            errorMessage: 'Could not save this update.'
+          });
         }
       });
 
@@ -1732,7 +2976,7 @@
 
       if (!window.location.hash) window.history.replaceState(null, '', '#home');
       render();
-      loadDashboard({ memberName: state.currentMember });
+      loadDashboard({ profileKey: state.currentMember });
     }());
   </script>
 </body>
