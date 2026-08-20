@@ -256,15 +256,18 @@ function assistantContextBuildWorkScope_(context, dashboard, truncation) {
 function assistantContextBuildWaitingScope_(context, dashboard, truncation) {
   var tasks = Array.isArray(dashboard.tasks) ? dashboard.tasks : [];
   var projects = Array.isArray(dashboard.projects) ? dashboard.projects : [];
-  var schoolReview = projects.filter(function (project) {
+  var schoolReviewSources = projects.filter(function (project) {
     return assistantContextProjectStage_(assistantContextObject_(project).stage) === 'School Review';
-  }).map(function (project) {
+  });
+  var schoolReview = schoolReviewSources.map(function (project) {
     return assistantContextWaitingProject_(project, truncation);
   }).filter(assistantContextHasStableSource_);
   schoolReview.sort(assistantContextProjectSort_);
 
   var blocked = tasks.filter(function (task) {
-    return assistantContextTaskStatus_(assistantContextObject_(task).status) === 'Blocked';
+    var source = assistantContextObject_(task);
+    return assistantContextTaskStatus_(source.status) === 'Blocked' &&
+      assistantContextBlockedTaskIsSchoolRelevant_(source, schoolReviewSources, projects);
   }).map(function (task) {
     return assistantContextTask_(task, truncation);
   }).filter(assistantContextHasStableSource_);
@@ -469,18 +472,29 @@ function assistantContextProjectTasks_(dashboard, project, truncation) {
 }
 
 function assistantContextProjectUpdates_(dashboard, project, truncation) {
-  var candidates = (Array.isArray(dashboard.updates) ? dashboard.updates : []).concat(
-    Array.isArray(project.recentUpdates) ? project.recentUpdates : []
-  );
+  var dashboardCandidates = Array.isArray(dashboard.updates) ? dashboard.updates : [];
+  var projectCandidates = Array.isArray(project.recentUpdates) ? project.recentUpdates : [];
   var projects = Array.isArray(dashboard.projects) ? dashboard.projects : [];
-  var result = candidates.filter(function (update) {
+  var dashboardResult = dashboardCandidates.filter(function (update) {
     var source = assistantContextObject_(update);
-    if (String(source.projectId || '').trim() === String(project.projectId || '').trim()) return true;
-    return assistantContextRecordMatchesProject_(source.taskProject || source.item, project, projects);
+    if (assistantContextNormalize_(source.projectId) === assistantContextNormalize_(project.projectId) &&
+        assistantContextHasText_(project.projectId)) return true;
+    if (assistantContextRecordMatchesProject_(source.taskProject || source.item, project, projects)) return true;
+    return assistantContextUpdateMatchesRelatedTask_(source, dashboard, project, projects);
   }).map(function (update) {
     return assistantContextUpdate_(update, truncation);
   });
-  result = assistantContextDedupe_(result, 'dedupeKey');
+  dashboardResult = assistantContextDedupe_(dashboardResult, 'dedupeKey');
+  var projectResult = projectCandidates.filter(function (update) {
+    var source = assistantContextObject_(update);
+    return assistantContextRecordMatchesProject_(source.taskProject || source.item, project, projects) ||
+      (source.associationType === 'project' &&
+        assistantContextNormalize_(source.projectKey) === assistantContextNormalize_(project.projectKey));
+  }).map(function (update) {
+    return assistantContextUpdate_(update, truncation);
+  });
+  projectResult = assistantContextDedupe_(projectResult, 'dedupeKey');
+  var result = assistantContextDedupe_(dashboardResult.concat(projectResult), 'dedupeKey');
   result.sort(assistantContextUpdateSort_);
   return result.map(function (item, index) {
     item.sourceId = 'update:' + (index + 1);
@@ -504,22 +518,70 @@ function assistantContextProjectMetrics_(dashboard, project, truncation) {
 }
 
 function assistantContextRecordMatchesProject_(association, project, projects) {
-  var value = String(association || '').trim();
+  var value = assistantContextNormalize_(association);
   if (!value) return false;
-  var id = String(project.projectId || '').trim();
-  var label = String(project.projectLabel || '').trim();
-  var name = String(project.projectName || '').trim();
+  var id = assistantContextNormalize_(project.projectId);
+  var label = assistantContextNormalize_(project.projectLabel);
+  var name = assistantContextNormalize_(project.projectName);
   if (id && value === id) return true;
   if (label && value === label) return true;
-  if (id && name && value === id + ': ' + name) return true;
+  if (id && name && value === assistantContextNormalize_(id + ': ' + name)) return true;
   if (name && value === name) {
-    var normalizedName = assistantContextNormalize_(name);
     var count = (Array.isArray(projects) ? projects : []).filter(function (candidate) {
-      return assistantContextNormalize_(assistantContextObject_(candidate).projectName) === normalizedName;
+      return assistantContextNormalize_(assistantContextObject_(candidate).projectName) === name;
     }).length;
     return count === 1;
   }
   return false;
+}
+
+function assistantContextUpdateMatchesRelatedTask_(update, dashboard, project, projects) {
+  var association = assistantContextObject_(update).taskProject || assistantContextObject_(update).item;
+  if (!assistantContextHasText_(association)) return false;
+  var dashboardTasks = Array.isArray(assistantContextObject_(dashboard).tasks) ? dashboard.tasks : [];
+  var tasks = dashboardTasks.length
+    ? dashboardTasks
+    : (Array.isArray(project.relatedTasks) ? project.relatedTasks : []);
+  var matches = tasks.filter(function (task) {
+    return assistantContextRecordMatchesTask_(association, task);
+  });
+  if (matches.length !== 1) return false;
+  return assistantContextRecordMatchesProject_(
+    assistantContextObject_(matches[0]).relatedProject,
+    project,
+    projects
+  );
+}
+
+function assistantContextRecordMatchesTask_(association, task) {
+  var value = assistantContextNormalize_(association);
+  var source = assistantContextObject_(task);
+  var id = assistantContextNormalize_(source.taskId);
+  var title = assistantContextNormalize_(source.task || source.title);
+  if (!value) return false;
+  if (id && value === id) return true;
+  if (id && title && value === assistantContextNormalize_(id + ': ' + title)) return true;
+  return !!title && value === title;
+}
+
+function assistantContextBlockedTaskIsSchoolRelevant_(task, schoolReviewProjects, allProjects) {
+  var source = assistantContextObject_(task);
+  var projects = Array.isArray(allProjects) ? allProjects : [];
+  var schoolProjects = Array.isArray(schoolReviewProjects) ? schoolReviewProjects : [];
+  var relatedToSchoolReview = schoolProjects.some(function (project) {
+    return assistantContextRecordMatchesProject_(source.relatedProject, project, projects);
+  });
+  if (relatedToSchoolReview) return true;
+
+  var blocker = assistantContextNormalize_(source.blocker);
+  if (!blocker) return false;
+  if (/\b(?:school|teacher|faculty|staff|facilit(?:y|ies)|approval|permission|feedback|response|review|administrator|administration|principal|committee)\b|\broom access\b/.test(blocker)) {
+    return true;
+  }
+  return schoolProjects.some(function (project) {
+    var contact = assistantContextNormalize_(assistantContextObject_(project).schoolContact);
+    return contact.length >= 3 && blocker.indexOf(contact) !== -1;
+  });
 }
 
 function assistantContextFullProject_(project, truncation) {
@@ -815,8 +877,13 @@ function assistantContextUpdateSort_(left, right) {
 function assistantContextCompare_(left, right) {
   var a = assistantContextNormalize_(left);
   var b = assistantContextNormalize_(right);
-  if (a === b) return 0;
-  return a < b ? -1 : 1;
+  if (a < b) return -1;
+  if (a > b) return 1;
+  var exactLeft = String(left || '');
+  var exactRight = String(right || '');
+  if (exactLeft < exactRight) return -1;
+  if (exactLeft > exactRight) return 1;
+  return 0;
 }
 
 function assistantContextTaskStatus_(status) {

@@ -66,6 +66,9 @@ function project(overrides = {}) {
     projectLead: '',
     problemOpportunity: '',
     linkedMetricNames: [],
+    startImpact: '',
+    startDifficulty: '',
+    startCost: '',
     localFeasibility: '',
     recommendation: '',
     schoolFeedback: '',
@@ -515,6 +518,9 @@ test('caps every text field and linked-metric list with explicit truncation tota
       projectId: 'P-LONG',
       projectName: huge,
       problemOpportunity: huge,
+      startImpact: huge,
+      startDifficulty: huge,
+      startCost: huge,
       linkedMetricNames: linkedMetrics
     })]
   });
@@ -527,6 +533,9 @@ test('caps every text field and linked-metric list with explicit truncation tota
     result.projects.ideas[0].problemOpportunity.length,
     result.limits.fieldCharacters.longText
   );
+  assert.equal(result.projects.ideas[0].startImpact.length, result.limits.fieldCharacters.longText);
+  assert.equal(result.projects.ideas[0].startDifficulty.length, result.limits.fieldCharacters.longText);
+  assert.equal(result.projects.ideas[0].startCost.length, result.limits.fieldCharacters.longText);
   assert.equal(result.projects.ideas[0].linkedMetrics.length, result.limits.linkedMetricsPerProject);
   assert.ok(result.truncation.text.fieldsTruncated >= 5);
   assert.ok(result.truncation.text.charactersOmitted > 0);
@@ -639,12 +648,13 @@ test('returns display names only and cannot leak email, profile, row, or Sheet i
   assert.match(result.projects.ideas[0].problemOpportunity, /\[redacted\]/);
 });
 
-test('is deterministic, pure, and omits source scoring fields', () => {
+test('is deterministic, pure, preserves recorded START facts, and omits carbon/scoring internals', () => {
   const dashboard = {
     tasks: [task({ taskId: 'T1' })],
     projects: [project({
       projectId: 'P1',
       startImpact: 'High',
+      startDifficulty: 'Medium',
       startCost: 'Low',
       carbonTrack: 'Estimated savings'
     })]
@@ -654,7 +664,10 @@ test('is deterministic, pure, and omits source scoring fields', () => {
   const second = snapshot(dashboard);
   assert.deepEqual(first, second);
   assert.equal(JSON.stringify(dashboard), before, 'input was not mutated');
-  assert.doesNotMatch(JSON.stringify(first), /startImpact|startCost|carbonTrack|score/i);
+  assert.equal(first.projects.ideas[0].startImpact, 'High');
+  assert.equal(first.projects.ideas[0].startDifficulty, 'Medium');
+  assert.equal(first.projects.ideas[0].startCost, 'Low');
+  assert.doesNotMatch(JSON.stringify(first), /carbonTrack|score/i);
   assert.doesNotMatch(SOURCE, /new Date\s*\(\s*\)/, 'module never reads the clock');
   assert.doesNotMatch(SOURCE, /SpreadsheetApp|PropertiesService|DriveApp|UrlFetchApp/);
 });

@@ -206,20 +206,31 @@ test('never name-matches a duplicated project name', () => {
   assert.deepEqual(resolved, { scope: 'program', projectId: '' });
 });
 
-test('specific-project context uses only exact associations and all required factual fields', () => {
+test('specific-project context uses only unambiguous associations and all required factual fields', () => {
   const context = loadContext();
-  const selected = project();
+  const selected = project({
+    recentUpdates: [
+      update({ timestamp: '8/20/2026', update: 'Exact update' }),
+      update({
+        timestampMachine: '2026-08-20T11:00:00.000Z',
+        timestamp: '8/20/2026',
+        update: 'Exact update'
+      })
+    ]
+  });
   const duplicateName = project({ projectId: 'P-2', projectName: 'Water Audit', projectLabel: 'P-2: Water Audit' });
   const data = dashboard({
     projects: [selected, duplicateName, project({ projectId: 'P-3', projectName: 'Garden' })],
     tasks: [
-      task({ taskId: 'T-ID', relatedProject: 'P-1' }),
-      task({ taskId: 'T-LABEL', relatedProject: 'P-1: Water Audit' }),
+      task({ taskId: 'T-ID', task: 'Read P-1 meter', relatedProject: 'P-1' }),
+      task({ taskId: 'T-LABEL', relatedProject: 'p-1: water audit' }),
       task({ taskId: 'T-NAME', relatedProject: 'Water Audit' }),
       task({ taskId: 'T-OTHER', relatedProject: 'P-3' })
     ],
     updates: [
       update({ update: 'Exact update' }),
+      update({ timestampMachine: '2026-08-20T11:00:00.000Z', update: 'Exact update' }),
+      update({ taskProject: 'T-ID: Read P-1 meter', update: 'Task progress' }),
       update({ taskProject: 'Water Audit', update: 'Ambiguous update' }),
       update({ taskProject: 'P-3: Garden', update: 'Irrelevant update' })
     ],
@@ -237,7 +248,15 @@ test('specific-project context uses only exact associations and all required fac
     'successMeasure', 'knownConcerns', 'decisionNotes', 'completedWork', 'observedResult'
   ].forEach((key) => assert.ok(Object.hasOwn(result.commandCenter.selectedProject, key), key));
   assert.deepEqual(result.commandCenter.relatedTasks.map((item) => item.id), ['T-ID', 'T-LABEL']);
-  assert.deepEqual(result.commandCenter.recentUpdates.map((item) => item.update), ['Exact update']);
+  assert.deepEqual(
+    result.commandCenter.recentUpdates.map((item) => item.update),
+    ['Exact update', 'Exact update', 'Task progress']
+  );
+  assert.equal(
+    result.commandCenter.recentUpdates.filter((item) => item.update === 'Exact update').length,
+    2,
+    'enriched copies are deduplicated by full instant without collapsing legitimate repeats'
+  );
   assert.equal(result.commandCenter.recentUpdates[0].sourceId, 'update:1');
   assert.deepEqual(result.commandCenter.linkedMetrics.map((item) => item.metric), ['Water Use']);
   assert.ok(result.sourceCatalog.some((item) => item.sourceId === 'project:P-1' && item.navigable));
@@ -293,7 +312,11 @@ test('waiting context includes school-review projects, blocked tasks, and waitin
       project({ projectId: 'P-WAIT', stage: 'School Review', linkedMetricNames: ['Water Use'] }),
       project({ projectId: 'P-ACTIVE', stage: 'Active', linkedMetricNames: ['Energy Use'] })
     ],
-    tasks: [task({ taskId: 'T-BLOCK', status: 'Blocked', blocker: 'School response', relatedMetric: 'Waste' })],
+    tasks: [
+      task({ taskId: 'T-BLOCK', status: 'Blocked', blocker: 'School response', relatedMetric: 'Waste' }),
+      task({ taskId: 'T-PROJECT', status: 'Blocked', blocker: 'Supplier delay', relatedProject: 'P-WAIT' }),
+      task({ taskId: 'T-UNRELATED', status: 'Blocked', blocker: 'Waiting for equipment delivery' })
+    ],
     metrics: [
       metric(),
       metric({ metric: 'Waste' }),
@@ -302,7 +325,7 @@ test('waiting context includes school-review projects, blocked tasks, and waitin
     ]
   }), { question: 'What is waiting?', scope: 'waiting' }));
   assert.deepEqual(result.commandCenter.schoolReviewProjects.map((item) => item.id), ['P-WAIT']);
-  assert.deepEqual(result.commandCenter.blockedTasks.map((item) => item.id), ['T-BLOCK']);
+  assert.deepEqual(result.commandCenter.blockedTasks.map((item) => item.id), ['T-BLOCK', 'T-PROJECT']);
   assert.deepEqual(
     result.commandCenter.metrics.map((item) => item.metric),
     ['Energy Use', 'Waste', 'Water Use']
@@ -380,6 +403,16 @@ test('recent update source IDs remain stable after shuffled input and are citabl
   const projectFirst = build(updates, 'project');
   const projectShuffled = build([updates[1], updates[2], updates[0]], 'project');
   assert.deepEqual(sources(projectFirst), sources(projectShuffled));
+
+  const normalizedTie = [
+    update({ member: 'Avery', taskProject: 'Program', update: 'Same update', nextStep: '' }),
+    update({ member: 'avery', taskProject: 'Program', update: 'Same update', nextStep: '' })
+  ];
+  assert.deepEqual(
+    sources(build(normalizedTie)),
+    sources(build(normalizedTie.slice().reverse())),
+    'case-only normalized ties have an exact deterministic tiebreaker'
+  );
 
   const cited = plain(context.validateAssistantModelResponse_({
     answer: 'A baseline was recorded.',

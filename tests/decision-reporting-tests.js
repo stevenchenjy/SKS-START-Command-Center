@@ -8,7 +8,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const ROOT = path.resolve(__dirname, '..');
+const CONFIG_PATH = path.join(ROOT, 'apps-script', 'Config.gs');
+const SNAPSHOT_PATH = path.join(ROOT, 'apps-script', 'ProgramSnapshot.gs');
 const SOURCE_PATH = path.join(ROOT, 'apps-script', 'DecisionReporting.gs');
+const CONFIG_SOURCE = fs.readFileSync(CONFIG_PATH, 'utf8');
+const SNAPSHOT_SOURCE = fs.readFileSync(SNAPSHOT_PATH, 'utf8');
 const SOURCE = fs.readFileSync(SOURCE_PATH, 'utf8');
 const tests = [];
 
@@ -18,6 +22,8 @@ function test(name, work) {
 
 function loadHelpers() {
   const context = vm.createContext({});
+  new vm.Script(CONFIG_SOURCE, { filename: CONFIG_PATH }).runInContext(context);
+  new vm.Script(SNAPSHOT_SOURCE, { filename: SNAPSHOT_PATH }).runInContext(context);
   new vm.Script(SOURCE, { filename: SOURCE_PATH }).runInContext(context);
   assert.equal(typeof context.buildProjectDecisionRecord_, 'function');
   assert.equal(typeof context.buildProjectDecisionComparison_, 'function');
@@ -25,7 +31,8 @@ function loadHelpers() {
   return {
     buildRecord: context.buildProjectDecisionRecord_,
     buildComparison: context.buildProjectDecisionComparison_,
-    buildReport: context.buildStartReportingData_
+    buildReport: context.buildStartReportingData_,
+    buildSnapshot: context.buildProgramSnapshot_
   };
 }
 
@@ -295,6 +302,62 @@ test('prepares all requested report sections from a mixed Program Snapshot', () 
     ['project:ACTIVE', 'project:IDEA', 'project:REVIEW', 'task:BLOCKED', 'task:DOING', 'task:OVERDUE']
   );
   assert.equal(result.humanDecisionRequired, true);
+});
+
+test('preserves recorded START facts and upstream omissions through the real snapshot-to-report path', () => {
+  const projects = [
+    project({
+      projectId: 'A-REVIEW',
+      projectName: 'First review',
+      stage: 'School Review',
+      startImpact: 'High recorded impact',
+      startDifficulty: 'Medium recorded difficulty',
+      startCost: '$125 recorded estimate',
+      linkedMetricNames: ['Waste']
+    }),
+    project({
+      projectId: 'B-REVIEW',
+      projectName: 'Second review',
+      stage: 'School Review'
+    }),
+    project({
+      projectId: 'C-REVIEW',
+      projectName: 'Third review',
+      stage: 'School Review'
+    })
+  ];
+  const snapshot = helpers.buildSnapshot({
+    generatedAt: '2026-08-20T12:00:00.000Z',
+    today: '2026-08-20',
+    projects,
+    tasks: [],
+    updates: []
+  }, {
+    asOf: '2026-08-20T12:00:00.000Z',
+    today: '2026-08-20',
+    limits: { projectsPerStage: 1, attentionPerGroup: 1 }
+  });
+  const result = plain(helpers.buildReport(snapshot));
+
+  assert.equal(result.schoolDecisionQueue.length, 1);
+  assert.equal(result.schoolDecisionQueue[0].projectId, 'A-REVIEW');
+  assert.equal(result.schoolDecisionQueue[0].startImpact, 'High recorded impact');
+  assert.equal(result.schoolDecisionQueue[0].startDifficulty, 'Medium recorded difficulty');
+  assert.equal(result.schoolDecisionQueue[0].startCost, '$125 recorded estimate');
+  assert.ok(!result.schoolDecisionQueue[0].missingInformation.some((item) => (
+    ['startImpact', 'startDifficulty', 'startCost'].includes(item.field)
+  )));
+  assert.equal(result.truncation.truncated, true);
+  assert.deepEqual(result.truncation.collections.schoolDecisionQueue, {
+    available: 1,
+    included: 1,
+    omitted: 0
+  });
+  assert.deepEqual(result.truncation.sourceSnapshot.collections['projects.schoolReview'], {
+    available: 3,
+    included: 1,
+    omitted: 2
+  });
 });
 
 test('returns a stable empty report with explicit zero counts and collection metadata', () => {

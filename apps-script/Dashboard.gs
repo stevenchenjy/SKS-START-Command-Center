@@ -192,6 +192,7 @@ function enrichProjects_(projects, tasks, updates, metrics) {
 function projectUpdatePayload_(update, projectKey) {
   return {
     timestamp: update.timestamp,
+    timestampMachine: update.timestampMachine,
     member: update.member,
     memberProfileKey: update.memberProfileKey,
     taskProject: update.taskProject,

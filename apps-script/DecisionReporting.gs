@@ -181,7 +181,12 @@ function buildProjectDecisionComparison_(projects, projectIds) {
 function buildStartReportingData_(snapshot) {
   var source = decisionReportingObject_(snapshot);
   var limits = decisionReportingLimits_();
-  var truncation = { truncated: false, collections: {} };
+  var sourceSnapshotTruncation = decisionReportingSourceSnapshotTruncation_(source);
+  var truncation = {
+    truncated: sourceSnapshotTruncation.truncated,
+    collections: {},
+    sourceSnapshot: sourceSnapshotTruncation
+  };
   var schoolProjects = decisionReportingProjectsFromGroups_(source, [
     ['projects', 'schoolReview']
   ]);
@@ -312,6 +317,53 @@ function decisionReportingLimits_() {
     blockers: 20,
     upcomingPriorities: 24,
     observedResults: 20
+  };
+}
+
+function decisionReportingSourceSnapshotTruncation_(snapshot) {
+  var truncation = decisionReportingObject_(decisionReportingObject_(snapshot).truncation);
+  var sourceCollections = decisionReportingObject_(truncation.collections);
+  var paths = [
+    'projects.schoolReview',
+    'projects.active',
+    'projects.completed',
+    'tasks.doing',
+    'tasks.currentMemberWork',
+    'tasks.blocked',
+    'tasks.overdue',
+    'attention.blockedTasks'
+  ];
+  var collections = {};
+  var collectionOmissions = 0;
+  paths.forEach(function (path) {
+    if (!Object.prototype.hasOwnProperty.call(sourceCollections, path)) return;
+    var state = decisionReportingObject_(sourceCollections[path]);
+    var available = decisionReportingCount_(state.available);
+    var included = decisionReportingCount_(state.included);
+    var omitted = decisionReportingCount_(state.omitted);
+    collections[path] = {
+      available: available,
+      included: included,
+      omitted: omitted
+    };
+    collectionOmissions += omitted;
+  });
+  var text = decisionReportingObject_(truncation.text);
+  var lists = decisionReportingObject_(truncation.lists);
+  var serialized = decisionReportingObject_(truncation.serialized);
+  var textFieldsTruncated = decisionReportingCount_(text.fieldsTruncated);
+  var textCharactersOmitted = decisionReportingCount_(text.charactersOmitted);
+  var listItemsOmitted = decisionReportingCount_(lists.itemsOmitted);
+  var serializedItemsOmitted = decisionReportingCount_(serialized.itemsOmitted);
+  return {
+    truncated: truncation.truncated === true || collectionOmissions > 0 ||
+      textFieldsTruncated > 0 || textCharactersOmitted > 0 ||
+      listItemsOmitted > 0 || serializedItemsOmitted > 0,
+    collections: collections,
+    textFieldsTruncated: textFieldsTruncated,
+    textCharactersOmitted: textCharactersOmitted,
+    listItemsOmitted: listItemsOmitted,
+    serializedItemsOmitted: serializedItemsOmitted
   };
 }
 

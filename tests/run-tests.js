@@ -964,6 +964,14 @@ test('reads Metrics and enriches projects with workflow fields and related tasks
     Array.from(project.relatedTasks, (task) => task.taskId).sort(),
     ['T-001', 'T-005', 'T-006']
   );
+  const energyContext = sandbox.buildAssistantContext_(data, {
+    question: 'What changed on the Energy Dashboard project?',
+    scope: 'project',
+    projectId: 'P-002'
+  });
+  assert.ok(energyContext.commandCenter.recentUpdates.some((entry) => (
+    entry.update === 'Asked facilities for a meeting'
+  )), 'a task update is associated with its unambiguous related project');
 });
 
 test('creates a lightweight Idea with a unique ID, no required lead, and creation history', () => {
@@ -1251,9 +1259,19 @@ test('posts project updates to the shared Updates sheet and edits Next Action', 
   assert.equal(update.Update, 'Dining Services confirmed the new signage locations.');
   assert.equal(update['Next Step'], 'Print and install the signs.');
   assert.equal(projectRow('P-001')['Next Action'], 'Print and install the signs.');
-  assert.ok(projectFrom(result, 'P-001').recentUpdates.some((entry) => (
+  const enrichedUpdate = projectFrom(result, 'P-001').recentUpdates.find((entry) => (
     entry.update === 'Dining Services confirmed the new signage locations.'
-  )));
+  ));
+  assert.ok(enrichedUpdate);
+  assert.match(enrichedUpdate.timestampMachine, /^\d{4}-\d{2}-\d{2}T/);
+  const assistantContext = sandbox.buildAssistantContext_(result, {
+    question: 'What is the latest project update?',
+    scope: 'project',
+    projectId: 'P-001'
+  });
+  assert.equal(assistantContext.commandCenter.recentUpdates.filter((entry) => (
+    entry.update === 'Dining Services confirmed the new signage locations.'
+  )).length, 1, 'dashboard and enriched copies share one exact update source');
 });
 
 test('resolves related tasks and project Updates stored by ID, name, or canonical label', () => {
