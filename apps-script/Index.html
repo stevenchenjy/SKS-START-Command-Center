@@ -851,6 +851,124 @@
     .project-update-list a { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 720; }
     .project-update-next { margin-top: 7px; padding: 7px 8px; border-radius: 7px; background: var(--forest-100); color: #31594b; font-size: 10px; }
 
+    [data-ai-only][hidden] { display: none !important; }
+
+    .assistant-layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+      align-items: start;
+      gap: 22px;
+    }
+
+    .assistant-compose, .assistant-output {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.78);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .assistant-compose { padding: 22px; }
+    .assistant-output { min-height: 360px; overflow: hidden; }
+    .assistant-form { display: grid; gap: 17px; }
+    .assistant-form textarea { min-height: 146px; resize: vertical; }
+
+    .assistant-form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .assistant-question-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .assistant-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .assistant-starters { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .assistant-starters h2 { margin: 0 0 9px; color: var(--navy-900); font-size: 14px; }
+    .assistant-starters p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+    .assistant-starter-list { display: grid; gap: 8px; }
+
+    .assistant-starter {
+      min-height: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--cream-50);
+      color: var(--navy-800);
+      cursor: pointer;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 680;
+    }
+
+    .assistant-starter:hover { border-color: var(--forest-700); background: white; }
+    .assistant-state { min-height: 358px; padding: 28px; }
+    .assistant-state.initial, .assistant-state.loading, .assistant-state.error { display: grid; place-items: center; text-align: center; }
+    .assistant-state-copy { max-width: 480px; }
+    .assistant-state h2 { margin: 0; color: var(--navy-900); font-size: 20px; letter-spacing: -0.02em; }
+    .assistant-state p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    .assistant-state.error { background: #fffafa; }
+
+    .assistant-spinner {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 15px;
+      border: 4px solid var(--forest-100);
+      border-top-color: var(--forest-700);
+      border-radius: 50%;
+      animation: spin 900ms linear infinite;
+    }
+
+    .assistant-result { padding: 0; }
+    .assistant-answer { padding: 27px 28px; border-bottom: 1px solid var(--line); background: var(--white); }
+    .assistant-answer h2, .assistant-section h3 { margin: 0; color: var(--navy-900); letter-spacing: -0.02em; }
+    .assistant-answer h2 { font-size: 18px; }
+    .assistant-answer p { margin: 10px 0 0; color: var(--ink); font-size: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .assistant-sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .assistant-section { min-width: 0; padding: 22px 24px; border-bottom: 1px solid var(--line); }
+    .assistant-section:nth-child(odd) { border-right: 1px solid var(--line); }
+    .assistant-section h3 { font-size: 14px; }
+    .assistant-section > p { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .assistant-list { display: grid; gap: 10px; margin: 13px 0 0; padding: 0; list-style: none; }
+    .assistant-list li { min-width: 0; overflow-wrap: anywhere; }
+    .assistant-fact { padding: 11px 12px; border-radius: 10px; background: var(--cream-50); }
+    .assistant-fact > p { margin: 0; color: var(--ink); font-size: 13px; }
+    .assistant-sources { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0 0; padding: 0; list-style: none; }
+    .assistant-source { padding: 3px 7px; border-radius: 99px; background: var(--blue-soft); color: var(--navy-700); font-size: 10px; }
+    .assistant-simple-item { position: relative; padding-left: 16px; color: var(--ink); font-size: 13px; }
+    .assistant-simple-item::before { content: ""; position: absolute; top: 8px; left: 2px; width: 5px; height: 5px; border-radius: 50%; background: var(--forest-700); }
+
+    .assistant-relevant-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 0;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--white);
+      text-align: left;
+    }
+
+    button.assistant-relevant-item { cursor: pointer; }
+    button.assistant-relevant-item:hover { border-color: var(--forest-700); background: var(--cream-50); }
+    .assistant-relevant-title { min-width: 0; color: var(--navy-900); font-size: 12px; font-weight: 730; overflow-wrap: anywhere; }
+    .assistant-relevant-meta { color: var(--muted); font-size: 10px; white-space: nowrap; }
+
     .empty-state, .error-state {
       display: grid;
       place-items: center;
@@ -936,6 +1054,8 @@
       .project-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .project-detail-layout { grid-template-columns: 1fr; }
       .project-detail-side { grid-template-columns: 1fr; }
+      .assistant-layout { grid-template-columns: 1fr; }
+      .assistant-output { min-height: 0; }
     }
 
     @media (max-width: 820px) {
@@ -979,6 +1099,7 @@
         box-shadow: 0 16px 40px rgba(10,29,48,0.28);
         backdrop-filter: blur(12px);
       }
+      .mobile-nav.ai-enabled { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .mobile-nav .nav-button { justify-content: center; min-height: 51px; padding: 7px 8px; gap: 6px; border-radius: 12px; font-size: 11px; text-align: center; }
       .mobile-nav .nav-icon { width: 19px; height: 19px; font-size: 16px; }
       .toast { right: 16px; bottom: calc(90px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
@@ -1017,6 +1138,9 @@
       .workflow-outcomes { align-items: stretch; flex-direction: column; }
       .workflow-outcomes .button { width: 100%; }
       .related-task-list button { align-items: flex-start; }
+      .assistant-form-row, .assistant-sections { grid-template-columns: 1fr; }
+      .assistant-section:nth-child(odd) { border-right: 0; }
+      .assistant-compose, .assistant-state, .assistant-answer { padding: 20px; }
     }
 
     @media (max-width: 390px) {
@@ -1029,6 +1153,8 @@
       .task-actions { grid-template-columns: 1fr; }
       .task-actions .button-primary, .task-actions .action-note, .owned-by { grid-column: auto; }
       .project-header { flex-direction: column; gap: 9px; }
+      .mobile-nav .nav-button { flex-direction: column; padding-inline: 4px; gap: 3px; font-size: 10px; line-height: 1.1; }
+      .assistant-actions .button { width: 100%; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1054,6 +1180,7 @@
         <button class="nav-button" type="button" data-view-target="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
         <button class="nav-button" type="button" data-view-target="tasks"><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
         <button class="nav-button" type="button" data-view-target="projects"><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
+        <button class="nav-button" type="button" data-view-target="assistant" data-ai-only hidden><span class="nav-icon" aria-hidden="true">?</span>Ask START</button>
       </nav>
 
       <div class="identity-panel" id="identity-panel"></div>
@@ -1107,6 +1234,17 @@
           </div>
           <div id="projects-content" aria-live="polite"></div>
         </section>
+
+        <section class="view" id="view-assistant" data-view="assistant" data-ai-only aria-labelledby="assistant-title" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Committee records</p>
+              <h1 id="assistant-title">Ask START</h1>
+              <p>Ask about current tasks, projects, school decisions, or a proposal draft.</p>
+            </div>
+          </div>
+          <div id="assistant-content" aria-live="polite" aria-atomic="false"></div>
+        </section>
       </main>
     </div>
   </div>
@@ -1115,6 +1253,7 @@
     <button class="nav-button" type="button" data-view-target="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
     <button class="nav-button" type="button" data-view-target="tasks"><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
     <button class="nav-button" type="button" data-view-target="projects"><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
+    <button class="nav-button" type="button" data-view-target="assistant" data-ai-only hidden><span class="nav-icon" aria-hidden="true">?</span>Ask START</button>
   </nav>
 
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -1125,9 +1264,10 @@
 
       var STORAGE_KEY = 'sks-start-profile-key';
       var LEGACY_STORAGE_KEY = 'sks-start-member-name';
-      var VIEWS = ['home', 'tasks', 'projects'];
+      var VIEWS = ['home', 'tasks', 'projects', 'assistant'];
       var TASK_FILTERS = ['open', 'mine', 'all'];
       var PROJECT_STAGES = ['Idea', 'Validation', 'School Review', 'Active', 'Completed', 'Paused', 'Rejected'];
+      var ASSISTANT_SCOPES = ['auto', 'project', 'work', 'waiting', 'program', 'proposal'];
 
       var state = {
         view: viewFromHash(),
@@ -1163,6 +1303,15 @@
         selectedProjectKey: '',
         projectSecondaryVisible: false,
         projectFocusStage: '',
+        capabilities: {},
+        aiHelperEnabled: false,
+        assistantDraft: '',
+        assistantScope: 'auto',
+        assistantProjectId: '',
+        assistantStatus: 'initial',
+        assistantError: '',
+        assistantResponse: null,
+        assistantRequestToken: 0,
         generatedAt: ''
       };
 
@@ -1170,12 +1319,33 @@
       var identityPanel = document.getElementById('identity-panel');
       var memberChip = document.getElementById('member-chip');
       var refreshButton = document.getElementById('refresh-button');
+      var assistantContent = document.getElementById('assistant-content');
       var toast = document.getElementById('toast');
       var toastTimer = 0;
 
       function viewFromHash() {
         var candidate = String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
+        if (candidate === 'assistant') return 'home';
         return VIEWS.indexOf(candidate) >= 0 ? candidate : 'home';
+      }
+
+      function assistantHashIsActive() {
+        return String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase() === 'assistant';
+      }
+
+      function replaceDisabledAssistantWithHome() {
+        if (state.view === 'assistant') state.view = 'home';
+        if (assistantHashIsActive()) window.history.replaceState(null, '', '#home');
+      }
+
+      function clearAssistantConversation() {
+        state.assistantRequestToken += 1;
+        state.assistantDraft = '';
+        state.assistantScope = 'auto';
+        state.assistantProjectId = '';
+        state.assistantStatus = 'initial';
+        state.assistantError = '';
+        state.assistantResponse = null;
       }
 
       function readStoredMember() {
@@ -1456,6 +1626,14 @@
           payload = payload.dashboard;
           if (mutation && !payload.mutation) payload.mutation = mutation;
         }
+        state.capabilities = payload.capabilities && typeof payload.capabilities === 'object'
+          ? payload.capabilities
+          : {};
+        state.aiHelperEnabled = state.capabilities.aiHelper === true;
+        if (!state.aiHelperEnabled) {
+          clearAssistantConversation();
+          replaceDisabledAssistantWithHome();
+        }
         state.viewer = payload.viewer && typeof payload.viewer === 'object' ? payload.viewer : {};
         var email = text(first(state.viewer, ['email']));
         var authMode = text(first(state.viewer, ['authMode'])).toLowerCase();
@@ -1490,6 +1668,9 @@
 
         state.tasks = list(payload.tasks).map(normalizeTask);
         state.projects = list(payload.projects).map(normalizeProject);
+        if (state.assistantProjectId && !state.projects.some(function (project) {
+          return project.id === state.assistantProjectId;
+        })) state.assistantProjectId = '';
         state.metrics = list(payload.metrics).map(normalizeMetric).filter(function (metric) { return metric.name; });
         state.updates = list(payload.updates).map(normalizeUpdate).sort(function (left, right) {
           var leftTime = new Date(left.timestamp).getTime();
@@ -1588,6 +1769,7 @@
           else if (method === 'completeProject') runner.completeProject(args[0], args[1], args[2]);
           else if (method === 'pauseProject') runner.pauseProject(args[0], args[1], args[2], args[3]);
           else if (method === 'setupProjectWorkflow') runner.setupProjectWorkflow();
+          else if (method === 'askStartAssistant') runner.askStartAssistant(args[0], args[1]);
           else reject(new Error('Unknown server action.'));
         });
       }
@@ -1622,6 +1804,133 @@
             state.error = error.message || 'The dashboard could not be loaded.';
             render();
             if (options.restoreIdentityFocus) restoreIdentityFocus();
+          });
+      }
+
+      function normalizeAssistantResponse(payload) {
+        payload = payload && typeof payload === 'object' ? payload : {};
+        if (text(payload.schemaVersion) !== 'start-assistant-response/v1' || !text(payload.answer)) {
+          throw new Error('The response was incomplete. Please try the question again.');
+        }
+        var resolvedScope = text(payload.scope);
+        if (['project', 'work', 'waiting', 'program', 'proposal'].indexOf(resolvedScope) < 0) {
+          throw new Error('The response used an unsupported scope. Please try again.');
+        }
+        return {
+          schemaVersion: 'start-assistant-response/v1',
+          scope: resolvedScope,
+          answer: text(payload.answer),
+          knownFacts: list(payload.knownFacts).map(function (item) {
+            item = item && typeof item === 'object' ? item : {};
+            return {
+              fact: text(item.fact),
+              sources: list(item.sources).map(function (source) {
+                source = source && typeof source === 'object' ? source : {};
+                return {
+                  type: text(source.type),
+                  id: text(source.id),
+                  title: text(source.title)
+                };
+              }).filter(function (source) { return source.type && source.id && source.title; })
+            };
+          }).filter(function (item) { return item.fact; }),
+          missingInformation: list(payload.missingInformation).map(text).filter(Boolean),
+          suggestedNextActions: list(payload.suggestedNextActions).map(text).filter(Boolean),
+          relevantItems: list(payload.relevantItems).map(function (item) {
+            item = item && typeof item === 'object' ? item : {};
+            return {
+              type: text(item.type).toLowerCase(),
+              id: text(item.id),
+              title: text(item.title),
+              status: text(item.status),
+              stage: text(item.stage)
+            };
+          }).filter(function (item) { return item.type && item.id && item.title; })
+        };
+      }
+
+      function focusAssistantQuestion() {
+        window.requestAnimationFrame(function () {
+          var field = document.getElementById('assistant-question');
+          if (field && !field.disabled) {
+            field.focus({ preventScroll: true });
+            if (typeof field.setSelectionRange === 'function') {
+              var end = String(field.value || '').length;
+              field.setSelectionRange(end, end);
+            }
+          }
+        });
+      }
+
+      function submitAssistantQuestion() {
+        if (!state.aiHelperEnabled) {
+          replaceDisabledAssistantWithHome();
+          render();
+          return Promise.resolve();
+        }
+        if (!state.currentMember || !state.viewerIsActive) {
+          state.assistantStatus = 'error';
+          state.assistantError = state.currentMember
+            ? 'This member profile is inactive. Ask the Student Lead for help.'
+            : 'Choose an active member profile before asking a question.';
+          state.assistantResponse = null;
+          renderAssistant();
+          return Promise.resolve();
+        }
+
+        var question = text(state.assistantDraft);
+        var scope = ASSISTANT_SCOPES.indexOf(state.assistantScope) >= 0 ? state.assistantScope : 'auto';
+        var needsProject = scope === 'project' || scope === 'proposal';
+        var projectId = needsProject ? text(state.assistantProjectId) : '';
+        if (!question) {
+          state.assistantStatus = 'error';
+          state.assistantError = 'Write a question before asking START.';
+          state.assistantResponse = null;
+          renderAssistant();
+          focusAssistantQuestion();
+          return Promise.resolve();
+        }
+        if (question.length > 800) {
+          state.assistantStatus = 'error';
+          state.assistantError = 'Keep the question to 800 characters or fewer.';
+          state.assistantResponse = null;
+          renderAssistant();
+          focusAssistantQuestion();
+          return Promise.resolve();
+        }
+        if (needsProject && !state.projects.some(function (project) { return project.id === projectId; })) {
+          state.assistantStatus = 'error';
+          state.assistantError = 'Choose a project for this question.';
+          state.assistantResponse = null;
+          renderAssistant();
+          return Promise.resolve();
+        }
+
+        state.assistantDraft = question;
+        state.assistantScope = scope;
+        state.assistantProjectId = projectId;
+        state.assistantStatus = 'loading';
+        state.assistantError = '';
+        state.assistantResponse = null;
+        var requestToken = ++state.assistantRequestToken;
+        render();
+
+        var request = { question: question, scope: scope, projectId: projectId };
+        return serverCall('askStartAssistant', [state.currentMember, request])
+          .then(function (payload) {
+            if (requestToken !== state.assistantRequestToken || !state.aiHelperEnabled) return;
+            state.assistantResponse = normalizeAssistantResponse(payload);
+            state.assistantStatus = 'populated';
+            state.assistantError = '';
+            render();
+          })
+          .catch(function (error) {
+            if (requestToken !== state.assistantRequestToken || !state.aiHelperEnabled) return;
+            state.assistantStatus = 'error';
+            state.assistantError = error && error.message ? error.message : 'START could not answer that question.';
+            state.assistantResponse = null;
+            render();
+            focusAssistantQuestion();
           });
       }
 
@@ -1836,18 +2145,129 @@
           '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>';
       }
 
+      function assistantScopeOptions() {
+        var options = [
+          ['auto', 'Choose the useful context'],
+          ['project', 'One project'],
+          ['work', 'Work I can pick up'],
+          ['waiting', 'Waiting on school'],
+          ['program', 'Program summary'],
+          ['proposal', 'Proposal draft']
+        ];
+        return options.map(function (option) {
+          return '<option value="' + h(option[0]) + '"' + (state.assistantScope === option[0] ? ' selected' : '') + '>' + h(option[1]) + '</option>';
+        }).join('');
+      }
+
+      function assistantProjectOptions() {
+        var projects = state.projects.filter(function (project) { return !!project.id; });
+        return '<option value="">Choose a project</option>' + projects.map(function (project) {
+          return '<option value="' + h(project.id) + '"' + (state.assistantProjectId === project.id ? ' selected' : '') + '>' +
+            h(project.name + ' · ' + project.id) + '</option>';
+        }).join('');
+      }
+
+      function assistantStarterQuestions() {
+        var starters = [
+          { scope: 'work', question: 'What useful work can I pick up next?' },
+          { scope: 'waiting', question: 'What is waiting on school, and what can we do meanwhile?' },
+          { scope: 'program', question: 'Summarize the committee’s current work and next actions.' }
+        ];
+        return '<section class="assistant-starters" aria-labelledby="assistant-starters-title"><h2 id="assistant-starters-title">Starter questions</h2>' +
+          '<p>Choose one to put it in the question box.</p><div class="assistant-starter-list">' + starters.map(function (starter) {
+            return '<button class="assistant-starter" type="button" data-assistant-starter data-assistant-scope="' + h(starter.scope) + '" data-assistant-question="' + h(starter.question) + '">' + h(starter.question) + '</button>';
+          }).join('') + '</div></section>';
+      }
+
+      function renderAssistantSimpleList(items, emptyCopy) {
+        return items.length
+          ? '<ul class="assistant-list">' + items.map(function (item) {
+              return '<li class="assistant-simple-item">' + h(text(item)) + '</li>';
+            }).join('') + '</ul>'
+          : '<p>' + h(emptyCopy) + '</p>';
+      }
+
+      function renderAssistantFacts(facts) {
+        if (!facts.length) return '<p>No source-backed facts were returned.</p>';
+        return '<ul class="assistant-list">' + facts.map(function (item) {
+          var sources = item.sources.length
+            ? '<ul class="assistant-sources" aria-label="Sources">' + item.sources.map(function (source) {
+                var sourceLabel = source.title + ' · ' + source.type + ' ' + source.id;
+                return '<li class="assistant-source">' + h(sourceLabel) + '</li>';
+              }).join('') + '</ul>'
+            : '';
+          return '<li class="assistant-fact"><p>' + h(item.fact) + '</p>' + sources + '</li>';
+        }).join('') + '</ul>';
+      }
+
+      function renderAssistantRelevantItems(items) {
+        if (!items.length) return '<p>No task, project, or metric was linked to this answer.</p>';
+        return '<ul class="assistant-list">' + items.map(function (item) {
+          var detail = item.stage || item.status || item.type;
+          var body = '<span class="assistant-relevant-title">' + h(item.title) + '</span>' +
+            '<span class="assistant-relevant-meta">' + h(detail + ' · ' + item.id) + '</span>';
+          if (item.type === 'task' || item.type === 'project') {
+            return '<li><button class="assistant-relevant-item" type="button" data-assistant-item-type="' + h(item.type) + '" data-assistant-item-id="' + h(item.id) + '" aria-label="Open ' + h(item.type + ': ' + item.title) + '">' + body + '</button></li>';
+          }
+          return '<li><div class="assistant-relevant-item" data-assistant-item-type="' + h(item.type) + '">' + body + '</div></li>';
+        }).join('') + '</ul>';
+      }
+
+      function renderAssistantOutput() {
+        if (state.assistantStatus === 'loading') {
+          return '<div class="assistant-state loading" role="status"><div class="assistant-state-copy"><div class="assistant-spinner" aria-hidden="true"></div><h2>Checking the current records</h2><p>Keep this page open while START prepares a grounded response.</p></div></div>';
+        }
+        if (state.assistantStatus === 'error') {
+          return '<div class="assistant-state error" role="alert"><div class="assistant-state-copy"><div class="empty-icon" aria-hidden="true">!</div><h2>START could not answer yet</h2><p>' + h(state.assistantError) + '</p><div class="form-actions"><button class="button button-primary" type="button" data-assistant-retry>Try again</button></div></div></div>';
+        }
+        if (state.assistantStatus !== 'populated' || !state.assistantResponse) {
+          return '<div class="assistant-state initial"><div class="assistant-state-copy"><div class="empty-icon" aria-hidden="true">?</div><h2>Use the records already in the Command Center</h2><p>Ask a focused question. Answers separate known facts, missing information, and possible next actions.</p></div></div>';
+        }
+
+        var response = state.assistantResponse;
+        return '<article class="assistant-result"><section class="assistant-answer" aria-labelledby="assistant-answer-title"><h2 id="assistant-answer-title">Answer</h2><p>' + h(response.answer) + '</p></section>' +
+          '<div class="assistant-sections"><section class="assistant-section"><h3>Known facts</h3>' + renderAssistantFacts(response.knownFacts) + '</section>' +
+          '<section class="assistant-section"><h3>Missing information</h3>' + renderAssistantSimpleList(response.missingInformation, 'No missing information was identified.') + '</section>' +
+          '<section class="assistant-section"><h3>Suggested next actions</h3>' + renderAssistantSimpleList(response.suggestedNextActions, 'No next action was suggested.') + '</section>' +
+          '<section class="assistant-section"><h3>Relevant items</h3>' + renderAssistantRelevantItems(response.relevantItems) + '</section></div></article>';
+      }
+
+      function renderAssistant() {
+        if (!assistantContent) return;
+        if (!state.aiHelperEnabled) {
+          assistantContent.innerHTML = '';
+          return;
+        }
+        var busy = state.assistantStatus === 'loading';
+        var needsProject = state.assistantScope === 'project' || state.assistantScope === 'proposal';
+        var questionLength = String(state.assistantDraft || '').length;
+        var canAsk = !!state.currentMember && state.viewerIsActive;
+        assistantContent.innerHTML = '<div class="assistant-layout"><div class="assistant-compose"><form class="assistant-form" data-assistant-form>' +
+          '<div class="form-field"><label for="assistant-question">Question</label><textarea id="assistant-question" name="question" maxlength="800" aria-describedby="assistant-question-help assistant-question-count" placeholder="For example, what can I finish in 30 minutes?" required' + (busy ? ' disabled' : '') + '>' + h(state.assistantDraft) + '</textarea>' +
+          '<div class="assistant-question-meta"><span id="assistant-question-help">Do not include private student information.</span><span id="assistant-question-count">' + h(questionLength) + ' / 800</span></div></div>' +
+          '<div class="assistant-form-row"><div class="form-field"><label for="assistant-scope">Use records for</label><select id="assistant-scope" name="scope" data-assistant-scope' + (busy ? ' disabled' : '') + '>' + assistantScopeOptions() + '</select></div>' +
+          (needsProject ? '<div class="form-field"><label for="assistant-project">Project</label><select id="assistant-project" name="projectId" data-assistant-project required' + (busy ? ' disabled' : '') + '>' + assistantProjectOptions() + '</select></div>' : '<input type="hidden" name="projectId" value="">') + '</div>' +
+          (!canAsk ? '<p class="workflow-unavailable">Choose an active member profile before asking a question.</p>' : '') +
+          '<div class="assistant-actions">' + (state.assistantStatus !== 'initial' ? '<button class="button button-subtle" type="button" data-assistant-reset>New Conversation</button>' : '<span></span>') +
+          '<button class="button button-primary" type="submit"' + (!canAsk || busy ? ' disabled' : '') + '>' + (busy ? 'Checking…' : 'Ask START') + '</button></div></form>' +
+          (state.assistantStatus === 'initial' ? assistantStarterQuestions() : '') + '</div><div class="assistant-output">' + renderAssistantOutput() + '</div></div>';
+      }
+
       function render() {
-        app.setAttribute('aria-busy', state.loading || state.refreshing || !!state.busyKey ? 'true' : 'false');
+        app.setAttribute('aria-busy', state.loading || state.refreshing || !!state.busyKey || state.assistantStatus === 'loading' ? 'true' : 'false');
         renderNavigation();
         renderHeader();
         renderIdentity();
         renderHome();
         renderTasks();
         renderProjects();
+        renderAssistant();
       }
 
       function renderNavigation() {
+        if (!state.aiHelperEnabled && state.view === 'assistant') replaceDisabledAssistantWithHome();
         document.querySelectorAll('[data-view-target]').forEach(function (button) {
+          if (button.getAttribute('data-view-target') === 'assistant') button.hidden = !state.aiHelperEnabled;
           var current = button.getAttribute('data-view-target') === state.view;
           if (button.closest('nav')) {
             if (current) button.setAttribute('aria-current', 'page');
@@ -1855,7 +2275,11 @@
           }
         });
         document.querySelectorAll('.view').forEach(function (view) {
-          view.hidden = view.getAttribute('data-view') !== state.view;
+          var viewName = view.getAttribute('data-view');
+          view.hidden = viewName !== state.view || (viewName === 'assistant' && !state.aiHelperEnabled);
+        });
+        document.querySelectorAll('.mobile-nav').forEach(function (navigation) {
+          navigation.classList.toggle('ai-enabled', state.aiHelperEnabled);
         });
       }
 
@@ -1863,16 +2287,17 @@
         var copy = {
           home: ['Committee overview', 'What needs attention across START right now'],
           tasks: ['Task board', 'Claim work, record progress, and finish the next step'],
-          projects: ['Project workflow', 'Move an idea from suggestion to real school action']
+          projects: ['Project workflow', 'Move an idea from suggestion to real school action'],
+          assistant: ['Ask START', 'Use current committee records to plan the next useful step']
         }[state.view];
         document.getElementById('topbar-title').textContent = copy[0];
         document.getElementById('topbar-subtitle').textContent = copy[1];
         memberChip.textContent = state.currentDisplayName || 'Choose profile';
-        memberChip.disabled = state.identityLocked || state.loading || state.refreshing || !!state.busyKey;
+        memberChip.disabled = state.identityLocked || state.loading || state.refreshing || !!state.busyKey || state.assistantStatus === 'loading';
         memberChip.setAttribute('aria-label', state.identityLocked
           ? 'Signed in as ' + (state.currentDisplayName || 'committee member')
           : (state.currentMember ? 'Switch profile; currently ' + state.currentDisplayName : 'Choose member profile'));
-        refreshButton.disabled = state.loading || state.refreshing || !!state.busyKey;
+        refreshButton.disabled = state.loading || state.refreshing || !!state.busyKey || state.assistantStatus === 'loading';
         refreshButton.classList.toggle('is-refreshing', state.refreshing);
       }
 
@@ -2473,8 +2898,40 @@
           }).join('') + '</ul>' : '<div class="project-panel-empty"><p>No project updates yet.</p></div>') + '</section>';
       }
 
+      function openAssistantRelevantItem(type, id) {
+        type = text(type).toLowerCase();
+        id = text(id);
+        if (type === 'task') {
+          var task = state.tasks.find(function (candidate) {
+            return candidate.id === id || candidate.key === id;
+          });
+          if (!task) {
+            showToast('That task is no longer in the current dashboard. Refresh and try again.', true);
+            return;
+          }
+          navigate('tasks', 'all');
+          window.setTimeout(function () { focusTaskCard(task.key); }, 0);
+          return;
+        }
+        if (type === 'project') {
+          var project = state.projects.find(function (candidate) {
+            return candidate.id === id || candidate.projectKey === id;
+          });
+          if (!project) {
+            showToast('That project is no longer in the current dashboard. Refresh and try again.', true);
+            return;
+          }
+          openProject(projectIdentifier(project));
+        }
+      }
+
       function navigate(view, filter, projectStage) {
         if (VIEWS.indexOf(view) < 0) return;
+        if (view === 'assistant' && !state.aiHelperEnabled) {
+          replaceDisabledAssistantWithHome();
+          render();
+          return;
+        }
         if (filter && TASK_FILTERS.indexOf(filter) >= 0) state.taskFilter = filter;
         if (view === 'projects') {
           state.projectScreen = 'board';
@@ -2509,6 +2966,7 @@
         }
         state.taskDrafts = {};
         state.projectDrafts = {};
+        clearAssistantConversation();
         state.projectScreen = 'board';
         state.selectedProjectKey = '';
         state.profilePickerOpen = false;
@@ -2785,6 +3243,39 @@
       }
 
       document.addEventListener('click', function (event) {
+        var assistantStarter = event.target.closest('[data-assistant-starter]');
+        if (assistantStarter) {
+          if (!state.aiHelperEnabled) return;
+          state.assistantDraft = String(assistantStarter.getAttribute('data-assistant-question') || '').slice(0, 800);
+          state.assistantScope = ASSISTANT_SCOPES.indexOf(assistantStarter.getAttribute('data-assistant-scope')) >= 0
+            ? assistantStarter.getAttribute('data-assistant-scope')
+            : 'auto';
+          state.assistantProjectId = '';
+          state.assistantStatus = 'initial';
+          state.assistantError = '';
+          state.assistantResponse = null;
+          renderAssistant();
+          focusAssistantQuestion();
+          return;
+        }
+        if (event.target.closest('[data-assistant-reset]')) {
+          clearAssistantConversation();
+          render();
+          focusAssistantQuestion();
+          return;
+        }
+        if (event.target.closest('[data-assistant-retry]')) {
+          submitAssistantQuestion();
+          return;
+        }
+        var assistantItem = event.target.closest('[data-assistant-item-id]');
+        if (assistantItem) {
+          openAssistantRelevantItem(
+            assistantItem.getAttribute('data-assistant-item-type'),
+            assistantItem.getAttribute('data-assistant-item-id')
+          );
+          return;
+        }
         var scrollButton = event.target.closest('[data-scroll-target]');
         if (scrollButton) {
           var scrollTarget = document.getElementById(scrollButton.getAttribute('data-scroll-target'));
@@ -2896,11 +3387,34 @@
       });
 
       document.addEventListener('change', function (event) {
-        if (event.target.id !== 'profile-select') return;
-        chooseProfile(event.target.value);
+        if (event.target.id === 'profile-select') {
+          chooseProfile(event.target.value);
+          return;
+        }
+        if (event.target.matches('[data-assistant-scope]')) {
+          state.assistantScope = ASSISTANT_SCOPES.indexOf(event.target.value) >= 0 ? event.target.value : 'auto';
+          if (state.assistantScope !== 'project' && state.assistantScope !== 'proposal') state.assistantProjectId = '';
+          renderAssistant();
+          if (state.assistantScope === 'project' || state.assistantScope === 'proposal') {
+            window.requestAnimationFrame(function () {
+              var projectSelect = document.getElementById('assistant-project');
+              if (projectSelect) projectSelect.focus({ preventScroll: true });
+            });
+          }
+          return;
+        }
+        if (event.target.matches('[data-assistant-project]')) {
+          state.assistantProjectId = text(event.target.value);
+        }
       });
 
       document.addEventListener('input', function (event) {
+        if (event.target.id === 'assistant-question') {
+          state.assistantDraft = String(event.target.value || '').slice(0, 800);
+          var count = document.getElementById('assistant-question-count');
+          if (count) count.textContent = state.assistantDraft.length + ' / 800';
+          return;
+        }
         if (!event.target.matches('[data-metric-search]')) return;
         var query = text(event.target.value).toLowerCase();
         var picker = event.target.closest('.metric-picker');
@@ -2911,6 +3425,15 @@
       });
 
       document.addEventListener('submit', function (event) {
+        if (event.target.matches('[data-assistant-form]')) {
+          event.preventDefault();
+          var assistantData = new FormData(event.target);
+          state.assistantDraft = String(assistantData.get('question') || '').slice(0, 801);
+          state.assistantScope = ASSISTANT_SCOPES.indexOf(assistantData.get('scope')) >= 0 ? assistantData.get('scope') : 'auto';
+          state.assistantProjectId = text(assistantData.get('projectId'));
+          submitAssistantQuestion();
+          return;
+        }
         if (event.target.matches('[data-display-name-form]')) {
           event.preventDefault();
           var displayName = text(new FormData(event.target).get('displayName'));
@@ -2967,6 +3490,11 @@
       window.addEventListener('hashchange', function () {
         var hashValue = String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
         if (VIEWS.indexOf(hashValue) < 0) return;
+        if (hashValue === 'assistant' && !state.aiHelperEnabled) {
+          replaceDisabledAssistantWithHome();
+          render();
+          return;
+        }
         var next = hashValue;
         if (next !== state.view) {
           state.view = next;
@@ -2974,7 +3502,7 @@
         }
       });
 
-      if (!window.location.hash) window.history.replaceState(null, '', '#home');
+      if (!window.location.hash || assistantHashIsActive()) window.history.replaceState(null, '', '#home');
       render();
       loadDashboard({ profileKey: state.currentMember });
     }());
