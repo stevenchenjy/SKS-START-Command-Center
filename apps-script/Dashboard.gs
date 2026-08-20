@@ -9,6 +9,7 @@ function buildDashboardData_(spreadsheet, requestedProfileKey) {
   var projects = enrichProjects_(mapProjects_(projectsTable, directory.all), tasks, allUpdates, metrics);
   var recentUpdates = allUpdates.slice(0, 20);
   var workflow = projectWorkflowState_(projectsTable, readTable_(spreadsheet, 'Settings'));
+  var generatedNow = new Date();
 
   return {
     viewer: viewer,
@@ -20,9 +21,11 @@ function buildDashboardData_(spreadsheet, requestedProfileKey) {
     metrics: metrics,
     updates: recentUpdates,
     summary: summarize_(tasks, projects, recentUpdates),
+    capabilities: getPublicCapabilities_(),
     projectWorkflowSetupNeeded: workflow.setupNeeded,
     projectWorkflow: workflow,
-    generatedAt: new Date().toISOString()
+    today: dashboardMachineDateOnly_(generatedNow),
+    generatedAt: generatedNow.toISOString()
   };
 }
 
@@ -51,11 +54,13 @@ function mapTasks_(table, viewer, members) {
       interestTag: cell_(row.values, columns.interestTag),
       estimatedTime: cell_(row.values, columns.estimatedTime),
       dueDate: cell_(row.values, columns.dueDate),
+      dueDateMachine: dashboardMachineDateOnly_(rawCell_(row.rawValues, columns.dueDate)),
       status: status,
       claimedBy: claimedBy,
       claimedByProfileKey: ownerProfile ? ownerProfile.profileKey : claimedBy,
       claimedByDisplay: ownerDisplayName_(claimedBy, members),
       lastUpdate: cell_(row.values, columns.lastUpdate),
+      lastUpdateMachine: dashboardMachineTimestamp_(rawCell_(row.rawValues, columns.lastUpdate)),
       blocker: cell_(row.values, columns.blocker),
       supportingLink: cell_(row.values, columns.supportingLink),
       isOpen: status === 'Open' && !claimedBy,
@@ -226,6 +231,7 @@ function mapUpdates_(table, members) {
     var memberProfile = findMemberProfile_(memberValue, members);
     return {
       timestamp: cell_(row.values, columns.timestamp),
+      timestampMachine: dashboardMachineTimestamp_(rawCell_(row.rawValues, columns.timestamp)),
       member: ownerDisplayName_(memberValue, members),
       memberProfileKey: memberProfile ? memberProfile.profileKey : memberValue,
       taskProject: cell_(row.values, columns.taskProject),
@@ -302,4 +308,38 @@ function buildWaitingItems_(tasks, projects) {
   });
 
   return taskItems.concat(projectItems);
+}
+
+/**
+ * Converts a real Sheet Date into an unambiguous school-local calendar date.
+ * Text cells stay in their display form for the UI; only already-strict text is
+ * mirrored into the machine field. Locale-formatted text is intentionally not
+ * parsed because its meaning can differ by account locale.
+ */
+function dashboardMachineDateOnly_(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    if (isNaN(value.getTime())) return '';
+    if (typeof Utilities !== 'undefined' && Utilities && typeof Utilities.formatDate === 'function') {
+      return Utilities.formatDate(value, START_SCHOOL_TIME_ZONE, 'yyyy-MM-dd');
+    }
+    return value.toISOString().slice(0, 10);
+  }
+  var text = string_(value).trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : '';
+}
+
+/**
+ * Converts a real Sheet Date into an absolute timestamp without parsing any
+ * locale-formatted display value. Strict text is validated by the snapshot
+ * layer when it is used.
+ */
+function dashboardMachineTimestamp_(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]') {
+    if (isNaN(value.getTime())) return '';
+    return value.toISOString();
+  }
+  var text = string_(value).trim();
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?(?:Z|[+-]\d{2}:\d{2})$/.test(text)
+    ? text
+    : '';
 }

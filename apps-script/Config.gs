@@ -6,6 +6,30 @@
  */
 
 var START_SPREADSHEET_ID = '1XFTIrKIcckrwavS-tJ5E_fReKVR3BlLtsbLUXRhto6I';
+var START_SCHOOL_TIME_ZONE = 'America/New_York';
+var START_SCHEMA_VERSION = 1;
+var START_PROPERTY_KEYS = {
+  spreadsheetId: 'START_SPREADSHEET_ID',
+  openAiApiKey: 'OPENAI_API_KEY',
+  openAiModel: 'OPENAI_MODEL',
+  sksStartFolderId: 'SKS_START_FOLDER_ID',
+  gsaResourceFolderId: 'GSA_RESOURCE_FOLDER_ID'
+};
+var START_FEATURE_PROPERTY_KEYS = {
+  aiHelper: 'FEATURE_AI_HELPER',
+  driveKnowledge: 'FEATURE_DRIVE_KNOWLEDGE',
+  decisionHelper: 'FEATURE_DECISION_HELPER',
+  reporting: 'FEATURE_REPORTING'
+};
+var PROGRAM_SNAPSHOT_FIELD_LIMITS = {
+  id: 160,
+  member: 160,
+  label: 300,
+  shortText: 500,
+  longText: 1200
+};
+var PROGRAM_SNAPSHOT_LINKED_METRICS_LIMIT = 12;
+var PROGRAM_SNAPSHOT_SERIALIZED_CHARACTERS_LIMIT = 120000;
 var START_STATUSES = ['Open', 'Doing', 'Blocked', 'Done'];
 var PROJECT_STAGES = ['Idea', 'Validation', 'School Review', 'Active', 'Completed', 'Paused', 'Rejected'];
 var PROJECT_STAGE_OPTIONS = PROJECT_STAGES.join(' | ');
@@ -95,3 +119,75 @@ var METRIC_FIELDS = {
   supportingLink: ['Supporting Link', 'Link', 'URL'],
   legacyAssignedTo: ['Legacy Assigned To', 'Assigned To']
 };
+
+function getScriptProperties_() {
+  if (typeof PropertiesService === 'undefined' ||
+      !PropertiesService ||
+      typeof PropertiesService.getScriptProperties !== 'function') {
+    return null;
+  }
+  return PropertiesService.getScriptProperties();
+}
+
+function getScriptProperty_(propertyName) {
+  var properties = getScriptProperties_();
+  if (!properties || typeof properties.getProperty !== 'function') return '';
+  var value = properties.getProperty(propertyName);
+  return typeof value === 'string' ? value : '';
+}
+
+function getConfiguredString_(propertyName) {
+  return getScriptProperty_(propertyName).trim();
+}
+
+function getConfiguredSpreadsheetId_() {
+  return getConfiguredString_(START_PROPERTY_KEYS.spreadsheetId) || START_SPREADSHEET_ID;
+}
+
+function isFeatureEnabled_(propertyName) {
+  var supported = Object.keys(START_FEATURE_PROPERTY_KEYS).some(function (feature) {
+    return START_FEATURE_PROPERTY_KEYS[feature] === propertyName;
+  });
+  return supported && getScriptProperty_(propertyName) === 'true';
+}
+
+function getFeatureFlags_() {
+  return {
+    aiHelper: isFeatureEnabled_(START_FEATURE_PROPERTY_KEYS.aiHelper),
+    driveKnowledge: isFeatureEnabled_(START_FEATURE_PROPERTY_KEYS.driveKnowledge),
+    decisionHelper: isFeatureEnabled_(START_FEATURE_PROPERTY_KEYS.decisionHelper),
+    reporting: isFeatureEnabled_(START_FEATURE_PROPERTY_KEYS.reporting)
+  };
+}
+
+function getOpenAiApiKey_() {
+  return getConfiguredString_(START_PROPERTY_KEYS.openAiApiKey);
+}
+
+function getOpenAiModel_() {
+  return getConfiguredString_(START_PROPERTY_KEYS.openAiModel);
+}
+
+function getOpenAiConfig_() {
+  return {
+    apiKey: getOpenAiApiKey_(),
+    model: getOpenAiModel_()
+  };
+}
+
+function getDriveKnowledgeFolderConfig_() {
+  return {
+    sksStartFolderId: getConfiguredString_(START_PROPERTY_KEYS.sksStartFolderId),
+    gsaResourceFolderId: getConfiguredString_(START_PROPERTY_KEYS.gsaResourceFolderId)
+  };
+}
+
+function isAiAssistantAvailable_() {
+  return isFeatureEnabled_(START_FEATURE_PROPERTY_KEYS.aiHelper) && !!getOpenAiApiKey_();
+}
+
+function getPublicCapabilities_() {
+  return {
+    aiHelper: isAiAssistantAvailable_()
+  };
+}

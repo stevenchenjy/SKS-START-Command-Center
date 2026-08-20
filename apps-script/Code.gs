@@ -8,6 +8,10 @@ function getDashboardData(profileKey) {
   return buildDashboardData_(getSpreadsheet_(), profileKey);
 }
 
+function inspectStartSchema() {
+  return inspectStartSchema_(getSpreadsheet_());
+}
+
 function claimTask(taskKey, profileKey) {
   return mutateTask_(taskKey, profileKey, 'claim', '');
 }

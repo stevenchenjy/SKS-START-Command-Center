@@ -12,7 +12,7 @@ function withMutationLock_(work) {
 
 function getSpreadsheet_() {
   try {
-    var spreadsheet = SpreadsheetApp.openById(START_SPREADSHEET_ID);
+    var spreadsheet = SpreadsheetApp.openById(getConfiguredSpreadsheetId_());
     if (!spreadsheet) fail_('Could not open the START Control Center spreadsheet.');
     return spreadsheet;
   } catch (error) {
