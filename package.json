@@ -4,7 +4,7 @@
   "private": true,
   "description": "Local development and release tooling for the SKS START Command Center Apps Script web app.",
   "scripts": {
-    "test": "node tests/run-tests.js && node tests/tooling-tests.js",
+    "test": "node tests/run-tests.js && node tests/platform-config-schema-tests.js && node tests/program-snapshot-tests.js && node tests/tooling-tests.js",
     "check": "node scripts/verify.js",
     "verify": "npm test && npm run check",
     "gas:configure": "node scripts/gas-tooling.js configure",
