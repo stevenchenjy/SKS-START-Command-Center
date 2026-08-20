@@ -411,17 +411,46 @@ const sandbox = {
   }
 };
 
+const serverDirectory = path.join(__dirname, '..', 'apps-script');
+const serverFiles = fs.readdirSync(serverDirectory)
+  .filter((fileName) => fileName.endsWith('.gs'))
+  .sort();
+
+function loadServerFiles(context, fileNames) {
+  fileNames.forEach((fileName) => {
+    const serverPath = path.join(serverDirectory, fileName);
+    vm.runInContext(fs.readFileSync(serverPath, 'utf8'), context, {
+      filename: serverPath
+    });
+  });
+}
+
 vm.createContext(sandbox);
-const serverPath = path.join(__dirname, '..', 'apps-script', 'Code.gs');
-vm.runInContext(fs.readFileSync(serverPath, 'utf8'), sandbox, {
-  filename: serverPath
-});
+loadServerFiles(sandbox, serverFiles);
+
+const reverseOrderSandbox = {};
+vm.createContext(reverseOrderSandbox);
+loadServerFiles(reverseOrderSandbox, serverFiles.slice().reverse());
 
 const tests = [];
 
 function test(name, work) {
   tests.push({ name, work });
 }
+
+test('loads every Apps Script module in reverse order without top-level dependencies', () => {
+  assert.ok(serverFiles.length > 1);
+  assert.equal(typeof reverseOrderSandbox.doGet, 'function');
+  assert.equal(typeof reverseOrderSandbox.buildDashboardData_, 'function');
+  assert.equal(typeof reverseOrderSandbox.mutateTask_, 'function');
+  assert.equal(typeof reverseOrderSandbox.loadProjectMutation_, 'function');
+  assert.equal(typeof reverseOrderSandbox.readMemberDirectory_, 'function');
+  assert.equal(typeof reverseOrderSandbox.readTable_, 'function');
+  assert.equal(
+    reverseOrderSandbox.PROJECT_STAGE_OPTIONS,
+    'Idea | Validation | School Review | Active | Completed | Paused | Rejected'
+  );
+});
 
 function reset(options) {
   spreadsheet = makeFixture(options);
