@@ -17,7 +17,8 @@ const {
   loadConfiguration,
   parseJsonOutput,
   runChecks,
-  validateConfiguration
+  validateConfiguration,
+  verifyNodeVersion
 } = require('../scripts/gas-tooling');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -57,6 +58,14 @@ test('rejects a malformed deployment configuration', () => {
   const directory = temporaryDirectory();
   fs.writeFileSync(path.join(directory, '.gas-deploy.json'), '{broken', 'utf8');
   fs.writeFileSync(path.join(directory, '.clasp.json'), JSON.stringify(validClasp()), 'utf8');
+  assert.throws(() => loadConfiguration(directory), /malformed JSON/i);
+  fs.rmSync(directory, { recursive: true, force: true });
+});
+
+test('rejects a malformed clasp project configuration', () => {
+  const directory = temporaryDirectory();
+  fs.writeFileSync(path.join(directory, '.gas-deploy.json'), JSON.stringify(validDeployment()), 'utf8');
+  fs.writeFileSync(path.join(directory, '.clasp.json'), '{broken', 'utf8');
   assert.throws(() => loadConfiguration(directory), /malformed JSON/i);
   fs.rmSync(directory, { recursive: true, force: true });
 });
@@ -209,6 +218,15 @@ test('pins the current official clasp release and compatible Node engine', () =>
   const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
   assert.equal(packageJson.devDependencies['@google/clasp'], REQUIRED_CLASP_VERSION);
   assert.equal(packageJson.engines.node, '>=20');
+  assert.ok(verifyNodeVersion(process.versions.node) >= 20);
+  assert.throws(() => verifyNodeVersion('19.9.0'), /requires Node\.js 20 or newer/i);
+});
+
+test('release tooling never pulls into the repository or creates a deployment', () => {
+  const source = fs.readFileSync(path.join(ROOT, 'scripts', 'gas-tooling.js'), 'utf8');
+  assert.doesNotMatch(source, /['"]pull['"]/);
+  assert.doesNotMatch(source, /['"]create-deployment['"]/);
+  assert.match(source, /['"]update-deployment['"]/);
 });
 
 test('declares only current Spreadsheet and email scopes on the platform manifest', () => {

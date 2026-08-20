@@ -14,6 +14,7 @@ const CLASP_EXAMPLE_FILE = '.clasp.json.example';
 const DEPLOY_EXAMPLE_FILE = '.gas-deploy.example.json';
 const EXPECTED_SOURCE_ROOT = 'apps-script';
 const REQUIRED_CLASP_VERSION = '3.3.0';
+const MINIMUM_NODE_MAJOR = 20;
 
 function fail(message) {
   const error = new Error(message);
@@ -131,6 +132,14 @@ function runCommand(executable, args, options = {}) {
 
 function runClasp(args, options = {}) {
   return runCommand(claspBinary(options.repositoryRoot), args, options);
+}
+
+function verifyNodeVersion(version = process.versions.node) {
+  var major = Number(String(version || '').split('.')[0]);
+  if (!Number.isInteger(major) || major < MINIMUM_NODE_MAJOR) {
+    fail(`clasp requires Node.js ${MINIMUM_NODE_MAJOR} or newer; this runtime is ${version || 'unknown'}.`);
+  }
+  return major;
 }
 
 function parseJsonOutput(output, label) {
@@ -313,6 +322,7 @@ function compareRemote(config, options = {}) {
 }
 
 function verifyClaspVersion() {
+  verifyNodeVersion();
   const output = runClasp(['--version'], { capture: true }).trim();
   if (output !== REQUIRED_CLASP_VERSION) {
     fail(`Expected pinned clasp ${REQUIRED_CLASP_VERSION}, but found ${output || 'no version'}. Run npm install.`);
@@ -347,6 +357,7 @@ function login() {
 function status(options = {}) {
   const config = loadConfiguration();
   verifyClaspVersion();
+  process.stdout.write('Local upload candidates (this alone is not a remote synchronization check):\n');
   runClasp(commandFor('status', config));
   if (options.dryRun) {
     process.stdout.write('Dry run: skipped authenticated remote clone.\n');
@@ -364,6 +375,7 @@ function push(options = {}) {
     process.stdout.write(`Dry run: ${printableCommand('clasp', pushArgs)}\n`);
     return;
   }
+  process.stdout.write(`Verified target Script ID: ${config.scriptId}\n`);
   compareRemote(config, { failOnRemoteOnly: true });
   runClasp(pushArgs);
 }
@@ -507,5 +519,6 @@ module.exports = {
   printableCommand,
   readJsonFile,
   runChecks,
-  validateConfiguration
+  validateConfiguration,
+  verifyNodeVersion
 };

@@ -171,6 +171,23 @@ function verifySensitiveFilesIgnored() {
   });
 }
 
+function verifyNoSensitivePathsTracked() {
+  const tracked = execFileSync('git', ['ls-files'], {
+    cwd: REPOSITORY_ROOT,
+    encoding: 'utf8'
+  }).split(/\r?\n/).filter(Boolean);
+  const forbidden = tracked.filter((relativePath) => {
+    const base = path.basename(relativePath).toLowerCase();
+    return base === '.clasprc.json' ||
+      base === '.clasp.json' ||
+      base === '.gas-deploy.json' ||
+      /^client_secret.*\.json$/i.test(base) ||
+      /^credentials.*\.json$/i.test(base) ||
+      base === '.env' || /^\.env\./.test(base) && base !== '.env.example';
+  });
+  if (forbidden.length) fail(`Sensitive or local-only path is tracked: ${forbidden.join(', ')}`);
+}
+
 function verifyDiffWhitespace() {
   execFileSync('git', ['diff', '--check'], { cwd: REPOSITORY_ROOT, stdio: 'inherit' });
 }
@@ -184,6 +201,7 @@ function main() {
   verifyNoConflictMarkers(files);
   verifyNoObviousSecrets(files);
   verifySensitiveFilesIgnored();
+  verifyNoSensitivePathsTracked();
   verifyDiffWhitespace();
 
   process.stdout.write(
@@ -209,6 +227,7 @@ module.exports = {
   verifyManifest,
   verifyNoConflictMarkers,
   verifyNoObviousSecrets,
+  verifyNoSensitivePathsTracked,
   verifyRequiredFiles,
   verifySensitiveFilesIgnored,
   verifyServerSyntax
