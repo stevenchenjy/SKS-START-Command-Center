@@ -214,16 +214,34 @@ function normalizedFileContent(filePath) {
   return content.replace(/\r\n/g, '\n').replace(/\s+$/, '');
 }
 
+function logicalRuntimePath(filePath) {
+  return /\.(?:gs|js)$/i.test(filePath) ? filePath.replace(/\.(?:gs|js)$/i, '.gs') : filePath;
+}
+
+function runtimeFileIndex(directory) {
+  const index = new Map();
+  relativeRuntimeFiles(directory).forEach((filePath) => {
+    const logicalPath = logicalRuntimePath(filePath);
+    if (index.has(logicalPath)) {
+      fail(`Runtime directory contains conflicting server files for ${logicalPath}.`);
+    }
+    index.set(logicalPath, filePath);
+  });
+  return index;
+}
+
 function compareRuntimeDirectories(localDirectory, remoteDirectory) {
-  const localFiles = relativeRuntimeFiles(localDirectory);
-  const remoteFiles = relativeRuntimeFiles(remoteDirectory);
+  const localIndex = runtimeFileIndex(localDirectory);
+  const remoteIndex = runtimeFileIndex(remoteDirectory);
+  const localFiles = Array.from(localIndex.keys()).sort();
+  const remoteFiles = Array.from(remoteIndex.keys()).sort();
   const localSet = new Set(localFiles);
   const remoteSet = new Set(remoteFiles);
   const localOnly = localFiles.filter((file) => !remoteSet.has(file));
   const remoteOnly = remoteFiles.filter((file) => !localSet.has(file));
   const different = localFiles.filter((file) => remoteSet.has(file) && (
-    normalizedFileContent(path.join(localDirectory, file)) !==
-    normalizedFileContent(path.join(remoteDirectory, file))
+    normalizedFileContent(path.join(localDirectory, localIndex.get(file))) !==
+    normalizedFileContent(path.join(remoteDirectory, remoteIndex.get(file)))
   ));
   const identical = localFiles.filter((file) => remoteSet.has(file) && !different.includes(file));
   return { localOnly, remoteOnly, different, identical };
@@ -239,6 +257,15 @@ function assertNoRemoteOnly(comparisons) {
       'Inspect the comparison clone and deliberately preserve or remove those files before pushing.'
     );
   }
+  return remoteOnly;
+}
+
+function applyRemoteOnlyPolicy(headComparison, deployedComparison, failOnRemoteOnly) {
+  const remoteOnly = Array.from(new Set([
+    ...headComparison.remoteOnly,
+    ...(deployedComparison ? deployedComparison.remoteOnly : [])
+  ])).sort();
+  if (failOnRemoteOnly) assertNoRemoteOnly([headComparison]);
   return remoteOnly;
 }
 
@@ -306,12 +333,11 @@ function compareRemote(config, options = {}) {
     process.stdout.write('Permanent deployment points at HEAD; no separate version clone was needed.\n');
   }
 
-  const remoteOnly = options.failOnRemoteOnly
-    ? assertNoRemoteOnly([headComparison, deployedComparison])
-    : Array.from(new Set([
-      ...headComparison.remoteOnly,
-      ...(deployedComparison ? deployedComparison.remoteOnly : [])
-    ])).sort();
+  const remoteOnly = applyRemoteOnlyPolicy(
+    headComparison,
+    deployedComparison,
+    options.failOnRemoteOnly
+  );
   return {
     deployments,
     existing,
@@ -510,6 +536,7 @@ module.exports = {
   DEPLOY_CONFIG_FILE,
   EXPECTED_SOURCE_ROOT,
   REQUIRED_CLASP_VERSION,
+  applyRemoteOnlyPolicy,
   assertDeploymentUpdated,
   assertNoRemoteOnly,
   commandFor,

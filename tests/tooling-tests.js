@@ -10,6 +10,7 @@ const { spawnSync } = require('node:child_process');
 const {
   EXPECTED_SOURCE_ROOT,
   REQUIRED_CLASP_VERSION,
+  applyRemoteOnlyPolicy,
   assertDeploymentUpdated,
   assertNoRemoteOnly,
   commandFor,
@@ -157,15 +158,41 @@ test('compares runtime trees without overwriting either side', () => {
   fs.rmSync(directory, { recursive: true, force: true });
 });
 
-test('stops a push when either remote snapshot contains a remote-only file', () => {
+test('treats clasp-cloned .js and local .gs server files as the same logical runtime file', () => {
+  const directory = temporaryDirectory();
+  const local = path.join(directory, 'local');
+  const remote = path.join(directory, 'remote');
+  fs.mkdirSync(local);
+  fs.mkdirSync(remote);
+  fs.writeFileSync(path.join(local, 'Code.gs'), 'function same() {}\n', 'utf8');
+  fs.writeFileSync(path.join(remote, 'Code.js'), 'function same() {}\n', 'utf8');
+
+  const comparison = compareRuntimeDirectories(local, remote);
+  assert.deepEqual(comparison.identical, ['Code.gs']);
+  assert.deepEqual(comparison.different, []);
+  assert.deepEqual(comparison.localOnly, []);
+  assert.deepEqual(comparison.remoteOnly, []);
+  assert.doesNotThrow(() => assertNoRemoteOnly([comparison]));
+  fs.rmSync(directory, { recursive: true, force: true });
+});
+
+test('stops a push for remote HEAD-only files but not files only in the deployed version', () => {
   assert.throws(
-    () => assertNoRemoteOnly([
+    () => applyRemoteOnlyPolicy(
+      { remoteOnly: ['HeadOnly.gs'] },
       { remoteOnly: [] },
-      { remoteOnly: ['LegacyOnly.gs'] }
-    ]),
-    /LegacyOnly\.gs/
+      true
+    ),
+    /HeadOnly\.gs/
   );
-  assert.deepEqual(assertNoRemoteOnly([{ remoteOnly: [] }, null]), []);
+  assert.deepEqual(
+    applyRemoteOnlyPolicy(
+      { remoteOnly: [] },
+      { remoteOnly: ['PreviouslyDeployed.gs'] },
+      true
+    ),
+    ['PreviouslyDeployed.gs']
+  );
 });
 
 test('compares equivalent Apps Script manifests semantically', () => {
