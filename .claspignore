@@ -1,0 +1,5 @@
+# Everything below rootDir is ignored unless it is an Apps Script runtime file.
+**/**
+!appsscript.json
+!**/*.gs
+!**/*.html
