@@ -225,6 +225,61 @@ function currentRevision(repositoryRoot = REPOSITORY_ROOT) {
   return git.stdout.trim();
 }
 
+function gitOutput(args, repositoryRoot = REPOSITORY_ROOT, runner = spawnSync) {
+  const git = runner('git', args, {
+    cwd: repositoryRoot,
+    encoding: 'utf8'
+  });
+  return {
+    status: typeof git.status === 'number' ? git.status : 1,
+    stdout: String(git.stdout || '').trim(),
+    stderr: String(git.stderr || '').trim()
+  };
+}
+
+function assertReleaseBranchSynchronized(
+  repositoryRoot = REPOSITORY_ROOT,
+  runner = spawnSync,
+  options = {}
+) {
+  const branch = gitOutput(['symbolic-ref', '--quiet', '--short', 'HEAD'], repositoryRoot, runner);
+  if (branch.status !== 0 || !branch.stdout) {
+    fail('Production release requires an attached main branch; detached HEAD is not allowed.');
+  }
+  if (branch.stdout !== 'main') {
+    fail(`Production release must run from main, not ${branch.stdout}.`);
+  }
+
+  const upstream = gitOutput(
+    ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{upstream}'],
+    repositoryRoot,
+    runner
+  );
+  if (upstream.status !== 0 || !upstream.stdout) {
+    fail('Production release requires main to have a configured upstream branch.');
+  }
+  if (upstream.stdout !== 'origin/main') {
+    fail(`Production release requires main to track origin/main, not ${upstream.stdout}.`);
+  }
+
+  if (options.fetch !== false) {
+    const fetched = gitOutput(['fetch', '--quiet', 'origin', 'main'], repositoryRoot, runner);
+    if (fetched.status !== 0) {
+      fail(`Could not refresh origin/main before release${fetched.stderr ? `: ${fetched.stderr}` : '.'}`);
+    }
+  }
+
+  const head = gitOutput(['rev-parse', 'HEAD'], repositoryRoot, runner);
+  const remote = gitOutput(['rev-parse', '@{upstream}'], repositoryRoot, runner);
+  if (head.status !== 0 || remote.status !== 0 || !head.stdout || !remote.stdout) {
+    fail('Could not compare main with origin/main before release.');
+  }
+  if (head.stdout !== remote.stdout) {
+    fail('Production release requires main and origin/main to point to the same reviewed commit. Push or update main first.');
+  }
+  return { branch: branch.stdout, upstream: upstream.stdout, revision: head.stdout };
+}
+
 function relativeRuntimeFiles(directory) {
   const files = [];
   function walk(current) {
@@ -953,18 +1008,27 @@ function dev(options = {}) {
   );
 }
 
-function releaseDescription(argument) {
-  const revision = currentRevision();
+function releaseDescription(argument, metadata, repositoryRoot = REPOSITORY_ROOT) {
+  const revision = currentRevision(repositoryRoot);
   const supplied = String(argument || '').trim();
-  return supplied || `START Command Center ${revision}`;
+  const release = metadata || readWebReleaseMetadata(
+    path.join(repositoryRoot, EXPECTED_SOURCE_ROOT)
+  );
+  const label = supplied || 'START Command Center';
+  return `${label} · Web v${release.version} · build ${release.build} · git ${revision}`;
 }
 
 async function release(options = {}) {
   const config = loadConfiguration();
   verifyClaspVersion();
   runChecks();
-  if (!options.dryRun) assertCleanWorktree();
-  const description = releaseDescription(options.description);
+  if (!options.dryRun) {
+    assertCleanWorktree();
+    assertReleaseBranchSynchronized();
+  }
+  const localRoot = path.join(REPOSITORY_ROOT, config.sourceRoot);
+  const localRelease = validateRuntimeWebApp(localRoot, 'Local Apps Script source');
+  const description = releaseDescription(options.description, localRelease.metadata);
 
   if (options.dryRun) {
     const plan = [
@@ -982,8 +1046,6 @@ async function release(options = {}) {
     return;
   }
 
-  const localRoot = path.join(REPOSITORY_ROOT, config.sourceRoot);
-  const localRelease = validateRuntimeWebApp(localRoot, 'Local Apps Script source');
   const remote = compareRemote(config, { failOnRemoteOnly: true });
   const existing = remote.existing;
   const previousVersion = positiveVersionNumber(existing.versionNumber);
@@ -1162,6 +1224,7 @@ module.exports = {
   assertDeploymentUpdated,
   assertNoRemoteOnly,
   assertPermanentWebAppDeployment,
+  assertReleaseBranchSynchronized,
   assertReleaseMetadataBumped,
   assertRuntimeSynchronized,
   assertWebAppManifest,
@@ -1180,6 +1243,7 @@ module.exports = {
   publishVersionWithRecovery,
   readJsonFile,
   readWebReleaseMetadata,
+  releaseDescription,
   resolveCreatedVersion,
   runChecks,
   runCommandResult,

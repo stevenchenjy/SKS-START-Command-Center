@@ -15,6 +15,7 @@ const {
   assertDeploymentUpdated,
   assertNoRemoteOnly,
   assertPermanentWebAppDeployment,
+  assertReleaseBranchSynchronized,
   assertReleaseMetadataBumped,
   assertRuntimeSynchronized,
   assertWebAppManifest,
@@ -31,12 +32,17 @@ const {
   runChecks,
   probePermanentWebApp,
   readWebReleaseMetadata,
+  releaseDescription,
   resolveCreatedVersion,
   updatePermanentDeployment,
   validateConfiguration,
   verifyPermanentDeployment,
   verifyNodeVersion
 } = require('../scripts/gas-tooling');
+const {
+  parseRuntimeReleaseMetadata,
+  verifyWebReleaseMetadata
+} = require('../scripts/verify');
 
 const ROOT = path.resolve(__dirname, '..');
 const SCRIPT_ID = '12Ex89VwthU9KQo0txTbhvdl-4hIpZe5SjpbEnekFGz5gbYaNRdm2S0Dg';
@@ -106,10 +112,14 @@ function temporaryDirectory() {
 }
 
 test('loads the ignored local Script ID, Deployment ID, and source root', () => {
-  const config = loadConfiguration(ROOT);
+  const directory = temporaryDirectory();
+  fs.copyFileSync(path.join(ROOT, '.clasp.json.example'), path.join(directory, '.clasp.json'));
+  fs.copyFileSync(path.join(ROOT, '.gas-deploy.example.json'), path.join(directory, '.gas-deploy.json'));
+  const config = loadConfiguration(directory);
   assert.equal(config.scriptId, SCRIPT_ID);
   assert.equal(config.deploymentId, DEPLOYMENT_ID);
   assert.equal(config.sourceRoot, 'apps-script');
+  fs.rmSync(directory, { recursive: true, force: true });
 });
 
 test('rejects a malformed deployment configuration', () => {
@@ -415,6 +425,106 @@ test('stops the required-check sequence at the first failed test command', () =>
   assert.deepEqual(calls[0][1], ['test']);
 });
 
+function fakeGitRunner(responses) {
+  return (_executable, args) => {
+    const key = args.join(' ');
+    const response = responses[key];
+    if (!response) return { status: 1, stdout: '', stderr: `Unexpected git call: ${key}` };
+    return {
+      status: response.status === undefined ? 0 : response.status,
+      stdout: response.stdout || '',
+      stderr: response.stderr || ''
+    };
+  };
+}
+
+function synchronizedGitResponses(overrides = {}) {
+  return {
+    'symbolic-ref --quiet --short HEAD': { stdout: 'main\n' },
+    'rev-parse --abbrev-ref --symbolic-full-name @{upstream}': { stdout: 'origin/main\n' },
+    'fetch --quiet origin main': { stdout: '' },
+    'rev-parse HEAD': { stdout: 'abc123\n' },
+    'rev-parse @{upstream}': { stdout: 'abc123\n' },
+    ...overrides
+  };
+}
+
+test('production release accepts only synchronized main tracking origin/main', () => {
+  const state = assertReleaseBranchSynchronized(
+    ROOT,
+    fakeGitRunner(synchronizedGitResponses())
+  );
+  assert.equal(state.branch, 'main');
+  assert.equal(state.upstream, 'origin/main');
+  assert.equal(state.revision, 'abc123');
+});
+
+test('production release rejects feature branches, detached HEAD, and missing or wrong upstreams', () => {
+  assert.throws(() => assertReleaseBranchSynchronized(
+    ROOT,
+    fakeGitRunner(synchronizedGitResponses({
+      'symbolic-ref --quiet --short HEAD': { stdout: 'preseason/platform-completion\n' }
+    })),
+    { fetch: false }
+  ), /must run from main/i);
+  assert.throws(() => assertReleaseBranchSynchronized(
+    ROOT,
+    fakeGitRunner(synchronizedGitResponses({
+      'symbolic-ref --quiet --short HEAD': { status: 1 }
+    })),
+    { fetch: false }
+  ), /detached HEAD/i);
+  assert.throws(() => assertReleaseBranchSynchronized(
+    ROOT,
+    fakeGitRunner(synchronizedGitResponses({
+      'rev-parse --abbrev-ref --symbolic-full-name @{upstream}': { status: 1 }
+    })),
+    { fetch: false }
+  ), /configured upstream/i);
+  assert.throws(() => assertReleaseBranchSynchronized(
+    ROOT,
+    fakeGitRunner(synchronizedGitResponses({
+      'rev-parse --abbrev-ref --symbolic-full-name @{upstream}': { stdout: 'fork/main\n' }
+    })),
+    { fetch: false }
+  ), /track origin\/main/i);
+});
+
+test('production release rejects ahead, behind, and diverged main state', () => {
+  ['ahead', 'behind', 'diverged'].forEach((label, index) => {
+    assert.throws(() => assertReleaseBranchSynchronized(
+      ROOT,
+      fakeGitRunner(synchronizedGitResponses({
+        'rev-parse HEAD': { stdout: `local-${label}-${index}\n` },
+        'rev-parse @{upstream}': { stdout: `remote-${label}-${index}\n` }
+      })),
+      { fetch: false }
+    ), /same reviewed commit/i);
+  });
+});
+
+test('production release stops when origin main cannot be refreshed', () => {
+  assert.throws(() => assertReleaseBranchSynchronized(
+    ROOT,
+    fakeGitRunner(synchronizedGitResponses({
+      'fetch --quiet origin main': { status: 1, stderr: 'network unavailable' }
+    }))
+  ), /could not refresh origin\/main.*network unavailable/i);
+});
+
+test('release descriptions always include visible version, build, and git revision', () => {
+  const revision = spawnSync('git', ['rev-parse', '--short', 'HEAD'], {
+    cwd: ROOT,
+    encoding: 'utf8'
+  }).stdout.trim();
+  const description = releaseDescription('Reviewed preseason release', {
+    version: '0.4.0',
+    build: '20260826a'
+  }, ROOT);
+  assert.match(description, /^Reviewed preseason release · Web v0\.4\.0 · build 20260826a · git /);
+  assert.ok(description.endsWith(revision));
+});
+
 test('compares runtime trees without overwriting either side', () => {
   const directory = temporaryDirectory();
   const local = path.join(directory, 'local');
@@ -694,6 +804,20 @@ test('visible release metadata is source-frozen and must change with runtime dri
   fs.rmSync(directory, { recursive: true, force: true });
 });
 
+test('runtime, footer, package, and lockfile release metadata stay synchronized', () => {
+  const runtime = parseRuntimeReleaseMetadata(
+    fs.readFileSync(path.join(ROOT, 'apps-script', 'Config.gs'), 'utf8')
+  );
+  const visible = verifyWebReleaseMetadata();
+  const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  const packageLock = JSON.parse(fs.readFileSync(path.join(ROOT, 'package-lock.json'), 'utf8'));
+  assert.deepEqual(runtime, { version: visible.version, build: visible.build });
+  assert.equal(packageJson.version, visible.version);
+  assert.equal(packageLock.version, visible.version);
+  assert.equal(packageLock.packages[''].version, visible.version);
+  assert.throws(() => parseRuntimeReleaseMetadata("var START_WEB_VERSION = '0.4.0';"), /must define/i);
+});
+
 test('visible release footer exposes no deployment, configuration, identity, or path data', () => {
   const html = fs.readFileSync(path.join(ROOT, 'apps-script', 'Index.html'), 'utf8');
   const footer = html.match(/<footer\b[^>]*\bid="release-indicator"[\s\S]*?<\/footer>/i);
@@ -719,7 +843,7 @@ test('keeps OAuth and local target files ignored by Git', () => {
 test('tracks only Apps Script runtime types below the configured source root', () => {
   const result = spawnSync(
     path.join(ROOT, 'node_modules', '.bin', process.platform === 'win32' ? 'clasp.cmd' : 'clasp'),
-    ['--json', '--project', '.clasp.json', 'show-file-status'],
+    ['--json', '--project', '.clasp.json.example', 'show-file-status'],
     { cwd: ROOT, encoding: 'utf8' }
   );
   assert.equal(result.status, 0, result.stderr);
@@ -740,12 +864,43 @@ test('pins the current official clasp release and compatible Node engine', () =>
   assert.throws(() => verifyNodeVersion('19.9.0'), /requires Node\.js 20 or newer/i);
 });
 
+test('release verification runs every workflow, reporting, integrity, client, and tooling suite', () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  [
+    'tests/run-tests.js',
+    'tests/platform-config-schema-tests.js',
+    'tests/program-snapshot-tests.js',
+    'tests/decision-reporting-tests.js',
+    'tests/integrity-tests.js',
+    'tests/client-ui-tests.js',
+    'tests/tooling-tests.js'
+  ].forEach((suite) => assert.match(packageJson.scripts.test, new RegExp(suite.replace('.', '\\.'))));
+  assert.equal(packageJson.scripts.verify, 'npm test && npm run check');
+});
+
 test('release tooling never pulls into the repository or creates a deployment', () => {
   const source = fs.readFileSync(path.join(ROOT, 'scripts', 'gas-tooling.js'), 'utf8');
   assert.doesNotMatch(source, /['"]pull['"]/);
   assert.doesNotMatch(source, /['"]create-deployment['"]/);
   assert.doesNotMatch(source, /CLASP_USER/);
   assert.match(source, /['"]update-deployment['"]/);
+  const releaseBody = source.match(/async function release\([\s\S]*?\n}\n\nasync function recover/);
+  const recoveryBody = source.match(/async function recover\([\s\S]*?\n}\n\nfunction usage/);
+  assert.ok(releaseBody);
+  assert.ok(recoveryBody);
+  assert.match(releaseBody[0], /assertReleaseBranchSynchronized/);
+  assert.doesNotMatch(recoveryBody[0], /assertReleaseBranchSynchronized/);
+});
+
+test('CI installs and verifies without credentials or deployment commands', () => {
+  const workflow = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'verify.yml'), 'utf8');
+  assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /branches:\s*\n\s*- main/);
+  assert.match(workflow, /permissions:\s*\n\s*contents: read/);
+  assert.match(workflow, /node-version: 20/);
+  assert.match(workflow, /run: npm ci/);
+  assert.match(workflow, /run: npm run verify/);
+  assert.doesNotMatch(workflow, /secrets\.|clasp|gas:(?:push|dev|release|recover)|deploy/i);
 });
 
 test('declares only current Spreadsheet and email scopes on the platform manifest', () => {
