@@ -109,16 +109,36 @@ The command:
 
 1. runs all tests and static checks;
 2. verifies the pinned clasp version, local IDs, clean Git state, and existing
-   permanent Deployment ID;
+   permanent Deployment ID and Web App entry point;
 3. compares local source with remote HEAD and the deployed version;
 4. pushes to the configured existing Script ID;
-5. creates an immutable Apps Script version;
-6. updates only the configured existing Deployment ID to that version;
-7. confirms the update and prints the unchanged `/exec` URL, previous version,
-   and rollback command.
+5. re-clones HEAD and proves the pushed source is synchronized;
+6. creates an immutable Apps Script version and re-clones that exact version;
+7. updates only the configured existing Deployment ID to that version;
+8. polls authoritative Apps Script API state for the exact version, Web App
+   entry point, access/execution policy, and `/exec` URL;
+9. requests the public `/exec` page and requires the source-frozen visible build
+   marker before reporting success.
+
+The immediate text/JSON printed by a clasp mutation is advisory. The command
+uses post-mutation API state as the authority, so a harmless clasp output change
+or short propagation delay does not become a false release failure. If the new
+deployment cannot be verified, the command restores and verifies the previous
+immutable version automatically.
 
 It never calls `create-deployment`. Do not use **New deployment** for a normal
 release.
+
+To deliberately restore a known immutable version without pushing or creating
+anything, use:
+
+```bash
+npm run gas:recover -- 1 "Restore reviewed version 1"
+```
+
+Recovery validates that version's manifest and Web App handler, updates the
+same configured Deployment ID, and verifies the unchanged `/exec` URL and
+served START UI.
 
 ## Troubleshooting
 
@@ -133,6 +153,11 @@ release.
   explicit preservation/removal decision before retrying.
 - **Dirty worktree:** commit the exact reviewed release state; do not bypass the
   guard.
+- **Visible build token unchanged:** update `data-web-build` in `Index.html`
+  when runtime source changes, then commit the reviewed marker with the code.
+- **Web App invariant failure:** keep `doGet`, the manifest `webapp` block, and
+  the existing `USER_DEPLOYING` / `ANYONE_ANONYMOUS` policy. Do not add an
+  `executionApi` block or create a replacement deployment.
 - **Workbook access error after deployment:** confirm the execution identity has
   Editor access to the existing spreadsheet and `START_SPREADSHEET_ID` was not
   overridden with a different Script Property.

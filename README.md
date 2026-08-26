@@ -30,6 +30,9 @@ browser-callable function. The foundation also provides:
 - a reusable deterministic, bounded, privacy-minimized program snapshot layer;
 - pinned clasp tooling that compares local source with both Apps Script HEAD and
   the current permanent deployment before a push or release;
+- authoritative permanent-deployment checks for version, Web App entry point,
+  access policy, execution identity, and the exact `/exec` URL;
+- an immutable visible Web version/build footer for browser release checks;
 - checks for syntax, secrets, conflicts, manifest scopes, source-root drift,
   and accidental deployment replacement.
 
@@ -71,13 +74,18 @@ npm run gas:status
 npm run gas:compare
 npm run gas:dev
 npm run gas:release -- "Reviewed release description"
+npm run gas:recover -- 1 "Restore reviewed version"
 ```
 
 `gas:status` shows local upload candidates and then performs the authenticated
 remote comparison; clasp's local status alone is not a synchronization check.
 `gas:dev` synchronizes reviewed source for an editor-only `/dev` test deployment.
 `gas:release` creates a version and updates only the configured permanent
-deployment—never a new deployment—so the existing `/exec` URL is preserved.
+deployment—never a new deployment—so the existing `/exec` URL is preserved. It
+re-reads deployment state through the Apps Script API, checks the served build
+marker, and automatically restores the previous version if post-update
+verification fails. `gas:recover` is the guarded path for explicitly restoring
+an already-existing immutable version to that same permanent deployment.
 
 Automated tests use local Sheet simulations and mocks. They never write to the
 production workbook, deploy Apps Script, or call a paid service.

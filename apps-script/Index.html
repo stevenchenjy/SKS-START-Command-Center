@@ -339,6 +339,14 @@
       padding: 40px clamp(22px, 4vw, 58px) 62px;
     }
 
+    .release-indicator {
+      margin-top: 42px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.02em;
+      text-align: right;
+    }
+
     .view[hidden] { display: none; }
     .page-heading {
       display: flex;
@@ -1107,6 +1115,14 @@
           </div>
           <div id="projects-content" aria-live="polite"></div>
         </section>
+
+        <footer
+          class="release-indicator"
+          id="release-indicator"
+          aria-label="Web app version"
+          data-web-version="0.3.1"
+          data-web-build="20260825a"
+        >Web v0.3.1 · build 20260825a</footer>
       </main>
     </div>
   </div>

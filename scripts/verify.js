@@ -81,6 +81,18 @@ function verifyManifest() {
     fail(`apps-script/appsscript.json is not valid JSON: ${error.message}`);
   }
   if (manifest.runtimeVersion !== 'V8') fail('Apps Script manifest must use the V8 runtime.');
+  const expectedWebApp = {
+    executeAs: 'USER_DEPLOYING',
+    access: 'ANYONE_ANONYMOUS'
+  };
+  if (!manifest.webapp ||
+      manifest.webapp.executeAs !== expectedWebApp.executeAs ||
+      manifest.webapp.access !== expectedWebApp.access) {
+    fail(
+      'Apps Script manifest must preserve the permanent Web App configuration: ' +
+      'executeAs USER_DEPLOYING and access ANYONE_ANONYMOUS.'
+    );
+  }
   if (!Array.isArray(manifest.oauthScopes)) fail('Apps Script manifest must declare oauthScopes explicitly.');
   const requiredScopes = [
     'https://www.googleapis.com/auth/spreadsheets',
@@ -95,6 +107,10 @@ function verifyManifest() {
 function verifyServerSyntax() {
   const serverFiles = listFilesRecursively(SOURCE_ROOT)
     .filter((filePath) => filePath.endsWith('.gs'));
+  const combinedSource = serverFiles.map((filePath) => fs.readFileSync(filePath, 'utf8')).join('\n');
+  if (!/function\s+doGet\s*\(/.test(combinedSource)) {
+    fail('Apps Script web app must keep a public doGet entry point.');
+  }
   const compile = (files, label) => {
     const source = files.map((filePath) => (
       `\n// ${path.relative(SOURCE_ROOT, filePath)}\n${fs.readFileSync(filePath, 'utf8')}`
@@ -108,6 +124,27 @@ function verifyServerSyntax() {
   compile(serverFiles, 'forward');
   compile(serverFiles.slice().reverse(), 'reverse');
   return serverFiles.length;
+}
+
+function verifyWebReleaseMetadata() {
+  const html = fs.readFileSync(path.join(SOURCE_ROOT, 'Index.html'), 'utf8');
+  const tag = html.match(/<[^>]+\bid=["']release-indicator["'][^>]*>/i);
+  if (!tag) fail('Index.html must contain the release-indicator footer.');
+  const attribute = (name) => {
+    const match = tag[0].match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`, 'i'));
+    return match ? match[1] : '';
+  };
+  const version = attribute('data-web-version');
+  const build = attribute('data-web-build');
+  if (!/^\d+\.\d+\.\d+$/.test(version)) fail('Release indicator has an invalid Web version.');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$/.test(build)) {
+    fail('Release indicator has an invalid build token.');
+  }
+  const marker = `Web v${version} · build ${build}`;
+  if (!html.includes(marker)) fail('Release indicator text does not match its machine-readable metadata.');
+  const packageVersion = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'package.json'), 'utf8')).version;
+  if (packageVersion !== version) fail('package.json version must match the visible Web version.');
+  return { version, build, marker };
 }
 
 function verifyBrowserSyntax() {
@@ -197,6 +234,7 @@ function main() {
   const manifest = verifyManifest();
   const serverCount = verifyServerSyntax();
   const browserScriptCount = verifyBrowserSyntax();
+  const release = verifyWebReleaseMetadata();
   const files = repositoryTextFiles();
   verifyNoConflictMarkers(files);
   verifyNoObviousSecrets(files);
@@ -206,7 +244,7 @@ function main() {
 
   process.stdout.write(
     `Static checks passed: ${serverCount} server file(s), ${browserScriptCount} browser script(s), ` +
-    `${manifest.oauthScopes.length} explicit OAuth scope(s).\n`
+    `${manifest.oauthScopes.length} explicit OAuth scope(s), ${release.marker}.\n`
   );
 }
 
@@ -230,5 +268,6 @@ module.exports = {
   verifyNoSensitivePathsTracked,
   verifyRequiredFiles,
   verifySensitiveFilesIgnored,
-  verifyServerSyntax
+  verifyServerSyntax,
+  verifyWebReleaseMetadata
 };
