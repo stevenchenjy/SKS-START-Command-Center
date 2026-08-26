@@ -153,7 +153,10 @@ const sandbox = {
   },
   Session: {
     getActiveUser() {
-      return { getEmail: () => '' };
+      return { getEmail: () => 'deployment.owner@sks.org' };
+    },
+    getEffectiveUser() {
+      return { getEmail: () => 'deployment.owner@sks.org' };
     }
   },
   LockService: {
@@ -336,6 +339,20 @@ test('supported header aliases satisfy schema readiness', () => {
 
   assert.equal(status.ready, true);
   assert.deepEqual(status.issues, []);
+  assert.equal(activeSpreadsheet.writeAttempts(), 0);
+});
+
+test('ambiguous supported headers fail schema readiness without suggesting an unsafe setup', () => {
+  activeSpreadsheet = makeSchemaFixture();
+  activeSpreadsheet.sheets.Tasks.rows[0].push('Task Status');
+  const status = plain(sandbox.inspectStartSchema_(activeSpreadsheet));
+  const tasks = status.sheets.find((sheet) => sheet.name === 'Tasks');
+
+  assert.equal(status.ready, false);
+  assert.deepEqual(tasks.ambiguousHeaders, ['Status']);
+  assert.ok(status.issues.some((issue) => (
+    issue.code === 'AMBIGUOUS_HEADER' && issue.sheet === 'Tasks' && issue.header === 'Status'
+  )));
   assert.equal(activeSpreadsheet.writeAttempts(), 0);
 });
 

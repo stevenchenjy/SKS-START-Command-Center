@@ -54,11 +54,11 @@ function mutateTask_(taskKey, profileKey, action, input) {
         updateText = 'Marked done';
         historyBlocker = currentBlocker;
       } else if (action === 'release') {
-        assertWorkingStatus_(currentStatus, ['Doing'], 'release');
+        assertWorkingStatus_(currentStatus, ['Doing', 'Blocked'], 'release');
         nextStatus = 'Open';
         nextOwner = '';
         nextBlocker = '';
-        updateText = 'Released task';
+        updateText = currentStatus === 'Blocked' ? 'Released blocked task' : 'Released task';
         historyBlocker = currentBlocker;
       } else if (action === 'legacy_update') {
         var legacy = input || {};
@@ -129,7 +129,7 @@ function assertWorkingStatus_(status, allowed, verb) {
 function assertLegacyTaskTransition_(currentStatus, nextStatus) {
   var allowed = {
     Doing: ['Open', 'Doing', 'Blocked', 'Done'],
-    Blocked: ['Doing', 'Blocked', 'Done']
+    Blocked: ['Open', 'Doing', 'Blocked', 'Done']
   };
   if (!allowed[currentStatus] || allowed[currentStatus].indexOf(nextStatus) < 0) {
     fail_('You cannot change a task from ' + currentStatus + ' to ' + nextStatus + '. Refresh the dashboard and use the action shown for its current state.');

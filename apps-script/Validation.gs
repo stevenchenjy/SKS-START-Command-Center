@@ -38,6 +38,21 @@ function literalSheetText_(value) {
   return /^[=+\-@]/.test(text) ? "'" + text : text;
 }
 
+function validateDueDate_(value, label) {
+  var clean = singleLineText_(value, label || 'Due date', 10, false);
+  if (!clean) return '';
+  var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(clean);
+  if (!match) fail_((label || 'Due date') + ' must use YYYY-MM-DD.');
+  var year = Number(match[1]);
+  var month = Number(match[2]);
+  var day = Number(match[3]);
+  var date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    fail_((label || 'Due date') + ' must be a real calendar date.');
+  }
+  return clean;
+}
+
 function string_(value) {
   if (value === null || typeof value === 'undefined') return '';
   if (Object.prototype.toString.call(value) === '[object Date]') {

@@ -66,12 +66,16 @@ function project(overrides = {}) {
     projectLead: '',
     problemOpportunity: '',
     linkedMetricNames: [],
+    startImpact: '',
+    startDifficulty: '',
+    startCost: '',
     localFeasibility: '',
     recommendation: '',
     schoolFeedback: '',
     nextAction: 'Start validation',
     validationEvidence: '',
     successMeasure: '',
+    schoolContact: '',
     knownConcerns: '',
     decisionNotes: '',
     completedWork: '',
@@ -367,6 +371,7 @@ test('infers only known server-generated project transitions', () => {
     ['2026-08-20T05:00:00Z', 'REJECTED', 'Rejected target', 'School review declined the project: Not feasible'],
     ['2026-08-20T04:00:00Z', 'COMPLETED', 'Completed target', 'Completed project: Installed stations. Observed result: In use'],
     ['2026-08-20T03:00:00Z', 'PAUSED', 'Paused target', 'Paused project: Waiting for next term'],
+    ['2026-08-20T02:30:00Z', 'ACTIVE', 'Former active title', 'Resumed project in Active'],
     ['2026-08-20T02:00:00Z', 'COMPLETED', 'Completed target', 'Student says project is probably completed']
   ].map(([timestamp, projectId, projectName, text]) => update({
     timestamp,
@@ -384,7 +389,7 @@ test('infers only known server-generated project transitions', () => {
       'created_idea', 'started_validation', 'ready_for_school_review',
       'paused_during_validation', 'school_review_approved',
       'school_review_revision', 'school_review_declined',
-      'completed_project', 'paused_project'
+      'completed_project', 'paused_project', 'resumed_project'
     ]
   );
   const completed = result.activity.recentProjectTransitions.find((item) => item.event === 'completed_project');
@@ -397,6 +402,11 @@ test('infers only known server-generated project transitions', () => {
   });
   const genericPause = result.activity.recentProjectTransitions.find((item) => item.event === 'paused_project');
   assert.equal(genericPause.fromStage, '', 'does not invent an unknowable previous stage');
+  const resumed = result.activity.recentProjectTransitions.find((item) => item.event === 'resumed_project');
+  assert.deepEqual(
+    { from: resumed.fromStage, to: resumed.toStage, id: resumed.projectId },
+    { from: 'Paused', to: 'Active', id: 'ACTIVE' }
+  );
   assert.equal(result.activity.recentlyCompleted[0].completedWork, 'Installed stations');
 });
 
@@ -515,6 +525,10 @@ test('caps every text field and linked-metric list with explicit truncation tota
       projectId: 'P-LONG',
       projectName: huge,
       problemOpportunity: huge,
+      startImpact: huge,
+      startDifficulty: huge,
+      startCost: huge,
+      schoolContact: huge,
       linkedMetricNames: linkedMetrics
     })]
   });
@@ -527,8 +541,12 @@ test('caps every text field and linked-metric list with explicit truncation tota
     result.projects.ideas[0].problemOpportunity.length,
     result.limits.fieldCharacters.longText
   );
+  assert.equal(result.projects.ideas[0].startImpact.length, result.limits.fieldCharacters.longText);
+  assert.equal(result.projects.ideas[0].startDifficulty.length, result.limits.fieldCharacters.longText);
+  assert.equal(result.projects.ideas[0].startCost.length, result.limits.fieldCharacters.longText);
+  assert.equal(result.projects.ideas[0].schoolContact.length, result.limits.fieldCharacters.longText);
   assert.equal(result.projects.ideas[0].linkedMetrics.length, result.limits.linkedMetricsPerProject);
-  assert.ok(result.truncation.text.fieldsTruncated >= 5);
+  assert.ok(result.truncation.text.fieldsTruncated >= 9);
   assert.ok(result.truncation.text.charactersOmitted > 0);
   assert.equal(result.truncation.lists.listsTruncated, 1);
   assert.equal(result.truncation.lists.itemsOmitted, 8);
@@ -639,12 +657,13 @@ test('returns display names only and cannot leak email, profile, row, or Sheet i
   assert.match(result.projects.ideas[0].problemOpportunity, /\[redacted\]/);
 });
 
-test('is deterministic, pure, and omits source scoring fields', () => {
+test('is deterministic, pure, preserves recorded START facts, and omits carbon/scoring internals', () => {
   const dashboard = {
     tasks: [task({ taskId: 'T1' })],
     projects: [project({
       projectId: 'P1',
       startImpact: 'High',
+      startDifficulty: 'Medium',
       startCost: 'Low',
       carbonTrack: 'Estimated savings'
     })]
@@ -654,7 +673,10 @@ test('is deterministic, pure, and omits source scoring fields', () => {
   const second = snapshot(dashboard);
   assert.deepEqual(first, second);
   assert.equal(JSON.stringify(dashboard), before, 'input was not mutated');
-  assert.doesNotMatch(JSON.stringify(first), /startImpact|startCost|carbonTrack|score/i);
+  assert.equal(first.projects.ideas[0].startImpact, 'High');
+  assert.equal(first.projects.ideas[0].startDifficulty, 'Medium');
+  assert.equal(first.projects.ideas[0].startCost, 'Low');
+  assert.doesNotMatch(JSON.stringify(first), /carbonTrack|score/i);
   assert.doesNotMatch(SOURCE, /new Date\s*\(\s*\)/, 'module never reads the clock');
   assert.doesNotMatch(SOURCE, /SpreadsheetApp|PropertiesService|DriveApp|UrlFetchApp/);
 });

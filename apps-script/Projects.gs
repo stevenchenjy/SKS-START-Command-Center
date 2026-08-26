@@ -112,6 +112,31 @@ function appendProjectUpdate_(context, timestamp, updateText, nextStep, link) {
   });
 }
 
+function resumeProject_(projectKey, profileKey, targetStage, nextAction) {
+  return withMutationLock_(function () {
+    var context = loadProjectMutation_(projectKey, profileKey,
+      ['stage', 'decisionNotes', 'nextAction']);
+    assertProjectStage_(context.stage, ['Paused'], 'resume');
+    var resumedStage = validateChoice_(targetStage, 'Resume stage', {
+      idea: 'Idea',
+      validation: 'Validation',
+      schoolreview: 'School Review',
+      active: 'Active'
+    });
+    var next = validateText_(nextAction, 'Next action', 600, true);
+
+    setCells_(context.projectsTable.sheet, context.projectRow.rowNumber, [
+      { column: context.columns.decisionNotes, value: '' },
+      { column: context.columns.nextAction, value: literalSheetText_(next) },
+      { column: context.columns.stage, value: resumedStage }
+    ]);
+    appendProjectUpdate_(context, new Date(), 'Resumed project in ' + resumedStage, next, '');
+    flush_();
+    return projectMutationResult_(context.spreadsheet, context.member.profileKey,
+      'resume_project', context.projectKey, '');
+  });
+}
+
 function projectMutationResult_(spreadsheet, profileKey, action, projectKey, taskKey) {
   var dashboard = buildDashboardData_(spreadsheet, profileKey);
   var resolvedProjectKey = projectKey || '';
@@ -153,13 +178,15 @@ function assertProjectStage_(stage, allowed, verb) {
 }
 
 function relatedProjectMatches_(storedReference, project, allowNameOnlyMatch) {
-  var reference = normalizeIdentity_(storedReference);
+  var rawReference = string_(storedReference).trim();
+  var reference = normalizeIdentity_(rawReference);
   if (!reference) return false;
   var id = normalizeIdentity_(project.projectId);
   var name = normalizeIdentity_(project.projectName);
   var label = normalizeIdentity_(project.projectLabel || projectLabelFromParts_(project.projectId, project.projectName));
   if (id && reference === id) return true;
   if (id && name && reference === label) return true;
+  if (id && rawReference.toLowerCase().indexOf(string_(project.projectId).trim().toLowerCase() + ':') === 0) return true;
   return !!allowNameOnlyMatch && reference === name;
 }
 

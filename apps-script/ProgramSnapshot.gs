@@ -294,12 +294,16 @@ function programSnapshotProjects_(rawProjects, settings, quality, truncation) {
       lead: programSnapshotDisplayName_(source.projectLeadDisplay || source.projectLead, truncation),
       problemOpportunity: programSnapshotText_(source.problemOpportunity, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       linkedMetrics: linkedMetrics,
+      startImpact: programSnapshotText_(source.startImpact, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
+      startDifficulty: programSnapshotText_(source.startDifficulty, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
+      startCost: programSnapshotText_(source.startCost, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       localFeasibility: programSnapshotText_(source.localFeasibility, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       recommendation: programSnapshotText_(source.recommendation, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       schoolFeedback: programSnapshotText_(source.schoolFeedback, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       nextAction: nextAction,
       validationEvidence: programSnapshotText_(source.validationEvidence, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       successMeasure: programSnapshotText_(source.successMeasure, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
+      schoolContact: programSnapshotText_(source.schoolContact, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       knownConcerns: programSnapshotText_(source.knownConcerns, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       decisionNotes: programSnapshotText_(source.decisionNotes, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
       completedWork: programSnapshotText_(source.completedWork, PROGRAM_SNAPSHOT_FIELD_LIMITS.longText, truncation),
@@ -466,12 +470,16 @@ function programSnapshotPublicProject_(project) {
     lead: project.lead,
     problemOpportunity: project.problemOpportunity,
     linkedMetrics: project.linkedMetrics.slice(),
+    startImpact: project.startImpact,
+    startDifficulty: project.startDifficulty,
+    startCost: project.startCost,
     localFeasibility: project.localFeasibility,
     recommendation: project.recommendation,
     schoolFeedback: project.schoolFeedback,
     nextAction: project.nextAction,
     validationEvidence: project.validationEvidence,
     successMeasure: project.successMeasure,
+    schoolContact: project.schoolContact,
     knownConcerns: project.knownConcerns,
     decisionNotes: project.decisionNotes,
     completedWork: project.completedWork,
@@ -642,14 +650,27 @@ function programSnapshotTransitionInference_(value) {
   if (/^paused project:/i.test(text)) {
     return { event: 'paused_project', fromStage: '', toStage: 'Paused' };
   }
+  var resumed = /^resumed project in (idea|validation|school review|active)$/i.exec(text);
+  if (resumed) {
+    var resumedStage = {
+      idea: 'Idea',
+      validation: 'Validation',
+      'school review': 'School Review',
+      active: 'Active'
+    }[resumed[1].toLowerCase()];
+    return { event: 'resumed_project', fromStage: 'Paused', toStage: resumedStage };
+  }
   return null;
 }
 
 function programSnapshotMatchProject_(update, projects) {
+  var rawAssociation = String(update.taskProject || update.item || '').trim().toLowerCase();
   var association = programSnapshotKey_(update.taskProject || update.item);
   if (!association) return null;
   var matches = projects.filter(function (project) {
-    return project._labels.indexOf(association) >= 0;
+    var rawId = String(project.id || '').trim().toLowerCase();
+    return project._labels.indexOf(association) >= 0 ||
+      (!!rawId && rawAssociation.indexOf(rawId + ':') === 0);
   });
   return matches.length === 1 ? matches[0] : null;
 }
@@ -902,9 +923,10 @@ function programSnapshotProjectSortKey_(project) {
   return [
     project.id, project.name, project.stage, project.lead,
     project.problemOpportunity, project.linkedMetrics.join('\u001e'),
+    project.startImpact, project.startDifficulty, project.startCost,
     project.localFeasibility, project.recommendation, project.schoolFeedback,
     project.nextAction, project.validationEvidence, project.successMeasure,
-    project.knownConcerns, project.decisionNotes, project.completedWork,
+    project.schoolContact, project.knownConcerns, project.decisionNotes, project.completedWork,
     project.observedResult
   ].join('\u001f');
 }

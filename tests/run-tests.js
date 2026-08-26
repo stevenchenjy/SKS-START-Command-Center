@@ -46,6 +46,7 @@ const PROJECT_STAGE_SETTING =
   'Idea | Validation | School Review | Active | Completed | Paused | Rejected';
 const STEVEN_KEY = 'steven.chen@sks.org';
 const JORDAN_KEY = 'jordan.lee@sks.org';
+const OWNER_KEY = 'deployment.owner@sks.org';
 
 function displayValue(value) {
   if (value === null || typeof value === 'undefined') return '';
@@ -250,7 +251,7 @@ function makeFixture({
     ],
     [
       'T-005', 'Publish audit notes', 'Waste Reduction', 'M-01',
-      'Writing', '20 min', '2026-09-09', 'Doing', 'Steven Chen', '', '', ''
+      'Writing', '20 min', '2026-09-09', 'Doing', STEVEN_KEY, '', '', ''
     ],
     [
       'T-006', 'Archive old checklist', 'Waste Reduction', '',
@@ -353,7 +354,9 @@ function makeFixture({
 }
 
 let spreadsheet = makeFixture();
-let sessionEmail = '';
+let sessionEmail = STEVEN_KEY;
+let effectiveEmail = OWNER_KEY;
+let scriptProperties = {};
 let flushCount = 0;
 let lockHeld = false;
 
@@ -401,6 +404,20 @@ const sandbox = {
   Session: {
     getActiveUser() {
       return { getEmail: () => sessionEmail };
+    },
+    getEffectiveUser() {
+      return { getEmail: () => effectiveEmail };
+    }
+  },
+  PropertiesService: {
+    getScriptProperties() {
+      return {
+        getProperty(name) {
+          return Object.prototype.hasOwnProperty.call(scriptProperties, name)
+            ? scriptProperties[name]
+            : null;
+        }
+      };
     }
   },
   LockService: {
@@ -479,7 +496,9 @@ test('loads every Apps Script module in reverse order without top-level dependen
 
 function reset(options) {
   spreadsheet = makeFixture(options);
-  sessionEmail = '';
+  sessionEmail = STEVEN_KEY;
+  effectiveEmail = OWNER_KEY;
+  scriptProperties = {};
   flushCount = 0;
   lockHeld = false;
 }
@@ -489,6 +508,15 @@ function taskRow(taskId) {
   const rowIndex = sheet.rows.findIndex((row) => row[0] === taskId);
   assert.notEqual(rowIndex, -1, `task ${taskId} exists`);
   return sheet.rowObject(rowIndex + 1);
+}
+
+function setTaskField(taskId, header, value) {
+  const sheet = spreadsheet.getSheetByName('Tasks');
+  const row = sheet.rows.find((candidate) => candidate[0] === taskId);
+  const column = TASK_HEADERS.indexOf(header);
+  assert.ok(row, `task ${taskId} exists`);
+  assert.notEqual(column, -1, `task header ${header} exists`);
+  row[column] = value;
 }
 
 function newestUpdate() {
@@ -536,6 +564,12 @@ function createIdea(overrides = {}) {
 function updateRowsFor(labelPart) {
   const updates = spreadsheet.getSheetByName('Updates');
   return updates.rows.slice(1).filter((row) => String(row[2]).includes(labelPart));
+}
+
+function workbookSnapshot() {
+  return JSON.stringify(
+    Object.keys(spreadsheet.sheets).sort().map((name) => [name, spreadsheet.sheets[name].rows])
+  );
 }
 
 test('opens the dashboard HTML entry point', () => {
@@ -597,11 +631,12 @@ test('reads active Members profiles, display names, updates, and summary counts'
   reset();
   const data = sandbox.getDashboardData(STEVEN_KEY);
 
-  assert.equal(data.viewer.identity, STEVEN_KEY);
-  assert.equal(data.viewer.profileKey, STEVEN_KEY);
+  assert.equal(data.viewer.identity, 'Steven Chen');
+  assert.equal(data.viewer.profileKey, 'Steven Chen');
   assert.equal(data.viewer.displayName, 'Steven Chen');
-  assert.equal(data.viewer.email, STEVEN_KEY);
-  assert.equal(data.viewer.authMode, 'members_selector');
+  assert.equal(data.viewer.email, undefined);
+  assert.equal(data.viewer.authMode, 'google');
+  assert.equal(data.viewer.canMutate, true);
   assert.equal(data.viewer.needsProfileSelection, false);
   assert.equal(data.members.length, 3);
   assert.deepEqual(
@@ -610,12 +645,32 @@ test('reads active Members profiles, display names, updates, and summary counts'
   );
   assert.equal(data.members.some((member) => member.displayName === 'Former Member'), false);
   assert.equal(data.updates[0].member, 'Steven Chen');
+  assert.equal(taskFrom(data, 'T-003').recentUpdates.length, 1);
+  assert.equal(taskFrom(data, 'T-003').recentUpdates[0].update, 'Asked facilities for a meeting');
+  assert.equal(taskFrom(data, 'T-001').recentUpdates.length, 0);
   assert.equal(data.tasks.length, 6);
   assert.equal(data.projects.length, 3);
   assert.equal(data.summary.openTasks, 1);
   assert.equal(data.summary.myTasks, 2);
   assert.equal(data.summary.activeProjects, 1);
   assert.equal(data.summary.waitingOnSchool, 2);
+  assert.equal(data.decisionComparison.humanDecisionRequired, true);
+  assert.deepEqual(
+    Array.from(data.decisionComparison.projects, (project) => project.projectId),
+    ['P-001', 'P-002', 'P-003']
+  );
+  assert.deepEqual(
+    Array.from(data.reporting.activeWork.projects, (project) => project.projectId),
+    ['P-001']
+  );
+  assert.deepEqual(
+    Array.from(data.reporting.schoolDecisionQueue, (project) => project.projectId),
+    ['P-002']
+  );
+  assert.ok(data.reporting.blockers.some((item) => item.itemId === 'T-003'));
+  assert.equal(data.reporting.humanDecisionRequired, true);
+  const serialized = JSON.stringify(data);
+  assert.doesNotMatch(serialized, /steven\.chen@sks\.org|jordan\.lee@sks\.org|maya\.patel@sks\.org/i);
 });
 
 test('normalizes every legacy task status while preserving owner display mapping', () => {
@@ -625,7 +680,7 @@ test('normalizes every legacy task status while preserving owner display mapping
   assert.equal(taskFrom(data, 'T-002').status, 'Doing');
   assert.equal(taskFrom(data, 'T-003').status, 'Blocked');
   assert.equal(taskFrom(data, 'T-004').status, 'Doing');
-  assert.equal(taskFrom(data, 'T-003').claimedBy, STEVEN_KEY);
+  assert.equal(taskFrom(data, 'T-003').claimedBy, 'Steven Chen');
   assert.equal(taskFrom(data, 'T-003').claimedByDisplay, 'Steven Chen');
   assert.equal(taskFrom(data, 'T-002').claimedByDisplay, 'Jordan Lee');
   assert.equal(taskFrom(data, 'T-003').isMine, true);
@@ -707,6 +762,7 @@ test('adds a progress update without changing task state or active blocker', () 
   assert.equal(taskFrom(data, 'T-003').status, 'Blocked');
   assert.equal(newestUpdate().Update, 'Facilities suggested Thursday morning');
   assert.equal(newestUpdate().Blocker, '');
+  assert.equal(taskFrom(data, 'T-003').recentUpdates[0].update, 'Facilities suggested Thursday morning');
 });
 
 test('completes a Doing task with a canonical Done write', () => {
@@ -733,13 +789,26 @@ test('releases a Doing task back to Open and clears the owner', () => {
   assert.match(newestUpdate().Update, /release/i);
 });
 
+test('releases a Blocked task back to Open while preserving its blocker in history', () => {
+  reset();
+  const blocker = taskRow('T-003').Blocker;
+  const data = sandbox.releaseTask('T-003', STEVEN_KEY);
+
+  assert.equal(taskRow('T-003').Status, 'Open');
+  assert.equal(taskRow('T-003')['Claimed By'], '');
+  assert.equal(taskRow('T-003').Blocker, '');
+  assert.equal(taskFrom(data, 'T-003').isOpen, true);
+  assert.match(newestUpdate().Update, /released blocked task/i);
+  assert.equal(newestUpdate().Blocker, blocker);
+});
+
 test('recognizes an automatic Google email and displays the matching member name', () => {
   reset();
   sessionEmail = 'STEVEN.CHEN@SKS.ORG';
   const data = sandbox.claimTask('T-001', '');
 
-  assert.equal(data.viewer.email, STEVEN_KEY);
-  assert.equal(data.viewer.profileKey, STEVEN_KEY);
+  assert.equal(data.viewer.email, undefined);
+  assert.equal(data.viewer.profileKey, 'Steven Chen');
   assert.equal(data.viewer.displayName, 'Steven Chen');
   assert.equal(data.viewer.authMode, 'google');
   assert.equal(taskRow('T-001')['Claimed By'], STEVEN_KEY);
@@ -764,38 +833,31 @@ test('uses a temporary name and lets an email-backed member save a display name'
   assert.equal(after.viewer.needsDisplayName, false);
 });
 
-test('falls back to active Members profiles when Google email is unavailable', () => {
+test('ignores a requested profile and binds the dashboard to the Session email', () => {
   reset();
   const selected = sandbox.getDashboardData(JORDAN_KEY);
-  const inactive = sandbox.getDashboardData('former.member@sks.org');
 
-  assert.equal(selected.viewer.email, JORDAN_KEY);
-  assert.equal(selected.viewer.profileKey, JORDAN_KEY);
-  assert.equal(selected.viewer.displayName, 'Jordan Lee');
-  assert.equal(selected.viewer.authMode, 'members_selector');
-  assert.equal(inactive.viewer.profileKey, '');
-  assert.equal(inactive.viewer.displayName, '');
-  assert.throws(
-    () => sandbox.claimTask('T-001', 'former.member@sks.org'),
-    /active|member|profile/i
-  );
+  assert.equal(selected.viewer.profileKey, 'Steven Chen');
+  assert.equal(selected.viewer.displayName, 'Steven Chen');
+  assert.equal(selected.viewer.authMode, 'google');
 });
 
-test('preserves the Settings-backed fallback when Members does not exist yet', () => {
+test('never treats Settings-backed fallback profiles as write authorization', () => {
   reset({ includeMembers: false });
   const data = sandbox.getDashboardData('Steven Chen');
 
-  assert.equal(data.viewer.profileKey, 'Steven Chen');
-  assert.equal(data.viewer.displayName, 'Steven Chen');
-  assert.equal(data.members.some((member) => member.displayName === 'Steven Chen'), true);
-
-  sandbox.claimTask('T-001', 'Steven Chen');
-  assert.equal(taskRow('T-001').Status, 'Doing');
-  assert.equal(taskRow('T-001')['Claimed By'], 'Steven Chen');
+  assert.equal(data.accessDenied, true);
+  assert.equal(data.accessReason, 'members_not_ready');
+  assert.deepEqual(Array.from(data.members), []);
+  assert.deepEqual(Array.from(data.tasks), []);
+  assert.throws(() => sandbox.claimTask('T-001', 'Steven Chen'), /access denied/i);
+  assert.equal(taskRow('T-001').Status, 'Open');
 });
 
 test('creates a missing Members sheet safely and leaves production task rows untouched', () => {
   reset({ includeMembers: false });
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
   const tasksBefore = JSON.stringify(spreadsheet.getSheetByName('Tasks').rows);
   const result = sandbox.setupMembersSheet();
   const members = spreadsheet.getSheetByName('Members');
@@ -811,12 +873,447 @@ test('creates a missing Members sheet safely and leaves production task rows unt
   assert.deepEqual(members.rows[0], MEMBER_HEADERS);
 });
 
-test('accepts migrated owners stored as either email or display name', () => {
+test('returns a sanitized access-denied dashboard for blank, unknown, inactive, and duplicate identities', () => {
+  const cases = [
+    ['', 'identity_unavailable'],
+    ['unknown.student@gmail.com', 'unknown_member'],
+    ['former.member@sks.org', 'inactive_member'],
+    [STEVEN_KEY, 'duplicate_member']
+  ];
+
+  cases.forEach(([email, reason]) => {
+    reset();
+    sessionEmail = email;
+    if (reason === 'duplicate_member') {
+      spreadsheet.getSheetByName('Members').rows.push([STEVEN_KEY.toUpperCase(), 'Duplicate Steven', true]);
+    }
+    const data = sandbox.getDashboardData(JORDAN_KEY);
+    assert.equal(data.accessDenied, true);
+    assert.equal(data.accessReason, reason);
+    assert.equal(data.viewer.accessDenied, true);
+    ['members', 'tasks', 'projects', 'metrics', 'updates'].forEach((field) => {
+      assert.deepEqual(Array.from(data[field]), [], `${reason} clears ${field}`);
+    });
+    assert.equal(data.summary.openTasks, 0);
+    assert.equal(data.summary.activeProjects, 0);
+    assert.doesNotMatch(JSON.stringify(data), /@sks\.org|@gmail\.com/i);
+  });
+});
+
+test('rejects every operational mutation when Session identity is unavailable', () => {
+  const mutations = [
+    ['claimTask', () => sandbox.claimTask('T-001', STEVEN_KEY)],
+    ['addTaskUpdate', () => sandbox.addTaskUpdate('T-003', STEVEN_KEY, 'Update')],
+    ['blockTask', () => sandbox.blockTask('T-003', STEVEN_KEY, 'Blocked')],
+    ['resumeTask', () => sandbox.resumeTask('T-003', STEVEN_KEY)],
+    ['completeTask', () => sandbox.completeTask('T-003', STEVEN_KEY)],
+    ['releaseTask', () => sandbox.releaseTask('T-005', STEVEN_KEY)],
+    ['updateTask', () => sandbox.updateTask('T-005', STEVEN_KEY, 'Done', '', '')],
+    ['createProjectIdea', () => sandbox.createProjectIdea(STEVEN_KEY, {
+      projectName: 'Denied idea', problemOpportunity: 'Must not be written'
+    })],
+    ['startProjectValidation', () => sandbox.startProjectValidation('P-001', STEVEN_KEY)],
+    ['saveProjectValidation', () => sandbox.saveProjectValidation('P-001', STEVEN_KEY, {})],
+    ['recordSchoolReview', () => sandbox.recordSchoolReview('P-002', STEVEN_KEY, {})],
+    ['setProjectLead', () => sandbox.setProjectLead('P-001', STEVEN_KEY, JORDAN_KEY)],
+    ['addProjectTask', () => sandbox.addProjectTask('P-001', STEVEN_KEY, {})],
+    ['addProjectUpdate', () => sandbox.addProjectUpdate('P-001', STEVEN_KEY, 'Update', '')],
+    ['editProjectNextAction', () => sandbox.editProjectNextAction('P-001', STEVEN_KEY, 'Next')],
+    ['completeProject', () => sandbox.completeProject('P-001', STEVEN_KEY, {})],
+    ['pauseProject', () => sandbox.pauseProject('P-001', STEVEN_KEY, 'Reason', '')],
+    ['resumeProject', () => sandbox.resumeProject('P-003', STEVEN_KEY, 'Active', 'Next')],
+    ['saveMyDisplayName', () => sandbox.saveMyDisplayName('Spoofed Name')]
+  ];
+
+  mutations.forEach(([name, invoke]) => {
+    reset();
+    sessionEmail = '';
+    const before = workbookSnapshot();
+    assert.throws(invoke, /access denied/i, name);
+    assert.equal(workbookSnapshot(), before, `${name} leaves every Sheet row unchanged`);
+  });
+});
+
+test('ignores spoofed profile arguments and records the authenticated active member', () => {
+  reset();
+  sessionEmail = STEVEN_KEY;
+  const data = sandbox.claimTask('T-001', JORDAN_KEY);
+
+  assert.equal(taskRow('T-001')['Claimed By'], STEVEN_KEY);
+  assert.equal(newestUpdate().Member, 'Steven Chen');
+  assert.equal(data.viewer.displayName, 'Steven Chen');
+  assert.equal(taskFrom(data, 'T-001').isMine, true);
+});
+
+test('saveMyDisplayName never creates, activates, or edits an unauthorized member', () => {
+  reset();
+  const members = spreadsheet.getSheetByName('Members');
+  const rowCount = members.getLastRow();
+
+  sessionEmail = 'unknown.student@gmail.com';
+  assert.throws(() => sandbox.saveMyDisplayName('Unknown Student'), /access denied/i);
+  assert.equal(members.getLastRow(), rowCount);
+
+  sessionEmail = 'former.member@sks.org';
+  const inactiveBefore = JSON.stringify(members.rows);
+  assert.throws(() => sandbox.saveMyDisplayName('Reactivated Name'), /inactive/i);
+  assert.equal(JSON.stringify(members.rows), inactiveBefore);
+
+  members.rows.push([STEVEN_KEY.toUpperCase(), 'Duplicate Steven', true]);
+  sessionEmail = STEVEN_KEY;
+  const duplicateBefore = JSON.stringify(members.rows);
+  assert.throws(() => sandbox.saveMyDisplayName('Ambiguous Steven'), /more than once|duplicate/i);
+  assert.equal(JSON.stringify(members.rows), duplicateBefore);
+
+  reset();
+  sessionEmail = JORDAN_KEY;
+  const collisionBefore = workbookSnapshot();
+  assert.throws(
+    () => sandbox.saveMyDisplayName(STEVEN_KEY),
+    /unique|member email|does not match/i
+  );
+  assert.equal(workbookSnapshot(), collisionBefore, 'a display name cannot impersonate another stable email');
+
+  setTaskField('T-005', 'Claimed By', 'Departed Captain');
+  sandbox.saveMyDisplayName('Departed Captain');
+  const takeoverBefore = workbookSnapshot();
+  assert.throws(
+    () => sandbox.addTaskUpdate('T-005', JORDAN_KEY, 'Attempted legacy-name takeover'),
+    /only|owner|claimed/i
+  );
+  assert.equal(workbookSnapshot(), takeoverBefore, 'an orphaned mutable display name is never task authority');
+});
+
+test('gates schema inspection and setup operations to administrators before any write', () => {
+  reset({ projectWorkflowReady: false });
+  const beforeProjectSetup = workbookSnapshot();
+  assert.throws(() => sandbox.inspectStartSchema(), /administrator/i);
+  assert.throws(() => sandbox.setupProjectWorkflow(), /administrator/i);
+  assert.equal(workbookSnapshot(), beforeProjectSetup);
+
+  reset({ includeMembers: false });
+  const beforeMemberSetup = workbookSnapshot();
+  assert.throws(() => sandbox.setupMembersSheet(), /administrator/i);
+  assert.equal(workbookSnapshot(), beforeMemberSetup);
+});
+
+test('allows the authenticated deployment owner to inspect, set up, and manage Members', () => {
+  reset({ includeMembers: false });
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+
+  const deniedDashboard = sandbox.getDashboardData(STEVEN_KEY);
+  assert.equal(deniedDashboard.accessDenied, true);
+  assert.equal(deniedDashboard.viewer.canAdmin, true);
+  assert.deepEqual(Array.from(deniedDashboard.tasks), []);
+  assert.deepEqual(Array.from(deniedDashboard.members), []);
+
+  const schemaBefore = sandbox.inspectStartSchema();
+  assert.equal(schemaBefore.ready, false);
+  sandbox.setupMembersSheet();
+  const members = spreadsheet.getSheetByName('Members');
+  assert.deepEqual(members.rows[0], MEMBER_HEADERS);
+
+  let adminData = sandbox.saveMemberProfile({
+    email: ' New.Student@Gmail.com ',
+    displayName: '=New Student',
+    active: false
+  });
+  assert.equal(adminData.authorization.canAdmin, true);
+  assert.equal(adminData.authorization.isDeploymentOwner, true);
+  assert.equal(adminData.runtime.webVersion, '0.4.0');
+  assert.equal(adminData.runtime.webBuild, '20260826a');
+  assert.equal(adminData.runtime.sourceOfTruth, 'Google Sheets');
+  assert.equal(adminData.configuration.membersReady, true);
+  assert.equal(adminData.integrity.schemaVersion, 'start-integrity-report/v1');
+  assert.ok(adminData.integrity.summary.totalIssues >= 0);
+  assert.equal(adminData.integrity.issues.length <= 200, true);
+  assert.equal(adminData.members.length, 1);
+  assert.equal(adminData.members[0].email, 'new.student@gmail.com');
+  assert.equal(adminData.members[0].displayName, "'=New Student");
+  assert.equal(adminData.members[0].active, false);
+
+  adminData = sandbox.saveMemberProfile({
+    email: 'new.student@gmail.com',
+    displayName: 'New Student',
+    active: false
+  });
+  assert.equal(adminData.members.length, 1, 'updates the existing row instead of adding another');
+  adminData = sandbox.setMemberActive('new.student@gmail.com', true);
+  assert.equal(adminData.members[0].active, true);
+  adminData = sandbox.setMemberActive('new.student@gmail.com', false);
+  assert.equal(adminData.members[0].active, false);
+  assert.equal(members.getLastRow(), 2, 'member administration never deletes rows');
+});
+
+test('allows only configured active unique Members to use coordinator operations', () => {
+  reset();
+  scriptProperties.START_COORDINATOR_EMAILS = '  STEVEN.CHEN@SKS.ORG | another.person@gmail.com  ';
+  let adminData = sandbox.getAdminData();
+  assert.equal(adminData.authorization.canAdmin, true);
+  assert.equal(adminData.authorization.isDeploymentOwner, false);
+  assert.ok(adminData.members.some((member) => member.email === STEVEN_KEY));
+
+  sessionEmail = 'former.member@sks.org';
+  scriptProperties.START_COORDINATOR_EMAILS = 'former.member@sks.org';
+  assert.throws(() => sandbox.getAdminData(), /administrator/i);
+
+  sessionEmail = 'unknown.student@gmail.com';
+  scriptProperties.START_COORDINATOR_EMAILS = 'unknown.student@gmail.com';
+  assert.throws(() => sandbox.getAdminData(), /administrator/i);
+
+  sessionEmail = STEVEN_KEY;
+  scriptProperties.START_COORDINATOR_EMAILS = STEVEN_KEY;
+  spreadsheet.getSheetByName('Members').rows.push([STEVEN_KEY.toUpperCase(), 'Duplicate Steven', true]);
+  assert.throws(() => sandbox.getAdminData(), /more than once|duplicate/i);
+});
+
+test('requires a nonblank exact active/effective email match for owner administration', () => {
+  reset({ includeMembers: false });
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = 'different.owner@sks.org';
+  assert.throws(() => sandbox.getAdminData(), /administrator/i);
+
+  effectiveEmail = OWNER_KEY;
+  const beforeInvalid = workbookSnapshot();
+  assert.throws(() => sandbox.saveMemberProfile({
+    email: 'not-an-email', displayName: 'Invalid', active: 'maybe'
+  }), /email|true or false/i);
+  assert.equal(workbookSnapshot(), beforeInvalid, 'invalid admin input cannot create or change Members');
+});
+
+test('rejects ordinary member administration and duplicate target emails without writes', () => {
+  reset();
+  const ordinaryBefore = workbookSnapshot();
+  assert.throws(() => sandbox.getAdminData(), /administrator/i);
+  assert.throws(() => sandbox.saveMemberProfile({
+    email: 'new.student@gmail.com', displayName: 'New Student', active: true
+  }), /administrator/i);
+  assert.throws(() => sandbox.setMemberActive(JORDAN_KEY, false), /administrator/i);
+  assert.equal(workbookSnapshot(), ordinaryBefore);
+
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  spreadsheet.getSheetByName('Members').rows.push([JORDAN_KEY.toUpperCase(), 'Duplicate Jordan', true]);
+  const duplicateBefore = workbookSnapshot();
+  assert.throws(() => sandbox.saveMemberProfile({
+    email: JORDAN_KEY, displayName: 'Jordan Updated', active: true
+  }), /more than once|duplicate/i);
+  assert.throws(() => sandbox.setMemberActive(JORDAN_KEY, false), /more than once|duplicate/i);
+  assert.equal(workbookSnapshot(), duplicateBefore);
+
+  reset();
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  const members = spreadsheet.getSheetByName('Members');
+  members.rows.push(['legacy.holder@sks.org', 'new.student@sks.org', false]);
+  const namespaceBefore = workbookSnapshot();
+  assert.throws(() => sandbox.saveMemberProfile({
+    email: 'new.student@sks.org', displayName: 'New Student', active: false
+  }), /cannot match|unique|collision/i);
+  assert.equal(workbookSnapshot(), namespaceBefore, 'new email cannot collide with a legacy display name');
+
+  members.rows.push(['collision.student@sks.org', STEVEN_KEY, false]);
+  const activationBefore = workbookSnapshot();
+  assert.throws(
+    () => sandbox.setMemberActive('collision.student@sks.org', true),
+    /collision|display-name/i
+  );
+  assert.equal(workbookSnapshot(), activationBefore, 'a colliding member cannot be activated');
+});
+
+test('lets an administrator release a stranded task by exact ID and preserves the reason and old blocker in Updates', () => {
+  reset();
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  setTaskField('T-003', 'Claimed By', 'former.member@sks.org');
+  setTaskField('T-003', 'Blocker', '=PRIVATE_BLOCKER()');
+  const before = sandbox.getAdminData();
+  const candidate = before.taskRecovery.tasks.find((task) => task.taskId === 'T-003');
+
+  assert.ok(candidate, 'Operations lists the exact-ID stranded task');
+  assert.equal(candidate.status, 'Blocked');
+  assert.equal(candidate.ownerDisplayName, 'Former Member');
+  assert.equal(candidate.ownerResolution, 'Owner is inactive, legacy name-based, or is not an active Members email');
+
+  const updatesBefore = spreadsheet.getSheetByName('Updates').getLastRow();
+  const refreshed = sandbox.releaseStrandedTask('T-003', '=Owner left before handoff');
+  const recovered = taskRow('T-003');
+  const history = newestUpdate();
+
+  assert.equal(recovered.Status, 'Open');
+  assert.equal(recovered['Claimed By'], '');
+  assert.equal(recovered.Blocker, '');
+  assert.ok(recovered['Last Update'] instanceof Date);
+  assert.equal(spreadsheet.getSheetByName('Updates').getLastRow(), updatesBefore + 1);
+  assert.equal(history.Member, 'Deployment owner');
+  assert.equal(history['Task / Project'], 'T-003: Confirm facilities meeting');
+  assert.equal(history.Update, 'Coordinator released a stranded blocked task. Reason: =Owner left before handoff');
+  assert.equal(history.Blocker, "'=PRIVATE_BLOCKER()", 'the old blocker is retained and formula-neutralized');
+  assert.equal(history['Next Step'], 'Available to claim');
+  assert.ok(!refreshed.taskRecovery.tasks.some((task) => task.taskId === 'T-003'), 'refreshed admin data removes the recovered task');
+  assert.equal(lockHeld, false, 'the script lock is released');
+});
+
+test('permits stranded-task recovery for an ambiguous active owner and lists only actionable unique IDs', () => {
+  reset();
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  spreadsheet.getSheetByName('Members').rows.push(
+    ['first.alias@sks.org', 'Shared Alias', true],
+    ['second.alias@sks.org', 'Shared Alias', true]
+  );
+  setTaskField('T-004', 'Claimed By', 'Shared Alias');
+  setTaskField('T-003', 'Claimed By', 'former.member@sks.org');
+  const tasks = spreadsheet.getSheetByName('Tasks');
+  const duplicate = tasks.rows.find((row) => row[0] === 'T-003').slice();
+  tasks.rows.push(duplicate);
+  setTaskField('T-005', 'Task ID', '');
+  setTaskField('', 'Claimed By', 'missing.owner@sks.org');
+
+  const adminData = sandbox.getAdminData();
+  assert.ok(adminData.taskRecovery.tasks.some((task) => task.taskId === 'T-004'));
+  assert.ok(!adminData.taskRecovery.tasks.some((task) => task.taskId === 'T-003'), 'duplicate IDs are not presented as actionable');
+  assert.equal(adminData.taskRecovery.unavailableCount, 3, 'both duplicate rows and the missing-ID row require manual ID repair');
+
+  sandbox.releaseStrandedTask('T-004', 'Two active profiles use the recorded owner name');
+  assert.equal(taskRow('T-004').Status, 'Open');
+  assert.match(newestUpdate().Update, /Two active profiles use the recorded owner name/);
+});
+
+test('stranded-task recovery rejects active owners, invalid states, inexact or ambiguous IDs, invalid reasons, and non-admin callers without writes', () => {
+  const cases = [
+    {
+      name: 'active unique owner',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('T-003', 'Admin reason'),
+      error: /one active member/i
+    },
+    {
+      name: 'Open task',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('T-001', 'Admin reason'),
+      error: /Doing or Blocked|Open/i
+    },
+    {
+      name: 'Done task',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('T-006', 'Admin reason'),
+      error: /Doing or Blocked|Done/i
+    },
+    {
+      name: 'unknown exact ID',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('T-999', 'Admin reason'),
+      error: /not found|exact Task ID/i
+    },
+    {
+      name: 'case-inexact ID',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('t-003', 'Admin reason'),
+      error: /not found|exact Task ID/i
+    },
+    {
+      name: 'fallback row key',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('row:4:abc123', 'Admin reason'),
+      error: /not found|exact Task ID/i
+    },
+    {
+      name: 'missing ID input',
+      prepare() {},
+      invoke: () => sandbox.releaseStrandedTask('', 'Admin reason'),
+      error: /Task ID is required/i
+    },
+    {
+      name: 'missing reason',
+      prepare() { setTaskField('T-003', 'Claimed By', 'former.member@sks.org'); },
+      invoke: () => sandbox.releaseStrandedTask('T-003', ''),
+      error: /Recovery reason is required/i
+    },
+    {
+      name: 'multiline reason',
+      prepare() { setTaskField('T-003', 'Claimed By', 'former.member@sks.org'); },
+      invoke: () => sandbox.releaseStrandedTask('T-003', 'First line\nSecond line'),
+      error: /single line/i
+    },
+    {
+      name: 'overlong reason',
+      prepare() { setTaskField('T-003', 'Claimed By', 'former.member@sks.org'); },
+      invoke: () => sandbox.releaseStrandedTask('T-003', 'x'.repeat(301)),
+      error: /300 characters or fewer/i
+    },
+    {
+      name: 'duplicate exact ID',
+      prepare() {
+        setTaskField('T-003', 'Claimed By', 'former.member@sks.org');
+        spreadsheet.getSheetByName('Tasks').rows.push(
+          spreadsheet.getSheetByName('Tasks').rows.find((row) => row[0] === 'T-003').slice()
+        );
+      },
+      invoke: () => sandbox.releaseStrandedTask('T-003', 'Admin reason'),
+      error: /more than once|unique/i
+    }
+  ];
+
+  cases.forEach((scenario) => {
+    reset();
+    sessionEmail = OWNER_KEY;
+    effectiveEmail = OWNER_KEY;
+    scenario.prepare();
+    const before = workbookSnapshot();
+    assert.throws(scenario.invoke, scenario.error, scenario.name);
+    assert.equal(workbookSnapshot(), before, `${scenario.name} leaves every Sheet row unchanged`);
+    assert.equal(lockHeld, false, `${scenario.name} releases the lock`);
+  });
+
+  reset();
+  const ordinaryBefore = workbookSnapshot();
+  assert.throws(() => sandbox.releaseStrandedTask('T-003', 'Admin reason'), /administrator/i);
+  assert.equal(workbookSnapshot(), ordinaryBefore);
+
+  reset({ includeMembers: false });
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  const unreadyBefore = workbookSnapshot();
+  assert.throws(() => sandbox.releaseStrandedTask('T-003', 'Admin reason'), /Members sheet is ready/i);
+  assert.equal(workbookSnapshot(), unreadyBefore);
+
+  reset();
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  setTaskField('T-003', 'Claimed By', 'former.member@sks.org');
+  const lockedBefore = workbookSnapshot();
+  lockHeld = true;
+  assert.throws(() => sandbox.releaseStrandedTask('T-003', 'Admin reason'), /saving a change/i);
+  assert.equal(workbookSnapshot(), lockedBefore);
+  lockHeld = false;
+});
+
+test('requires stable task-owner identities and recovers legacy display-name ownership without takeover', () => {
   reset();
   sandbox.addTaskUpdate('T-003', STEVEN_KEY, 'Updated email-owned task');
-  sandbox.addTaskUpdate('T-005', STEVEN_KEY, 'Updated name-owned task');
+  setTaskField('T-005', 'Claimed By', 'Steven Chen');
+  const studentView = sandbox.getDashboardData(STEVEN_KEY);
 
   assert.equal(taskRow('T-003')['Claimed By'], STEVEN_KEY);
+  assert.equal(taskFrom(studentView, 'T-005').claimedByDisplay, 'Steven Chen');
+  assert.equal(taskFrom(studentView, 'T-005').isMine, false);
+  assert.throws(
+    () => sandbox.addTaskUpdate('T-005', STEVEN_KEY, 'Must not inherit mutable name ownership'),
+    /only|owner|claimed/i
+  );
+
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
+  const recovery = sandbox.getAdminData().taskRecovery.tasks.find((task) => task.taskId === 'T-005');
+  assert.ok(recovery, 'legacy display-name owner is routed to administrator recovery');
+  sandbox.releaseStrandedTask('T-005', 'Migrate legacy display-name ownership');
+
+  sessionEmail = STEVEN_KEY;
+  effectiveEmail = OWNER_KEY;
+  sandbox.claimTask('T-005', STEVEN_KEY);
+  sandbox.addTaskUpdate('T-005', STEVEN_KEY, 'Reclaimed with stable identity');
   assert.equal(taskRow('T-005')['Claimed By'], STEVEN_KEY);
   assert.equal(newestUpdate().Member, 'Steven Chen');
 });
@@ -858,6 +1355,7 @@ test('keeps the legacy updateTask entry point but writes only canonical statuses
 test('prevents a second member from taking or editing another member\'s task', () => {
   reset();
   sandbox.claimTask('T-001', STEVEN_KEY);
+  sessionEmail = JORDAN_KEY;
 
   assert.throws(
     () => sandbox.claimTask('T-001', JORDAN_KEY),
@@ -1137,8 +1635,52 @@ test('pauses an Active project with a reason and a reconsideration step', () => 
   assert.equal(row.Stage, 'Paused');
   assert.equal(row['Decision Notes'], 'Dining hall renovation makes the audit unreliable.');
   assert.equal(row['Next Action'], 'Reconsider after the dining hall reopens in October.');
-  assert.equal(row.Recommendation, 'Paused');
+  assert.equal(row.Recommendation, 'Do Now');
   assert.equal(projectFrom(result, 'P-001').stage, 'Paused');
+});
+
+test('resumes a Paused project to a human-selected working stage with a next action', () => {
+  reset();
+  sandbox.pauseProject(
+    'P-001',
+    STEVEN_KEY,
+    'Dining hall renovation makes the audit unreliable.',
+    'Reconsider after the dining hall reopens.'
+  );
+  const result = sandbox.resumeProject(
+    'P-001',
+    STEVEN_KEY,
+    'Validation',
+    'Repeat the baseline after reopening.'
+  );
+  const row = projectRow('P-001');
+
+  assert.equal(row.Stage, 'Validation');
+  assert.equal(row['Next Action'], 'Repeat the baseline after reopening.');
+  assert.equal(row['Decision Notes'], '');
+  assert.equal(row.Recommendation, 'Do Now');
+  assert.equal(projectFrom(result, 'P-001').stage, 'Validation');
+  assert.equal(result.mutation.action, 'resume_project');
+  assert.match(newestUpdate().Update, /resumed project in validation/i);
+  assert.equal(newestUpdate()['Next Step'], 'Repeat the baseline after reopening.');
+});
+
+test('rejects unsafe Paused-project resume targets and missing next actions without writes', () => {
+  reset();
+  sandbox.pauseProject('P-001', STEVEN_KEY, 'Wait for facilities.', 'Revisit next month.');
+  const projectBefore = JSON.stringify(projectRow('P-001'));
+  const updatesBefore = spreadsheet.getSheetByName('Updates').getLastRow();
+
+  assert.throws(
+    () => sandbox.resumeProject('P-001', STEVEN_KEY, 'Completed', 'Skip the workflow.'),
+    /Resume stage|choice|Idea|Validation|School Review|Active/i
+  );
+  assert.throws(
+    () => sandbox.resumeProject('P-001', STEVEN_KEY, 'Active', ' '),
+    /Next action|required/i
+  );
+  assert.equal(JSON.stringify(projectRow('P-001')), projectBefore);
+  assert.equal(spreadsheet.getSheetByName('Updates').getLastRow(), updatesBefore);
 });
 
 test('completes an Active project with observed results and keeps tasks and history', () => {
@@ -1236,6 +1778,23 @@ test('leaves Related Metric blank when an Active project links multiple metrics'
   assert.equal(taskRow(result.mutation.taskKey)['Related Metric'], '');
 });
 
+test('rejects invalid task due dates before creating a project task', () => {
+  reset();
+  const tasksBefore = spreadsheet.getSheetByName('Tasks').getLastRow();
+  const updatesBefore = spreadsheet.getSheetByName('Updates').getLastRow();
+
+  ['09/20/2026', '2026-02-30'].forEach((dueDate) => {
+    assert.throws(() => sandbox.addProjectTask('P-001', STEVEN_KEY, {
+      task: 'Invalid dated task',
+      interestTag: 'Data',
+      estimatedTime: '20 min',
+      dueDate
+    }), /Due date.*YYYY-MM-DD|real calendar date/i);
+  });
+  assert.equal(spreadsheet.getSheetByName('Tasks').getLastRow(), tasksBefore);
+  assert.equal(spreadsheet.getSheetByName('Updates').getLastRow(), updatesBefore);
+});
+
 test('posts project updates to the shared Updates sheet and edits Next Action', () => {
   reset();
   const result = sandbox.addProjectUpdate(
@@ -1274,15 +1833,25 @@ test('resolves related tasks and project Updates stored by ID, name, or canonica
     '2026-08-19 10:00', STEVEN_KEY, 'P-001: Waste Reduction',
     'Canonical project update', '', '', ''
   ]);
+  spreadsheet.getSheetByName('Tasks').appendRow([
+    'T-008', 'Renamed-project task', 'P-001: Former project title', '', 'Data',
+    '15 min', '', 'Open', '', '', '', ''
+  ]);
+  spreadsheet.getSheetByName('Updates').appendRow([
+    '2026-08-19 11:00', STEVEN_KEY, 'P-001: Former project title',
+    'Stable-ID update after project rename', '', '', ''
+  ]);
   const project = projectFrom(sandbox.getDashboardData(STEVEN_KEY), 'P-001');
   const taskIds = Array.from(project.relatedTasks, (task) => task.taskId);
   const updateTexts = Array.from(project.recentUpdates, (update) => update.update);
 
   assert.ok(taskIds.includes('T-001'));
   assert.ok(taskIds.includes('T-007'));
+  assert.ok(taskIds.includes('T-008'));
   assert.ok(updateTexts.includes('Legacy name-only project update'));
   assert.ok(updateTexts.includes('ID-only project update'));
   assert.ok(updateTexts.includes('Canonical project update'));
+  assert.ok(updateTexts.includes('Stable-ID update after project rename'));
 
   spreadsheet.getSheetByName('Projects').appendRow([
     'P-004', 'Waste Reduction', 'A separate project with the same display name', '', '', 'Idea'
@@ -1295,9 +1864,11 @@ test('resolves related tasks and project Updates stored by ID, name, or canonica
   const duplicateUpdateTexts = Array.from(duplicateProject.recentUpdates, (update) => update.update);
 
   assert.ok(originalTaskIds.includes('T-007'));
+  assert.ok(originalTaskIds.includes('T-008'));
   assert.equal(originalTaskIds.includes('T-001'), false);
   assert.ok(originalUpdateTexts.includes('ID-only project update'));
   assert.ok(originalUpdateTexts.includes('Canonical project update'));
+  assert.ok(originalUpdateTexts.includes('Stable-ID update after project rename'));
   assert.equal(originalUpdateTexts.includes('Legacy name-only project update'), false);
   assert.equal(duplicateUpdateTexts.includes('Legacy name-only project update'), false);
 });
@@ -1346,6 +1917,7 @@ test('rejects project mutations from inactive or unknown identities', () => {
   reset();
   const rowsBefore = spreadsheet.getSheetByName('Projects').getLastRow();
 
+  sessionEmail = 'former.member@sks.org';
   assert.throws(
     () => sandbox.createProjectIdea('former.member@sks.org', {
       projectName: 'Unauthorized Idea',
@@ -1353,6 +1925,7 @@ test('rejects project mutations from inactive or unknown identities', () => {
     }),
     /active|member|profile/i
   );
+  sessionEmail = 'unknown.student@sks.org';
   assert.throws(
     () => sandbox.pauseProject(
       'P-001',
@@ -1417,7 +1990,7 @@ test('keeps Project Lead optional and lets an active member set it explicitly', 
   const result = sandbox.setProjectLead(projectKey, STEVEN_KEY, JORDAN_KEY);
   assert.equal(projectRow(projectKey)['Project Lead'], JORDAN_KEY);
   assert.equal(projectFrom(result, projectKey).projectLead, 'Jordan Lee');
-  assert.equal(projectFrom(result, projectKey).projectLeadProfileKey, JORDAN_KEY);
+  assert.equal(projectFrom(result, projectKey).projectLeadProfileKey, 'Jordan Lee');
 });
 
 test('edits an Active project Next Action without changing its stage', () => {
@@ -1439,6 +2012,8 @@ test('edits an Active project Next Action without changing its stage', () => {
 
 test('setupProjectWorkflow is idempotent and never overwrites existing project rows', () => {
   reset({ projectWorkflowReady: false });
+  sessionEmail = OWNER_KEY;
+  effectiveEmail = OWNER_KEY;
   const projects = spreadsheet.getSheetByName('Projects');
   const baseRowsBefore = projects.rows.slice(1).map((row) => row.slice(0, BASE_PROJECT_HEADERS.length));
   const tasksBefore = JSON.stringify(spreadsheet.getSheetByName('Tasks').rows);

@@ -81,7 +81,8 @@ function inspectSchemaSheet_(spreadsheet, definition, issues) {
     name: definition.sheetName,
     present: !!sheet,
     ready: true,
-    missingHeaders: []
+    missingHeaders: [],
+    ambiguousHeaders: []
   };
 
   if (!sheet) {
@@ -107,19 +108,32 @@ function inspectSchemaSheet_(spreadsheet, definition, issues) {
     return state;
   }
 
-  var table = schemaHeaderTable_(headers);
   definition.requiredFields.forEach(function (fieldName) {
-    if (columnIndex_(table, definition.fields[fieldName]) >= 0) return;
+    var supported = definition.fields[fieldName].map(normalizeHeader_);
+    var matches = headers.filter(function (header) {
+      return supported.indexOf(normalizeHeader_(header)) >= 0;
+    });
+    if (matches.length === 1) return;
     var canonical = definition.fields[fieldName][0];
-    state.missingHeaders.push(canonical);
-    issues.push(schemaIssue_(
-      'MISSING_HEADER',
-      definition.sheetName,
-      canonical,
-      'Sheet "' + definition.sheetName + '" is missing the supported "' + canonical + '" header.'
-    ));
+    if (!matches.length) {
+      state.missingHeaders.push(canonical);
+      issues.push(schemaIssue_(
+        'MISSING_HEADER',
+        definition.sheetName,
+        canonical,
+        'Sheet "' + definition.sheetName + '" is missing the supported "' + canonical + '" header.'
+      ));
+    } else {
+      state.ambiguousHeaders.push(canonical);
+      issues.push(schemaIssue_(
+        'AMBIGUOUS_HEADER',
+        definition.sheetName,
+        canonical,
+        'Sheet "' + definition.sheetName + '" has more than one supported header for "' + canonical + '". Keep one supported column.'
+      ));
+    }
   });
-  state.ready = state.missingHeaders.length === 0;
+  state.ready = state.missingHeaders.length === 0 && state.ambiguousHeaders.length === 0;
   return state;
 }
 
@@ -203,8 +217,8 @@ function schemaSetupRecommendations_(statesByName, projectOptions) {
   var missingWorkflowHeader = projects && PROJECT_WORKFLOW_HEADERS.some(function (workflowHeader) {
     return projects.missingHeaders.indexOf(workflowHeader.canonical) >= 0;
   });
-  var projectSetupSafe = projects && projects.present &&
-    settings && settings.present && !settings.missingHeaders.length &&
+  var projectSetupSafe = projects && projects.present && !projects.ambiguousHeaders.length &&
+    settings && settings.present && !settings.missingHeaders.length && !settings.ambiguousHeaders.length &&
     projectOptions.inspectable && projectOptions.matchCount <= 1;
   if (projectSetupSafe && (missingWorkflowHeader || !projectOptions.current)) {
     recommendations.push('setupProjectWorkflow');

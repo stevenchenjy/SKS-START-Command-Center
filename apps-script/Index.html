@@ -53,7 +53,7 @@
     }
 
     button, input, select, textarea { font: inherit; }
-    button, select { min-height: 44px; }
+    button, select, input:not([type="checkbox"]):not([type="radio"]) { min-height: 44px; }
     button { color: inherit; }
     a { color: var(--navy-700); }
     a:hover { color: var(--forest-700); }
@@ -239,7 +239,7 @@
 
     .identity-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
     .identity-switch {
-      min-height: 34px;
+      min-height: 44px;
       padding: 5px 8px;
       border: 0;
       border-radius: 8px;
@@ -250,12 +250,10 @@
       font-weight: 750;
     }
     .identity-switch:hover { background: rgba(255,255,255,0.17); }
-    .profile-picker { margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(255,255,255,0.12); }
-    .profile-picker[hidden] { display: none; }
     .display-name-form { margin-top: 10px; }
     .display-name-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
     .identity-save {
-      min-height: 40px;
+      min-height: 44px;
       border: 0;
       border-radius: 9px;
       background: var(--forest-700);
@@ -270,7 +268,7 @@
     .identity-card select,
     .identity-card input {
       width: 100%;
-      min-height: 40px;
+      min-height: 44px;
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 9px;
       background: rgba(7,25,39,0.62);
@@ -415,7 +413,7 @@
     .panel-title { margin: 0; color: var(--navy-900); font-size: 17px; letter-spacing: -0.02em; }
     .panel-subtitle { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
     .text-button {
-      min-height: 36px;
+      min-height: 44px;
       padding: 6px 9px;
       border: 0;
       border-radius: 8px;
@@ -434,7 +432,7 @@
     .queue-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
     .queue-title { margin: 0; color: var(--ink); font-size: 14px; font-weight: 740; }
     .queue-meta { display: flex; flex-wrap: wrap; gap: 6px 13px; margin-top: 6px; color: var(--muted); font-size: 12px; }
-    .queue-action { flex: 0 0 auto; min-height: 36px; padding: 6px 10px; }
+    .queue-action { flex: 0 0 auto; min-height: 44px; padding: 6px 10px; }
 
     .update-who { color: var(--forest-700); font-size: 12px; font-weight: 760; }
     .update-time { float: right; color: var(--muted); font-size: 11px; }
@@ -477,7 +475,7 @@
     }
 
     .segment-button {
-      min-height: 38px;
+      min-height: 44px;
       min-width: 78px;
       padding: 7px 13px;
       border: 0;
@@ -548,6 +546,13 @@
     .task-notes { display: grid; gap: 7px; margin-top: 14px; }
     .task-note { padding: 9px 11px; border-radius: 9px; background: #f4f7f5; color: #41505a; font-size: 12px; overflow-wrap: anywhere; }
     .task-note.blocker { border-left: 3px solid var(--gold); background: #fff9eb; color: #6f4e18; }
+    .task-history { margin-top: 13px; border-top: 1px solid #edf0ed; }
+    .task-history summary { min-height: 44px; padding: 11px 1px; color: var(--forest-700); cursor: pointer; font-size: 11px; font-weight: 760; }
+    .task-history ul { list-style: none; margin: 0; padding: 0; }
+    .task-history li { padding: 10px 0; border-top: 1px solid #edf0ed; }
+    .task-history time { color: var(--muted); font-size: 10px; }
+    .task-history p { margin: 3px 0 0; color: var(--ink); font-size: 12px; overflow-wrap: anywhere; }
+    .task-history .blocker-note { margin-top: 5px; }
     .task-link { display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 720; }
 
     .task-actions { display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 154px; }
@@ -555,7 +560,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 42px;
+      min-height: 44px;
       padding: 8px 13px;
       border: 1px solid var(--line-strong);
       border-radius: 10px;
@@ -573,7 +578,7 @@
     .button-subtle { background: var(--cream-50); }
     .button-done { border-color: #aac8ba; color: var(--forest-800); }
     .button-warning { border-color: #dfc381; background: #fff9eb; color: #765016; }
-    .button-release { min-height: 34px; border-color: transparent; background: transparent; color: var(--muted); }
+    .button-release { min-height: 44px; border-color: transparent; background: transparent; color: var(--muted); }
     .button-release:hover { border-color: transparent; background: #f2f4f1; color: var(--navy-900); }
     .button[disabled] { opacity: 0.52; cursor: not-allowed; }
     .action-note { max-width: 170px; margin: 3px 0 0; color: var(--muted); font-size: 10px; text-align: center; }
@@ -859,6 +864,85 @@
     .project-update-list a { display: inline-block; margin-top: 6px; font-size: 10px; font-weight: 720; }
     .project-update-next { margin-top: 7px; padding: 7px 8px; border-radius: 7px; background: var(--forest-100); color: #31594b; font-size: 10px; }
 
+    .access-state {
+      display: grid;
+      place-items: center;
+      min-height: 360px;
+      padding: 44px 22px;
+      border: 1px solid #efdba9;
+      border-radius: var(--radius-lg);
+      background: #fffaf0;
+      text-align: center;
+    }
+    .access-state > div { max-width: 570px; }
+    .access-state h2 { margin: 0; color: var(--navy-900); font-size: 22px; }
+    .access-state p { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+    .access-state .access-help { margin-top: 18px; padding: 13px 15px; border-radius: 11px; background: white; color: #5f4a22; font-size: 12px; text-align: left; }
+
+    .attention-panel { border-color: #efdba9; }
+    .attention-list, .brief-list, .operations-list { list-style: none; margin: 0; padding: 0; }
+    .attention-item, .brief-list li, .operations-list li { padding: 14px 19px; border-bottom: 1px solid #edf0ed; }
+    .attention-item:last-child, .brief-list li:last-child, .operations-list li:last-child { border-bottom: 0; }
+    .attention-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .attention-item strong, .brief-list strong { display: block; color: var(--ink); font-size: 13px; }
+    .attention-item p, .brief-list p { margin: 3px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+
+    .briefing-shell, .operations-shell { display: grid; gap: 18px; }
+    .briefing-note {
+      margin: 0;
+      padding: 14px 16px;
+      border: 1px solid #cbd8d1;
+      border-radius: 13px;
+      background: #f6faf8;
+      color: #31594b;
+      font-size: 12px;
+    }
+    .briefing-grid, .operations-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+    .briefing-grid .panel-wide, .operations-grid .panel-wide { grid-column: 1 / -1; }
+    .comparison-scroll { overflow-x: auto; }
+    .comparison-table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 12px; }
+    .comparison-table caption { padding: 0 20px 13px; color: var(--muted); text-align: left; }
+    .comparison-table th, .comparison-table td { padding: 11px 13px; border-top: 1px solid #edf0ed; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+    .comparison-table thead th { color: var(--navy-900); background: #f7f8f5; font-weight: 780; }
+    .comparison-table tbody th { width: 170px; color: var(--muted); font-weight: 760; }
+    .comparison-missing { display: flex; flex-wrap: wrap; gap: 6px; }
+    .missing-chip { display: inline-block; padding: 3px 7px; border-radius: 99px; background: var(--gold-soft); color: #765016; font-size: 10px; font-weight: 730; }
+    .verification-note { display: inline-block; margin-top: 5px; color: #765016; font-size: 10px; font-weight: 760; }
+    .brief-section-empty { margin: 0; padding: 20px; color: var(--muted); font-size: 12px; }
+    .brief-item-meta { display: flex; flex-wrap: wrap; gap: 5px 10px; margin-top: 5px; color: var(--muted); font-size: 10px; }
+
+    .operations-toolbar { display: flex; flex-wrap: wrap; gap: 9px; padding: 16px 19px; }
+    .operations-member { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 13px; }
+    .operations-member strong, .operations-member span { display: block; overflow-wrap: anywhere; }
+    .operations-member span { margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .operations-form { display: grid; gap: 12px; padding: 18px 20px 20px; }
+    .operations-form > label { display: flex; align-items: center; gap: 9px; min-height: 44px; cursor: pointer; font-size: 12px; font-weight: 700; }
+    .operations-form > label input { width: 20px; height: 20px; }
+    .operations-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .operations-definition { display: grid; grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1fr); margin: 0; }
+    .operations-definition dt, .operations-definition dd { margin: 0; padding: 9px 19px; border-top: 1px solid #edf0ed; font-size: 11px; overflow-wrap: anywhere; }
+    .operations-definition dt { color: var(--muted); font-weight: 760; }
+    .operations-definition dd { color: var(--ink); }
+    .integrity-good { color: var(--forest-700); }
+    .integrity-warning { color: #765016; }
+
+    .operation-status {
+      position: fixed;
+      z-index: 90;
+      right: 24px;
+      bottom: 86px;
+      max-width: min(390px, calc(100vw - 32px));
+      padding: 11px 14px;
+      border: 1px solid #efdba9;
+      border-radius: 11px;
+      background: #fff9eb;
+      color: #674816;
+      box-shadow: var(--shadow-md);
+      font-size: 12px;
+      font-weight: 680;
+    }
+    .operation-status[hidden] { display: none; }
+
     .empty-state, .error-state {
       display: grid;
       place-items: center;
@@ -944,6 +1028,8 @@
       .project-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .project-detail-layout { grid-template-columns: 1fr; }
       .project-detail-side { grid-template-columns: 1fr; }
+      .briefing-grid, .operations-grid { grid-template-columns: 1fr; }
+      .briefing-grid .panel-wide, .operations-grid .panel-wide { grid-column: auto; }
     }
 
     @media (max-width: 820px) {
@@ -978,7 +1064,7 @@
         bottom: max(12px, env(safe-area-inset-bottom));
         left: 12px;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 4px;
         padding: 6px;
         border: 1px solid rgba(255,255,255,0.22);
@@ -987,9 +1073,12 @@
         box-shadow: 0 16px 40px rgba(10,29,48,0.28);
         backdrop-filter: blur(12px);
       }
-      .mobile-nav .nav-button { justify-content: center; min-height: 51px; padding: 7px 8px; gap: 6px; border-radius: 12px; font-size: 11px; text-align: center; }
+      .mobile-nav .nav-button { flex-direction: column; justify-content: center; min-height: 51px; padding: 6px 4px; gap: 2px; border-radius: 12px; font-size: 10px; text-align: center; }
       .mobile-nav .nav-icon { width: 19px; height: 19px; font-size: 16px; }
       .toast { right: 16px; bottom: calc(90px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
+      .operation-status { right: 16px; bottom: calc(150px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
+      .mobile-nav.has-admin { grid-template-columns: repeat(5, 1fr); }
+      .mobile-nav.admin-only { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 620px) {
@@ -1003,7 +1092,7 @@
       .stat-value { font-size: 31px; }
       .stat-note { font-size: 11px; }
       .toolbar { align-items: flex-start; flex-direction: column; }
-      .segmented { width: 100%; grid-template-columns: repeat(3, 1fr); grid-auto-flow: initial; }
+      .segmented { width: 100%; grid-template-columns: repeat(5, 1fr); grid-auto-flow: initial; }
       .segment-button { min-width: 0; padding-inline: 7px; }
       .task-card { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
       .task-card.is-mine { padding-left: 15px; }
@@ -1025,6 +1114,11 @@
       .workflow-outcomes { align-items: stretch; flex-direction: column; }
       .workflow-outcomes .button { width: 100%; }
       .related-task-list button { align-items: flex-start; }
+      .operations-form-grid { grid-template-columns: 1fr; }
+      .operations-member { align-items: stretch; grid-template-columns: 1fr; }
+      .operations-member .button { width: 100%; }
+      .operations-definition { grid-template-columns: 1fr; }
+      .operations-definition dd { padding-top: 2px; border-top: 0; }
     }
 
     @media (max-width: 390px) {
@@ -1059,9 +1153,11 @@
       </div>
 
       <nav class="desktop-nav" aria-label="Main navigation">
-        <button class="nav-button" type="button" data-view-target="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
-        <button class="nav-button" type="button" data-view-target="tasks"><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
-        <button class="nav-button" type="button" data-view-target="projects"><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
+        <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
+        <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
+        <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
+        <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span>Briefing</button>
+        <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span>Operations</button>
       </nav>
 
       <div class="identity-panel" id="identity-panel"></div>
@@ -1074,7 +1170,7 @@
           <p class="topbar-subtitle" id="topbar-subtitle">What needs attention across START right now</p>
         </div>
         <div class="topbar-actions">
-          <button class="member-chip" id="member-chip" type="button" data-focus-identity>Choose member</button>
+          <button class="member-chip" id="member-chip" type="button" disabled>Checking access…</button>
           <button class="icon-button" id="refresh-button" type="button" data-refresh aria-label="Refresh dashboard">
             <span class="refresh-icon" aria-hidden="true">↻</span><span class="refresh-label">Refresh</span>
           </button>
@@ -1116,33 +1212,56 @@
           <div id="projects-content" aria-live="polite"></div>
         </section>
 
+        <section class="view" id="view-briefing" data-view="briefing" aria-labelledby="briefing-title" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Recorded facts for discussion</p>
+              <h1 id="briefing-title">Committee briefing</h1>
+              <p>Compare what is known, spot missing information, and prepare a factual meeting update.</p>
+            </div>
+          </div>
+          <div id="briefing-content" aria-live="polite"></div>
+        </section>
+
+        <section class="view" id="view-operations" data-view="operations" aria-labelledby="operations-title" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Coordinator controls</p>
+              <h1 id="operations-title">Operations</h1>
+              <p>Manage approved members and inspect bounded, read-only platform readiness.</p>
+            </div>
+          </div>
+          <div id="operations-content" aria-live="polite"></div>
+        </section>
+
         <footer
           class="release-indicator"
           id="release-indicator"
           aria-label="Web app version"
-          data-web-version="0.3.1"
-          data-web-build="20260825a"
-        >Web v0.3.1 · build 20260825a</footer>
+          data-web-version="0.4.0"
+          data-web-build="20260826a"
+        >Web v0.4.0 · build 20260826a</footer>
       </main>
     </div>
   </div>
 
-  <nav class="mobile-nav" aria-label="Main navigation">
-    <button class="nav-button" type="button" data-view-target="home" aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
-    <button class="nav-button" type="button" data-view-target="tasks"><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
-    <button class="nav-button" type="button" data-view-target="projects"><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Main navigation">
+    <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
+    <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
+    <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
+    <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span>Briefing</button>
+    <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span>Admin</button>
   </nav>
 
+  <div class="operation-status" id="operation-status" role="status" aria-live="polite" aria-atomic="true" hidden></div>
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <script>
     (function () {
       'use strict';
 
-      var STORAGE_KEY = 'sks-start-profile-key';
-      var LEGACY_STORAGE_KEY = 'sks-start-member-name';
-      var VIEWS = ['home', 'tasks', 'projects'];
-      var TASK_FILTERS = ['open', 'mine', 'all'];
+      var VIEWS = ['home', 'tasks', 'projects', 'briefing', 'operations'];
+      var TASK_FILTERS = ['open', 'mine', 'overdue', 'blocked', 'completed', 'all'];
       var PROJECT_STAGES = ['Idea', 'Validation', 'School Review', 'Active', 'Completed', 'Paused', 'Rejected'];
 
       var state = {
@@ -1156,30 +1275,38 @@
         taskDrafts: {},
         projectDrafts: {},
         viewer: {},
-        identityLocked: false,
-        currentMember: readStoredMember(),
+        canRead: false,
+        canMutate: false,
+        isAdmin: false,
+        accessMessage: '',
+        currentMember: '',
         currentDisplayName: '',
-        viewerIsActive: true,
-        requestedMember: readStoredMember(),
+        viewerIsActive: false,
         needsDisplayName: false,
-        profilePickerOpen: false,
         displayNameEditorOpen: false,
         displayNameDraft: '',
         members: [],
-        membersSource: '',
-        membersSheetMissing: false,
         tasks: [],
         projects: [],
         metrics: [],
         updates: [],
         summary: {},
+        decisionComparison: {},
+        reporting: {},
+        todayMachine: '',
+        operations: null,
+        operationsLoading: false,
+        operationsError: '',
+        operationsMemberDraft: { email: '', displayName: '', active: false },
+        operationsTaskRecoveryDraft: { taskId: '', reason: '' },
         projectWorkflow: {},
         projectWorkflowSetupNeeded: false,
         projectScreen: 'board',
         selectedProjectKey: '',
         projectSecondaryVisible: false,
         projectFocusStage: '',
-        generatedAt: ''
+        generatedAt: '',
+        slowOperationVisible: false
       };
 
       var app = document.getElementById('app');
@@ -1187,30 +1314,13 @@
       var memberChip = document.getElementById('member-chip');
       var refreshButton = document.getElementById('refresh-button');
       var toast = document.getElementById('toast');
+      var operationStatus = document.getElementById('operation-status');
       var toastTimer = 0;
+      var slowOperationTimer = 0;
 
       function viewFromHash() {
         var candidate = String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
         return VIEWS.indexOf(candidate) >= 0 ? candidate : 'home';
-      }
-
-      function readStoredMember() {
-        try {
-          return String(window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem(LEGACY_STORAGE_KEY) || '').trim();
-        }
-        catch (error) { return ''; }
-      }
-
-      function storeMember(name) {
-        try {
-          if (name) window.localStorage.setItem(STORAGE_KEY, name);
-          else {
-            window.localStorage.removeItem(STORAGE_KEY);
-            window.localStorage.removeItem(LEGACY_STORAGE_KEY);
-          }
-        } catch (error) {
-          // Storage can be unavailable in privacy-restricted browsers; selection still works for this session.
-        }
       }
 
       function text(value) {
@@ -1320,29 +1430,18 @@
         });
       }
 
-      function displayNameFromIdentity(value) {
-        var raw = text(value);
-        var local = raw.indexOf('@') >= 0 ? raw.split('@')[0] : raw;
-        var words = local.replace(/[._-]+/g, ' ').split(/\s+/).filter(Boolean);
-        if (!words.length) return 'Committee member';
-        return words.map(function (word) {
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        }).join(' ');
-      }
-
       function normalizeMember(value, index) {
         if (typeof value === 'string' || typeof value === 'number') {
           var legacyName = text(value);
-          return { profileKey: legacyName, displayName: legacyName, isActive: true, renderKey: 'profile-' + index };
+          return { profileKey: legacyName, displayName: legacyName, isActive: true, renderKey: 'member-' + index };
         }
         value = value && typeof value === 'object' ? value : {};
-        var profileKey = text(first(value, ['profileKey', 'key', 'id', 'email', 'identity']));
-        var displayName = text(first(value, ['displayName', 'name', 'memberName'])) || displayNameFromIdentity(profileKey);
+        var displayName = text(first(value, ['displayName', 'name', 'memberName']));
         return {
-          profileKey: profileKey || displayName,
+          profileKey: displayName,
           displayName: displayName,
           isActive: bool(first(value, ['isActive', 'active'], true), true),
-          renderKey: profileKey || displayName || 'profile-' + index
+          renderKey: displayName || 'member-' + index
         };
       }
 
@@ -1368,11 +1467,14 @@
           interestTag: text(first(task, ['interestTag', 'interest', 'tag'])),
           estimatedTime: text(first(task, ['estimatedTime', 'timeEstimate', 'time'])),
           dueDate: first(task, ['dueDate', 'due', 'deadline'], ''),
+          dueDateMachine: text(first(task, ['dueDateMachine', 'dueMachine', 'deadlineMachine'])),
           status: status,
           claimedBy: claimedByDisplay,
           claimedByRaw: claimedByRaw,
           claimedByProfileKey: claimedByProfileKey,
           lastUpdate: text(first(task, ['lastUpdate', 'update', 'latestUpdate'])),
+          lastUpdateMachine: text(first(task, ['lastUpdateMachine', 'updatedAtMachine', 'lastUpdatedMachine'])),
+          recentUpdates: list(first(task, ['recentUpdates', 'taskUpdates', 'history'], [])).map(normalizeUpdate),
           blocker: text(first(task, ['blocker', 'blockedBy', 'blockers'])),
           supportingLink: text(first(task, ['supportingLink', 'link', 'url'])),
           isOpen: explicitOpen === null ? status === 'Open' && !claimedByRaw : explicitOpen,
@@ -1453,6 +1555,7 @@
         return {
           renderKey: text(first(update, ['id', 'key'])) || 'update-' + index,
           timestamp: first(update, ['timestamp', 'date', 'createdAt'], ''),
+          timestampMachine: text(first(update, ['timestampMachine', 'createdAtMachine'])),
           member: text(first(update, ['member', 'memberName', 'author'], 'Committee member')),
           context: text(first(update, ['taskProject', 'taskOrProject', 'task', 'project', 'context'])),
           projectKey: text(first(update, ['projectKey', 'relatedProjectKey'])),
@@ -1473,55 +1576,74 @@
           if (mutation && !payload.mutation) payload.mutation = mutation;
         }
         state.viewer = payload.viewer && typeof payload.viewer === 'object' ? payload.viewer : {};
-        var email = text(first(state.viewer, ['email']));
-        var authMode = text(first(state.viewer, ['authMode'])).toLowerCase();
-        var viewerProfileKey = text(first(state.viewer, ['profileKey', 'identity', 'key', 'email']));
+        var denied = bool(first(payload, ['accessDenied'], false), false) || bool(first(state.viewer, ['accessDenied'], false), false);
+        state.canRead = !denied && bool(first(state.viewer, ['canRead'], true), true);
+        state.canMutate = state.canRead && bool(first(state.viewer, ['canMutate', 'mayMutate'], false), false);
+        state.isAdmin = bool(first(state.viewer, ['isAdmin', 'canAdmin'], false), false);
+        state.viewerIsActive = state.canRead && bool(first(state.viewer, ['isActive', 'active'], false), false);
+        var accessReason = first(payload, ['accessMessage', 'accessReason'], first(state.viewer, ['accessMessage', 'accessReason'], ''));
+        state.accessMessage = denied ? accessMessageFor(accessReason) : text(first(payload, ['accessMessage'], first(state.viewer, ['accessMessage'], '')));
+        var viewerProfileKey = text(first(state.viewer, ['profileKey', 'identity', 'key']));
         var viewerDisplayName = text(first(state.viewer, ['displayName', 'name', 'memberName']));
-        state.identityLocked = /google|email/.test(authMode);
-        state.viewerIsActive = bool(first(state.viewer, ['isActive', 'active'], true), true);
-        state.needsDisplayName = bool(first(state.viewer, ['needsDisplayName', 'displayNameNeeded'], ''), !!email && !viewerDisplayName);
+        state.needsDisplayName = state.canMutate && bool(first(state.viewer, ['needsDisplayName', 'displayNameNeeded'], false), false);
 
-        state.members = list(payload.members).map(normalizeMember).filter(function (member) {
+        state.members = (state.canRead ? list(payload.members) : []).map(normalizeMember).filter(function (member) {
           return member.profileKey && member.isActive;
         }).filter(function (member, index, array) {
           return array.findIndex(function (candidate) { return equalName(candidate.profileKey, member.profileKey); }) === index;
         });
-        state.membersSource = text(first(payload, ['membersSource']));
-        state.membersSheetMissing = bool(first(payload, ['membersSheetMissing'], false), false);
+        state.currentMember = state.canRead ? (viewerProfileKey || viewerDisplayName) : '';
+        state.currentDisplayName = state.canRead ? (viewerDisplayName || 'Committee member') : '';
 
-        if (state.identityLocked) {
-          state.currentMember = viewerProfileKey || email;
-          state.currentDisplayName = viewerDisplayName || displayNameFromIdentity(state.currentMember);
-        } else {
-          var requestedProfile = state.members.find(function (member) {
-            return equalName(member.profileKey, state.requestedMember) || equalName(member.displayName, state.requestedMember);
-          });
-          var viewerProfile = state.members.find(function (member) {
-            return equalName(member.profileKey, viewerProfileKey) || equalName(member.displayName, viewerProfileKey);
-          });
-          var selectedProfile = viewerProfile || requestedProfile || null;
-          state.currentMember = selectedProfile ? selectedProfile.profileKey : '';
-          state.currentDisplayName = selectedProfile ? selectedProfile.displayName : '';
-        }
-
-        state.tasks = list(payload.tasks).map(normalizeTask);
-        state.projects = list(payload.projects).map(normalizeProject);
-        state.metrics = list(payload.metrics).map(normalizeMetric).filter(function (metric) { return metric.name; });
-        state.updates = list(payload.updates).map(normalizeUpdate).sort(function (left, right) {
+        state.tasks = (state.canRead ? list(payload.tasks) : []).map(normalizeTask);
+        state.projects = (state.canRead ? list(payload.projects) : []).map(normalizeProject);
+        state.metrics = (state.canRead ? list(payload.metrics) : []).map(normalizeMetric).filter(function (metric) { return metric.name; });
+        state.updates = (state.canRead ? list(payload.updates) : []).map(normalizeUpdate).sort(function (left, right) {
           var leftTime = new Date(left.timestamp).getTime();
           var rightTime = new Date(right.timestamp).getTime();
           return (Number.isFinite(rightTime) ? rightTime : 0) - (Number.isFinite(leftTime) ? leftTime : 0);
         });
-        state.summary = payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
-        state.projectWorkflow = payload.projectWorkflow && typeof payload.projectWorkflow === 'object' ? payload.projectWorkflow : {};
-        state.projectWorkflowSetupNeeded = bool(first(payload, ['projectWorkflowSetupNeeded'], ''),
+        state.summary = state.canRead && payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
+        state.decisionComparison = state.canRead && first(payload, ['decisionComparison', 'projectDecisionComparison']) && typeof first(payload, ['decisionComparison', 'projectDecisionComparison']) === 'object'
+          ? first(payload, ['decisionComparison', 'projectDecisionComparison']) : {};
+        state.reporting = state.canRead && first(payload, ['reporting', 'reportingData', 'meetingReport']) && typeof first(payload, ['reporting', 'reportingData', 'meetingReport']) === 'object'
+          ? first(payload, ['reporting', 'reportingData', 'meetingReport']) : {};
+        state.todayMachine = state.canRead ? text(first(payload, ['todayMachine', 'serverTodayMachine', 'today'])) : '';
+        state.projectWorkflow = state.canRead && payload.projectWorkflow && typeof payload.projectWorkflow === 'object' ? payload.projectWorkflow : {};
+        state.projectWorkflowSetupNeeded = state.canRead && bool(first(payload, ['projectWorkflowSetupNeeded'], ''),
           bool(first(state.projectWorkflow, ['setupNeeded'], false), false));
         state.generatedAt = first(payload, ['generatedAt'], '');
+        if (!state.canRead) {
+          state.taskDrafts = {};
+          state.projectDrafts = {};
+          state.projectScreen = 'board';
+          state.selectedProjectKey = '';
+        }
+        if ((!state.canRead && state.view !== 'home' && state.view !== 'operations') || (state.view === 'operations' && !state.isAdmin)) {
+          state.view = 'home';
+          if (window.location.hash !== '#home') window.history.replaceState(null, '', '#home');
+        }
+        if (!state.isAdmin) {
+          state.operations = null;
+          state.operationsError = '';
+        } else if (payload.operations && typeof payload.operations === 'object') {
+          state.operations = payload.operations;
+        }
         if (state.projectScreen === 'detail' && state.selectedProjectKey && !findProject(state.selectedProjectKey)) {
           state.projectScreen = 'board';
           state.selectedProjectKey = '';
         }
-        if (!state.identityLocked) storeMember(state.currentMember);
+      }
+
+      function accessMessageFor(reason) {
+        var value = text(reason).toLowerCase();
+        if (!value || value === 'access_denied') return 'Sign in with an approved active school Google account to use the Command Center.';
+        if (value === 'identity_unavailable') return 'Google did not provide a signed-in school identity. Open the app while signed in to your school Google account.';
+        if (value === 'unknown_member') return 'Your Google account is not yet listed as an active member. Ask a START coordinator to add it.';
+        if (value === 'inactive_member') return 'Your START member record is inactive. Ask a coordinator to reactivate it.';
+        if (value === 'duplicate_member') return 'Your Google account appears more than once in Members. Ask the deployment owner to remove the duplicate.';
+        if (value === 'members_not_ready') return 'The approved member directory is not ready. Ask the deployment owner to finish Members setup.';
+        return text(reason);
       }
 
       function summaryCount(key, fallback) {
@@ -1532,6 +1654,8 @@
         var open = state.tasks.filter(function (task) { return task.isOpen; }).length;
         var doing = state.tasks.filter(function (task) { return task.status === 'Doing'; }).length;
         var mine = state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; }).length;
+        var blocked = state.tasks.filter(function (task) { return task.status === 'Blocked'; }).length;
+        var overdue = state.tasks.filter(isTaskOverdue).length;
         var active = state.projects.filter(function (project) { return project.stage === 'Active'; }).length;
         var waitingProjects = state.projects.filter(function (project) { return project.stage === 'School Review'; }).length;
         var ideas = state.projects.filter(function (project) { return project.stage === 'Idea'; }).length;
@@ -1539,6 +1663,8 @@
           open: summaryCount('openTasks', open),
           doing: summaryCount('doingTasks', doing),
           mine: mine,
+          blocked: summaryCount('blockedTasks', blocked),
+          overdue: summaryCount('overdueTasks', overdue),
           active: summaryCount('activeProjects', active),
           waitingProjects: summaryCount('waitingOnSchoolProjects', waitingProjects),
           ideas: summaryCount('ideasNeedingValidation', ideas)
@@ -1603,7 +1729,14 @@
           else if (method === 'editProjectNextAction') runner.editProjectNextAction(args[0], args[1], args[2]);
           else if (method === 'completeProject') runner.completeProject(args[0], args[1], args[2]);
           else if (method === 'pauseProject') runner.pauseProject(args[0], args[1], args[2], args[3]);
+          else if (method === 'resumeProject') runner.resumeProject(args[0], args[1], args[2], args[3]);
           else if (method === 'setupProjectWorkflow') runner.setupProjectWorkflow();
+          else if (method === 'setupMembersSheet') runner.setupMembersSheet();
+          else if (method === 'inspectStartSchema') runner.inspectStartSchema();
+          else if (method === 'getOperationsData' || method === 'getAdminData') runner.getAdminData();
+          else if (method === 'addOrUpdateMember' || method === 'saveMemberProfile') runner.saveMemberProfile(args[0]);
+          else if (method === 'setMemberActive') runner.setMemberActive(args[0], args[1]);
+          else if (method === 'releaseStrandedTask') runner.releaseStrandedTask(args[0], args[1]);
           else reject(new Error('Unknown server action.'));
         });
       }
@@ -1611,10 +1744,6 @@
       function loadDashboard(options) {
         options = options || {};
         var requestToken = ++state.loadToken;
-        if (options.profileKey !== undefined) {
-          state.requestedMember = text(options.profileKey);
-          if (!state.identityLocked) state.currentMember = state.requestedMember;
-        }
         state.error = '';
         if (options.silent && state.tasks.length + state.projects.length + state.updates.length > 0) state.refreshing = true;
         else state.loading = true;
@@ -1628,7 +1757,7 @@
             state.refreshing = false;
             state.error = '';
             render();
-            if (options.restoreIdentityFocus) restoreIdentityFocus();
+            if (state.view === 'operations' && state.isAdmin && !state.operations) loadOperations();
             if (options.announce) showToast(options.announce);
           })
           .catch(function (error) {
@@ -1637,7 +1766,59 @@
             state.refreshing = false;
             state.error = error.message || 'The dashboard could not be loaded.';
             render();
-            if (options.restoreIdentityFocus) restoreIdentityFocus();
+          });
+      }
+
+      function loadOperations(options) {
+        options = options || {};
+        if (!state.isAdmin || state.operationsLoading) return Promise.resolve();
+        state.operationsLoading = true;
+        state.operationsError = '';
+        render();
+        return serverCall('getOperationsData', [])
+          .then(function (payload) {
+            state.operations = payload && typeof payload === 'object' ? payload : {};
+            state.operationsError = '';
+            if (options.announce) showToast(options.announce);
+          })
+          .catch(function (error) {
+            state.operations = null;
+            state.operationsError = error.message || 'Operations data could not be loaded.';
+          })
+          .finally(function () {
+            state.operationsLoading = false;
+            render();
+          });
+      }
+
+      function runOperationsCommand(method, args, successMessage) {
+        if (!state.isAdmin) { showToast('Administrator access is required.', true); return; }
+        if (state.busyKey || state.operationsLoading) return;
+        state.busyKey = 'operations:' + method;
+        render();
+        serverCall(method, args || [])
+          .then(function (payload) {
+            if (method === 'inspectStartSchema') {
+              var next = state.operations && typeof state.operations === 'object' ? state.operations : {};
+              next.schema = payload && typeof payload === 'object' ? payload : {};
+              state.operations = next;
+              showToast(successMessage || 'Schema inspection refreshed.');
+              return null;
+            }
+            if (method === 'addOrUpdateMember' || method === 'setMemberActive' || method === 'releaseStrandedTask') {
+              state.operations = payload && typeof payload === 'object' ? payload : {};
+              if (method === 'addOrUpdateMember') state.operationsMemberDraft = { email: '', displayName: '', active: false };
+              if (method === 'releaseStrandedTask') state.operationsTaskRecoveryDraft = { taskId: '', reason: '' };
+              showToast(successMessage || (method === 'releaseStrandedTask' ? 'Task released for a new claim.' : 'Member record updated.'));
+              return loadDashboard({ silent: true });
+            }
+            showToast(successMessage || 'Setup completed.');
+            return loadDashboard({ silent: true }).then(function () { return loadOperations(); });
+          })
+          .catch(function (error) { showToast(error.message || 'The administrator action could not be completed.', true); })
+          .finally(function () {
+            state.busyKey = '';
+            render();
           });
       }
 
@@ -1702,7 +1883,7 @@
       }
 
       function projectDraftKey(projectKey) {
-        return (state.currentMember || 'no-profile') + '::' + (projectKey || 'new');
+        return (state.currentMember || 'no-member') + '::' + (projectKey || 'new');
       }
 
       function mutationProjectKey(payload, fallback) {
@@ -1767,6 +1948,7 @@
       }
 
       function runProjectSetup() {
+        if (!state.isAdmin) { showToast('Only an approved coordinator can run setup.', true); return; }
         if (state.busyKey || state.refreshing) return;
         state.busyKey = 'project:setupProjectWorkflow:setup';
         render();
@@ -1784,13 +1966,8 @@
       }
 
       function requireIdentity() {
-        if (state.currentMember && state.viewerIsActive) return true;
-        if (state.currentMember && !state.viewerIsActive) {
-          showToast('This member profile is inactive. Ask the Student Lead for help.', true);
-          return false;
-        }
-        showToast('Choose a member profile before making changes.', true);
-        focusIdentity();
+        if (state.canMutate && state.currentMember && state.viewerIsActive) return true;
+        showToast(state.accessMessage || 'This signed-in account cannot make changes.', true);
         return false;
       }
 
@@ -1813,19 +1990,37 @@
         ).format(date);
       }
 
-      function dueInfo(value, done) {
-        var label = formatDate(value, false, true);
+      function machineDateKey(value) {
+        var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text(value));
+        return match ? match[1] + '-' + match[2] + '-' + match[3] : '';
+      }
+
+      function machineDateLabel(machineValue, displayValue) {
+        var key = machineDateKey(machineValue);
+        if (!key) return text(displayValue);
+        var parts = key.split('-').map(Number);
+        return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+          .format(new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])));
+      }
+
+      function dueInfo(displayValue, machineValue, done) {
+        var dueKey = machineDateKey(machineValue);
+        var todayKey = machineDateKey(state.todayMachine);
+        var label = machineDateLabel(dueKey, displayValue);
         if (!label) return null;
-        var parsed = parseDate(value, true);
-        if (done || !Number.isFinite(parsed.getTime())) return { label: 'Due ' + label, className: '' };
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var due = new Date(parsed);
-        due.setHours(0, 0, 0, 0);
-        var days = Math.round((due.getTime() - today.getTime()) / 86400000);
+        if (done || !dueKey || !todayKey) return { label: 'Due ' + label, className: '', overdue: false };
+        var dueParts = dueKey.split('-').map(Number);
+        var todayParts = todayKey.split('-').map(Number);
+        var days = Math.round((Date.UTC(dueParts[0], dueParts[1] - 1, dueParts[2]) - Date.UTC(todayParts[0], todayParts[1] - 1, todayParts[2])) / 86400000);
         if (days < 0) return { label: 'Overdue · ' + label, className: ' due-overdue' };
         if (days <= 3) return { label: 'Due soon · ' + label, className: ' due-soon' };
         return { label: 'Due ' + label, className: '' };
+      }
+
+      function isTaskOverdue(task) {
+        var dueKey = machineDateKey(task && task.dueDateMachine);
+        var todayKey = machineDateKey(state.todayMachine);
+        return !!dueKey && !!todayKey && task.status !== 'Done' && dueKey < todayKey;
       }
 
       function statusClass(status) {
@@ -1842,7 +2037,7 @@
       }
 
       function errorState() {
-        return '<div class="error-state"><div><div class="empty-icon" aria-hidden="true">!</div>' +
+        return '<div class="error-state" role="alert" aria-live="assertive"><div><div class="empty-icon" aria-hidden="true">!</div>' +
           '<h2>We couldn’t load the dashboard</h2><p>' + h(state.error) + '</p>' +
           '<button class="button button-primary" type="button" data-retry>Try again</button></div></div>';
       }
@@ -1852,17 +2047,43 @@
           '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>';
       }
 
+      function accessState() {
+        return '<section class="access-state" role="status" aria-labelledby="access-state-title"><div>' +
+          '<div class="empty-icon" aria-hidden="true">↪</div><h2 id="access-state-title">Approved school sign-in required</h2>' +
+          '<p>' + h(state.accessMessage || 'Sign in with an approved active school Google account to use the Command Center.') + '</p>' +
+          '<p class="access-help">The member list is managed by a START coordinator. Changing a browser setting or selecting another name cannot grant access. If you were just added, refresh after signing in to the correct school account.</p>' +
+          '<button class="button button-primary" type="button" data-refresh>Check access again</button></div></section>';
+      }
+
       function render() {
         app.setAttribute('aria-busy', state.loading || state.refreshing || !!state.busyKey ? 'true' : 'false');
+        syncSlowOperationStatus();
         renderNavigation();
         renderHeader();
         renderIdentity();
         renderHome();
         renderTasks();
         renderProjects();
+        renderBriefing();
+        renderOperations();
       }
 
       function renderNavigation() {
+        if ((!state.canRead && !state.loading && state.view !== 'home' && state.view !== 'operations') || (state.view === 'operations' && !state.isAdmin)) {
+          state.view = 'home';
+          if (window.location.hash !== '#home') window.history.replaceState(null, '', '#home');
+        }
+        document.querySelectorAll('[data-requires-access]').forEach(function (button) {
+          button.hidden = !state.loading && !state.canRead;
+        });
+        document.querySelectorAll('[data-requires-admin]').forEach(function (button) {
+          button.hidden = !state.isAdmin;
+        });
+        var mobileNav = document.getElementById('mobile-nav');
+        if (mobileNav) {
+          mobileNav.classList.toggle('has-admin', state.isAdmin);
+          mobileNav.classList.toggle('admin-only', state.isAdmin && !state.canRead);
+        }
         document.querySelectorAll('[data-view-target]').forEach(function (button) {
           var current = button.getAttribute('data-view-target') === state.view;
           if (button.closest('nav')) {
@@ -1879,60 +2100,47 @@
         var copy = {
           home: ['Committee overview', 'What needs attention across START right now'],
           tasks: ['Task board', 'Claim work, record progress, and finish the next step'],
-          projects: ['Project workflow', 'Move an idea from suggestion to real school action']
-        }[state.view];
+          projects: ['Project workflow', 'Move an idea from suggestion to real school action'],
+          briefing: ['Committee briefing', 'Recorded facts, missing information, and meeting-ready updates'],
+          operations: ['Operations', 'Approved-member management and bounded readiness checks']
+        }[state.view] || ['START Command Center', 'Student sustainability work'];
         document.getElementById('topbar-title').textContent = copy[0];
         document.getElementById('topbar-subtitle').textContent = copy[1];
-        memberChip.textContent = state.currentDisplayName || 'Choose profile';
-        memberChip.disabled = state.identityLocked || state.loading || state.refreshing || !!state.busyKey;
-        memberChip.setAttribute('aria-label', state.identityLocked
-          ? 'Signed in as ' + (state.currentDisplayName || 'committee member')
-          : (state.currentMember ? 'Switch profile; currently ' + state.currentDisplayName : 'Choose member profile'));
+        memberChip.textContent = state.loading ? 'Checking access…' : state.currentDisplayName || 'Access needed';
+        memberChip.disabled = true;
+        memberChip.setAttribute('aria-label', state.currentDisplayName
+          ? 'Signed in as ' + state.currentDisplayName
+          : 'No approved signed-in member');
         refreshButton.disabled = state.loading || state.refreshing || !!state.busyKey;
         refreshButton.classList.toggle('is-refreshing', state.refreshing);
       }
 
       function renderIdentity() {
-        if (state.identityLocked) {
-          var editingName = state.displayNameEditorOpen || state.needsDisplayName;
-          var displayNameValue = state.displayNameDraft || state.currentDisplayName;
-          identityPanel.innerHTML = '<div class="identity-card is-locked' + (state.needsDisplayName ? ' needs-name' : '') + '">' +
-            '<div class="identity-topline"><span class="identity-label">Working as</span><span class="temp-label">Google profile</span></div>' +
-            '<div class="identity-person"><span class="avatar" aria-hidden="true">' + h(initials(state.currentDisplayName)) + '</span><span>' +
-            '<strong class="identity-name">' + h(state.currentDisplayName || 'Committee member') + '</strong></span></div>' +
-            (state.needsDisplayName && !state.displayNameEditorOpen
-              ? '<div class="identity-actions"><button class="identity-switch" type="button" data-edit-display-name>Set display name</button></div>'
-              : '') +
-            (editingName && state.displayNameEditorOpen
-              ? '<form class="display-name-form" data-display-name-form><label for="display-name-input">Display name</label><div class="display-name-row">' +
-                '<input id="display-name-input" name="displayName" maxlength="120" value="' + h(displayNameValue) + '" required' + (state.busyKey ? ' disabled' : '') + '>' +
-                '<button class="identity-save" type="submit"' + (state.busyKey ? ' disabled' : '') + '>Save</button></div></form>'
-              : '') +
-            '<p class="identity-note">' + (state.viewerIsActive
-              ? 'Using your school Google profile for task changes.'
-              : 'This Google profile is inactive. Ask the Student Lead for help.') + '</p></div>';
+        if (state.loading) {
+          identityPanel.innerHTML = '<div class="identity-card"><div class="identity-topline"><span class="identity-label">Access</span><span class="temp-label">Checking</span></div><p class="identity-note">Confirming your signed-in Google identity…</p></div>';
           return;
         }
-
-        var options = '<option value="">Choose a profile</option>' + state.members.map(function (member) {
-          return '<option value="' + h(member.profileKey) + '"' + (equalName(member.profileKey, state.currentMember) ? ' selected' : '') + '>' + h(member.displayName) + '</option>';
-        }).join('');
-        var hasCurrentProfile = !!(state.currentMember && state.currentDisplayName);
-        var showPicker = !hasCurrentProfile || state.profilePickerOpen;
-        identityPanel.innerHTML = '<div class="identity-card">' +
-          '<div class="identity-topline"><span class="identity-label">Working as</span><span class="temp-label">Local profile</span></div>' +
-          (hasCurrentProfile ? '<div class="identity-person"><span class="avatar" aria-hidden="true">' + h(initials(state.currentDisplayName)) + '</span><span>' +
-            '<strong class="identity-name">' + h(state.currentDisplayName) + '</strong></span></div>' +
-            '<div class="identity-actions"><button class="identity-switch" type="button" data-switch-profile>Switch profile</button></div>' : '') +
-          '<div class="profile-picker"' + (showPicker ? '' : ' hidden') + '><label for="profile-select">Member profile</label>' +
-          '<select id="profile-select"' + (!state.members.length || state.loading || state.refreshing || !!state.busyKey ? ' disabled' : '') + '>' + options + '</select></div>' +
-          '<p class="identity-note">' + (state.loading && !state.members.length
-            ? 'Loading member profiles…'
-            : state.members.length
-            ? (state.membersSheetMissing || state.membersSource === 'settings'
-              ? 'Profiles are temporarily coming from Settings until the Members sheet is ready.'
-              : 'Profiles come from active entries in Members and are remembered on this browser.')
-            : 'No active member profiles are configured. Ask the Student Lead to add you in Members.') + '</p></div>';
+        if (!state.canRead) {
+          identityPanel.innerHTML = '<div class="identity-card"><div class="identity-topline"><span class="identity-label">Access needed</span><span class="temp-label">Google sign-in</span></div><p class="identity-note">' + h(state.accessMessage) + '</p></div>';
+          return;
+        }
+        var editingName = state.displayNameEditorOpen || state.needsDisplayName;
+        var displayNameValue = state.displayNameEditorOpen ? state.displayNameDraft : state.currentDisplayName;
+        identityPanel.innerHTML = '<div class="identity-card is-locked' + (state.needsDisplayName ? ' needs-name' : '') + '">' +
+          '<div class="identity-topline"><span class="identity-label">Signed in as</span><span class="temp-label">Google verified</span></div>' +
+          '<div class="identity-person"><span class="avatar" aria-hidden="true">' + h(initials(state.currentDisplayName)) + '</span><span>' +
+          '<strong class="identity-name">' + h(state.currentDisplayName || 'Committee member') + '</strong></span></div>' +
+          (state.needsDisplayName && !state.displayNameEditorOpen
+            ? '<div class="identity-actions"><button class="identity-switch" type="button" data-edit-display-name>Set display name</button></div>'
+            : '') +
+          (editingName && state.displayNameEditorOpen
+            ? '<form class="display-name-form" data-display-name-form><label for="display-name-input">Display name</label><div class="display-name-row">' +
+              '<input id="display-name-input" name="displayName" maxlength="120" value="' + h(displayNameValue) + '" required' + (state.busyKey ? ' disabled' : '') + '>' +
+              '<button class="identity-save" type="submit"' + (state.busyKey ? ' disabled' : '') + '>Save</button></div></form>'
+            : '') +
+          '<p class="identity-note">' + (state.canMutate
+            ? 'Your approved school Google identity is used for changes.'
+            : 'This signed-in account has read-only access.') + (state.isAdmin ? ' Coordinator tools are available.' : '') + '</p></div>';
       }
 
       function renderHome() {
@@ -1940,11 +2148,14 @@
         document.getElementById('home-generated').textContent = state.generatedAt ? 'Updated ' + formatDate(state.generatedAt, true) : '';
         if (state.loading) { target.innerHTML = loadingState(); return; }
         if (state.error) { target.innerHTML = errorState(); return; }
+        if (!state.canRead) { target.innerHTML = accessState(); return; }
 
         var tally = counts();
         var stats = [
           { label: 'Open tasks', value: tally.open, note: tally.open === 1 ? 'Ready for someone to claim' : 'Ready for someone to claim', view: 'tasks', filter: 'open' },
-          { label: 'My tasks', value: tally.mine, note: state.currentMember ? 'Assigned to ' + state.currentDisplayName : 'Choose a profile to see your work', view: 'tasks', filter: 'mine' },
+          { label: 'My tasks', value: tally.mine, note: 'Assigned to ' + state.currentDisplayName, view: 'tasks', filter: 'mine' },
+          { label: 'Overdue', value: tally.overdue, note: 'Past due by the school server date', view: 'tasks', filter: 'overdue' },
+          { label: 'Blocked', value: tally.blocked, note: 'Waiting for help, a decision, or a resource', view: 'tasks', filter: 'blocked' },
           { label: 'Active projects', value: tally.active, note: 'Work the committee is carrying out', view: 'projects', projectStage: 'Active' },
           { label: 'Waiting on school', value: tally.waitingProjects, note: 'Projects ready for school input', view: 'projects', projectStage: 'School Review' },
           { label: 'Ideas to validate', value: tally.ideas, note: 'Suggestions ready for a closer look', view: 'projects', projectStage: 'Idea' }
@@ -1958,40 +2169,55 @@
             (stat.scrollTarget ? ' data-scroll-target="' + h(stat.scrollTarget) + '"' : '') + '>' + content + '</button>';
         }).join('') + '</div>';
 
-        var queue = state.currentMember
-          ? state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; })
-          : state.tasks.filter(function (task) { return task.isOpen; });
+        var queue = state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; });
         queue = sortTasks(queue).slice(0, 5);
-        var queueTitle = state.currentMember ? 'Your next tasks' : 'Ready to claim';
-        var queueSubtitle = state.currentMember ? 'Work assigned to ' + state.currentDisplayName : 'Choose a profile, then pick something useful';
+        var queueTitle = 'Your next tasks';
+        var queueSubtitle = 'Work assigned to ' + state.currentDisplayName;
         html += '<div class="home-grid"><section class="panel"><div class="panel-header"><div><h2 class="panel-title">' + h(queueTitle) + '</h2>' +
-          '<p class="panel-subtitle">' + h(queueSubtitle) + '</p></div><button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="' + (state.currentMember ? 'mine' : 'open') + '">View all →</button></div>' +
+          '<p class="panel-subtitle">' + h(queueSubtitle) + '</p></div><button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="mine">View all →</button></div>' +
           (queue.length ? '<ul class="queue-list">' + queue.map(renderQueueItem).join('') + '</ul>' : emptyState(
-            state.currentMember ? 'You’re all caught up' : 'No open tasks right now',
-            state.currentMember ? 'Claim an open task when you are ready for something new.' : 'New work will appear here when it is added to the Tasks sheet.',
-            state.currentMember ? 'Browse open tasks' : '', 'tasks', true, state.currentMember ? 'open' : ''
+            'You’re all caught up',
+            'Claim an open task when you are ready for something new.',
+            'Browse open tasks', 'tasks', true, 'open'
           )) + '</section>';
 
-        html += '<div class="home-stack">' + renderRecentUpdates() + renderWaitingPanel() + '</div></div>';
+        html += '<div class="home-stack">' + renderAttentionPanel() + renderRecentUpdates() + renderWaitingPanel() + '</div></div>';
         target.innerHTML = html;
       }
 
       function sortTasks(tasks) {
         return tasks.slice().sort(function (left, right) {
-          var leftDate = new Date(left.dueDate).getTime();
-          var rightDate = new Date(right.dueDate).getTime();
-          if (!Number.isFinite(leftDate)) leftDate = Number.MAX_SAFE_INTEGER;
-          if (!Number.isFinite(rightDate)) rightDate = Number.MAX_SAFE_INTEGER;
-          return leftDate - rightDate || left.title.localeCompare(right.title);
+          var leftDate = machineDateKey(left.dueDateMachine) || '9999-12-31';
+          var rightDate = machineDateKey(right.dueDateMachine) || '9999-12-31';
+          return leftDate.localeCompare(rightDate) || left.title.localeCompare(right.title);
         });
       }
 
       function renderQueueItem(task) {
-        var due = dueInfo(task.dueDate, task.status === 'Done');
+        var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
         return '<li class="queue-item"><div class="queue-row"><div><p class="queue-title">' + h(task.title) + '</p><div class="queue-meta">' +
           '<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' +
           (task.relatedProject ? '<span>' + h(task.relatedProject) + '</span>' : '') + (due ? '<span>' + h(due.label) + '</span>' : '') +
-          '</div></div><button class="button button-subtle queue-action" type="button" data-view-target="tasks" data-set-task-filter="' + (task.isMine ? 'mine' : 'open') + '">Open</button></div></li>';
+          '</div></div><button class="button button-subtle queue-action" type="button" data-open-task="' + h(task.key || task.id) + '">Open</button></div></li>';
+      }
+
+      function renderAttentionPanel() {
+        var items = state.tasks.filter(function (task) {
+          return task.status === 'Blocked' || isTaskOverdue(task);
+        }).sort(function (left, right) {
+          if (isTaskOverdue(left) !== isTaskOverdue(right)) return isTaskOverdue(left) ? -1 : 1;
+          var leftDue = machineDateKey(left.dueDateMachine) || '9999-12-31';
+          var rightDue = machineDateKey(right.dueDateMachine) || '9999-12-31';
+          return leftDue.localeCompare(rightDue) || left.title.localeCompare(right.title);
+        }).slice(0, 6);
+        return '<section class="panel attention-panel"><div class="panel-header"><div><h2 class="panel-title">Needs attention</h2><p class="panel-subtitle">Overdue or blocked work, based on the school server date</p></div>' +
+          (items.length ? '<button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="all">View all →</button>' : '') + '</div>' +
+          (items.length ? '<ul class="attention-list">' + items.map(function (task) {
+            var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
+            var detail = task.status === 'Blocked' ? (task.blocker || 'Blocker reason not recorded') : (due ? due.label : 'Overdue');
+            return '<li class="attention-item"><div><strong>' + h(task.title) + '</strong><p>' + h(detail) + '</p></div>' +
+              '<button class="button button-subtle" type="button" data-open-task="' + h(task.key || task.id) + '">Open</button></li>';
+          }).join('') + '</ul>' : '<p class="brief-section-empty">No overdue or blocked tasks right now.</p>') + '</section>';
       }
 
       function renderRecentUpdates() {
@@ -2023,23 +2249,25 @@
         var target = document.getElementById('tasks-content');
         if (state.loading) { target.innerHTML = loadingState(); return; }
         if (state.error) { target.innerHTML = errorState(); return; }
+        if (!state.canRead) { target.innerHTML = accessState(); return; }
         var filtered = state.tasks.filter(function (task) {
           if (state.taskFilter === 'open') return task.isOpen;
           if (state.taskFilter === 'mine') return task.isMine && task.status !== 'Done';
+          if (state.taskFilter === 'overdue') return isTaskOverdue(task);
+          if (state.taskFilter === 'blocked') return task.status === 'Blocked';
+          if (state.taskFilter === 'completed') return task.status === 'Done';
           return true;
         });
         filtered = sortTasks(filtered);
-        var filterLabels = { open: 'Open', mine: 'My tasks', all: 'All' };
+        var filterLabels = { open: 'Open', mine: 'My tasks', overdue: 'Overdue', blocked: 'Blocked', completed: 'Completed', all: 'All' };
         var html = '<div class="toolbar"><div class="segmented" role="group" aria-label="Filter tasks">' + TASK_FILTERS.map(function (filter) {
           return '<button class="segment-button" type="button" data-task-filter="' + filter + '" aria-pressed="' + (state.taskFilter === filter ? 'true' : 'false') + '">' + filterLabels[filter] + '</button>';
         }).join('') + '</div><p class="results-count">' + filtered.length + ' ' + (filtered.length === 1 ? 'task' : 'tasks') + '</p></div>';
         if (!state.tasks.length) {
           html += emptyState('No tasks have been added yet', 'When the Tasks sheet has rows, they will appear here automatically.', '', '', false);
-        } else if (!filtered.length && state.taskFilter === 'mine' && !state.currentMember) {
-          html += emptyState('Choose a profile to see your work', 'Select your active member profile above, then My tasks will show work owned by you.', '', '', false);
         } else if (!filtered.length) {
           html += emptyState(
-            state.taskFilter === 'open' ? 'No open tasks right now' : state.taskFilter === 'mine' ? 'No tasks assigned to you' : 'No tasks to show',
+            state.taskFilter === 'open' ? 'No open tasks right now' : state.taskFilter === 'mine' ? 'No tasks assigned to you' : state.taskFilter === 'overdue' ? 'No overdue tasks' : state.taskFilter === 'blocked' ? 'No blocked tasks' : state.taskFilter === 'completed' ? 'No completed tasks yet' : 'No tasks to show',
             state.taskFilter === 'open' ? 'Everything is claimed or complete. Check back after new work is added.' : state.taskFilter === 'mine' ? 'Browse Open tasks when you are ready to claim one.' : 'Try another filter.',
             state.taskFilter === 'mine' ? 'Browse open tasks' : '', 'tasks', false, state.taskFilter === 'mine' ? 'open' : ''
           );
@@ -2050,11 +2278,11 @@
       }
 
       function renderTaskCard(task) {
-        var due = dueInfo(task.dueDate, task.status === 'Done');
+        var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
         var link = safeUrl(task.supportingLink);
         var busy = !!state.busyKey && state.busyKey.split(':').slice(1).join(':') === task.key;
         var busyMethod = busy ? state.busyKey.split(':')[0] : '';
-        var unavailable = !!state.busyKey || state.refreshing;
+        var unavailable = !!state.busyKey || state.refreshing || !state.canMutate;
         var draft = state.taskDrafts[task.key] || null;
         var taskDomId = 'task-' + (text(task.renderKey).toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'item');
         var meta = [];
@@ -2062,11 +2290,12 @@
         if (task.estimatedTime) meta.push('<span class="meta-chip">Time: ' + h(task.estimatedTime) + '</span>');
         if (task.interestTag) meta.push('<span class="meta-chip">' + h(task.interestTag) + '</span>');
         if (task.relatedMetric) meta.push('<span class="meta-chip">Metric: ' + h(task.relatedMetric) + '</span>');
+        if (task.lastUpdateMachine) meta.push('<span class="meta-chip">Updated ' + h(formatDate(task.lastUpdateMachine, true)) + '</span>');
 
         var actions = '';
         if (task.isOpen) {
-          actions = '<button class="button button-primary" type="button" data-task-action="claim" data-task-key="' + h(task.key) + '" aria-label="Claim Task: ' + h(task.title) + '"' + (!state.currentMember || !state.viewerIsActive || !task.key || unavailable ? ' disabled' : '') + '>' + (busy ? 'Claiming…' : 'Claim Task') + '</button>' +
-            (!state.currentMember ? '<p class="action-note">Choose a profile first</p>' : !state.viewerIsActive ? '<p class="action-note">This profile is inactive</p>' : !task.key ? '<p class="action-note">Task ID is missing</p>' : '');
+          actions = '<button class="button button-primary" type="button" data-task-action="claim" data-task-key="' + h(task.key) + '" aria-label="Claim Task: ' + h(task.title) + '"' + (!state.canMutate || !task.key || unavailable ? ' disabled' : '') + '>' + (busy ? 'Claiming…' : 'Claim Task') + '</button>' +
+            (!state.canMutate ? '<p class="action-note">Changes are unavailable for this account</p>' : !task.key ? '<p class="action-note">Task ID is missing</p>' : '');
         } else if (task.isMine && task.status === 'Doing') {
           actions = '<button class="button button-primary" type="button" data-task-action="show-update" data-task-key="' + h(task.key) + '" aria-label="Add update: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Add Update</button>' +
             '<button class="button button-warning" type="button" data-task-action="show-blocker" data-task-key="' + h(task.key) + '" aria-label="Mark blocked: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Mark Blocked</button>' +
@@ -2075,7 +2304,8 @@
         } else if (task.isMine && task.status === 'Blocked') {
           actions = '<button class="button button-primary" type="button" data-task-action="resume" data-task-key="' + h(task.key) + '" aria-label="Resume work: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'resumeTask' ? 'Resuming…' : 'Resume Work') + '</button>' +
             '<button class="button button-subtle" type="button" data-task-action="show-update" data-task-key="' + h(task.key) + '" aria-label="Add update: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>Add Update</button>' +
-            '<button class="button button-done" type="button" data-task-action="complete" data-task-key="' + h(task.key) + '" aria-label="Mark done: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'completeTask' ? 'Finishing…' : 'Mark Done') + '</button>';
+            '<button class="button button-done" type="button" data-task-action="complete" data-task-key="' + h(task.key) + '" aria-label="Mark done: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'completeTask' ? 'Finishing…' : 'Mark Done') + '</button>' +
+            '<button class="button button-release" type="button" data-task-action="release" data-task-key="' + h(task.key) + '" aria-label="Release blocked task: ' + h(task.title) + '"' + (unavailable ? ' disabled' : '') + '>' + (busyMethod === 'releaseTask' ? 'Releasing…' : 'Release Task') + '</button>';
         } else if (task.status === 'Done') {
           actions = '<span class="status-badge status-done">Completed</span>';
         } else if (task.claimedBy) {
@@ -2105,16 +2335,32 @@
           (task.relatedProject ? '<p class="task-context">Project: <strong>' + h(task.relatedProject) + '</strong></p>' : '') +
           (meta.length ? '<div class="meta-list">' + meta.join('') + '</div>' : '') +
           ((task.lastUpdate || task.status === 'Blocked') ? '<div class="task-notes">' +
-            (task.lastUpdate ? '<div class="task-note"><strong>Latest:</strong> ' + h(task.lastUpdate) + '</div>' : '') +
+            (task.lastUpdate ? '<div class="task-note"><strong>Updated:</strong> ' + h(task.lastUpdate) + '</div>' : '') +
             (task.status === 'Blocked' ? '<div class="task-note blocker"><strong>Waiting for:</strong> ' + h(task.blocker || 'No blocker reason recorded.') + '</div>' : '') + '</div>' : '') +
           (link ? '<a class="task-link" href="' + h(link) + '" target="_blank" rel="noopener noreferrer">Supporting link ↗</a>' : '') +
-          '</div><div class="task-actions">' + actions + '</div>' + composer + '</article>';
+          renderTaskHistory(task) + '</div><div class="task-actions">' + actions + '</div>' + composer + '</article>';
+      }
+
+      function renderTaskHistory(task) {
+        var updates = list(task.recentUpdates).slice(0, 8);
+        if (!updates.length) return '';
+        return '<details class="task-history"><summary>Recent history (' + updates.length + ')</summary><ul>' + updates.map(function (update) {
+          var link = safeUrl(update.link);
+          var timestamp = update.timestampMachine || update.timestamp;
+          return '<li>' + (timestamp ? '<time>' + h(formatDate(timestamp, true)) + '</time>' : '') +
+            (update.member ? '<span class="update-who"> · ' + h(update.member) + '</span>' : '') +
+            '<p>' + h(update.update || update.nextStep || 'Task status updated') + '</p>' +
+            (update.blocker ? '<div class="blocker-note"><strong>Blocker:</strong> ' + h(update.blocker) + '</div>' : '') +
+            (update.nextStep ? '<p><strong>Next:</strong> ' + h(update.nextStep) + '</p>' : '') +
+            (link ? '<a class="task-link" href="' + h(link) + '" target="_blank" rel="noopener noreferrer">Open link ↗</a>' : '') + '</li>';
+        }).join('') + '</ul></details>';
       }
 
       function renderProjects() {
         var target = document.getElementById('projects-content');
         if (state.loading) { target.innerHTML = loadingState(); return; }
         if (state.error) { target.innerHTML = errorState(); return; }
+        if (!state.canRead) { target.innerHTML = accessState(); return; }
         if (state.projectScreen === 'new') target.innerHTML = renderNewIdeaScreen();
         else if (state.projectScreen === 'detail') {
           var project = findProject(state.selectedProjectKey);
@@ -2126,6 +2372,238 @@
           }
         } else target.innerHTML = renderProjectBoard();
 
+      }
+
+      function renderBriefing() {
+        var target = document.getElementById('briefing-content');
+        if (state.loading) { target.innerHTML = loadingState(); return; }
+        if (state.error) { target.innerHTML = errorState(); return; }
+        if (!state.canRead) { target.innerHTML = accessState(); return; }
+        var comparison = state.decisionComparison && typeof state.decisionComparison === 'object' ? state.decisionComparison : {};
+        var report = state.reporting && typeof state.reporting === 'object' ? state.reporting : {};
+        target.innerHTML = '<div class="briefing-shell"><p class="briefing-note"><strong>For human discussion:</strong> This view compares recorded facts only. It does not rank projects, create a score, or make a decision. Missing fields stay visibly missing.</p>' +
+          renderDecisionComparison(comparison) + renderMeetingReport(report) + '</div>';
+      }
+
+      function renderDecisionComparison(comparison) {
+        var projects = list(first(comparison, ['projects', 'records', 'items'], []));
+        var fields = list(first(comparison, ['comparisonFields', 'fields'], [])).map(function (field) {
+          if (typeof field === 'string') return { field: field, label: field };
+          field = field && typeof field === 'object' ? field : {};
+          return { field: text(first(field, ['field', 'key'])), label: text(first(field, ['label', 'name'], first(field, ['field', 'key']))) };
+        }).filter(function (field) { return field.field && field.field !== 'projectName'; });
+        if (!projects.length) {
+          return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Project fact comparison</h2><p class="panel-subtitle">No comparison records are available yet</p></div></div><p class="brief-section-empty">Comparison data will appear when the server prepares factual project records.</p></section>';
+        }
+        if (!fields.length) {
+          fields = [
+            { field: 'stage', label: 'Stage' },
+            { field: 'startImpact', label: 'START Impact' },
+            { field: 'startDifficulty', label: 'START Difficulty' },
+            { field: 'startCost', label: 'START Cost' },
+            { field: 'localFeasibility', label: 'Local Feasibility' },
+            { field: 'recordedRecommendation', label: 'Recorded Recommendation' },
+            { field: 'schoolFeedback', label: 'School Feedback' },
+            { field: 'validationEvidence', label: 'Validation Evidence' },
+            { field: 'successMeasure', label: 'Success Measure' },
+            { field: 'schoolContact', label: 'School Contact' },
+            { field: 'knownConcerns', label: 'Known Concerns' },
+            { field: 'nextAction', label: 'Next Action' },
+            { field: 'linkedMetrics', label: 'Linked Metrics' }
+          ];
+        }
+        var header = projects.map(function (project) {
+          var projectId = text(first(project, ['projectId', 'id']));
+          var projectName = text(first(project, ['projectName', 'name'], 'Untitled project'));
+          var local = findProject(projectId) || state.projects.find(function (candidate) { return equalName(candidate.name, projectName); });
+          return '<th scope="col">' + (local ? '<button class="text-button" type="button" data-project-open="' + h(projectIdentifier(local)) + '">' + h(projectName) + '</button>' : h(projectName)) + (projectId ? '<span class="project-id">' + h(projectId) + '</span>' : '') + '</th>';
+        }).join('');
+        var rows = fields.map(function (field) {
+          return '<tr><th scope="row">' + h(field.label) + '</th>' + projects.map(function (project) {
+            var value = project[field.field];
+            var display = Array.isArray(value) ? value.map(text).filter(Boolean).join(' · ') : text(value);
+            return '<td>' + (display ? h(display) : '<span class="missing-chip">Missing</span>') + '</td>';
+          }).join('') + '</tr>';
+        }).join('');
+        var missingRow = '<tr><th scope="row">Missing information</th>' + projects.map(function (project) {
+          var missing = list(first(project, ['missingInformation', 'missing'], [])).map(function (item) {
+            return typeof item === 'object' ? text(first(item, ['label', 'field', 'name'])) : text(item);
+          }).filter(Boolean);
+          return '<td><div class="comparison-missing">' + (missing.length ? missing.map(function (label) { return '<span class="missing-chip">' + h(label) + '</span>'; }).join('') : '<span class="integrity-good">None listed</span>') + '</div></td>';
+        }).join('') + '</tr>';
+        return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Project fact comparison</h2><p class="panel-subtitle">Human decision required; rows follow the server’s deterministic field order</p></div></div><div class="comparison-scroll"><table class="comparison-table"><caption>' + projects.length + ' recorded project ' + (projects.length === 1 ? 'record' : 'records') + '</caption><thead><tr><th scope="col">Recorded field</th>' + header + '</tr></thead><tbody>' + rows + missingRow + '</tbody></table></div></section>';
+      }
+
+      function renderMeetingReport(report) {
+        var activeWork = first(report, ['activeWork'], {});
+        activeWork = activeWork && typeof activeWork === 'object' ? activeWork : {};
+        var queue = list(first(report, ['schoolDecisionQueue', 'waitingOnSchool'], []));
+        var activeProjects = list(first(activeWork, ['projects', 'activeProjects'], first(report, ['activeProjects'], [])));
+        var activeTasks = list(first(activeWork, ['tasks', 'activeTasks'], first(report, ['activeTasks'], [])));
+        var completed = list(first(report, ['completedProjects', 'completed'], []));
+        var blockers = list(first(report, ['blockers', 'blockedItems'], []));
+        var priorities = list(first(report, ['upcomingPriorities', 'priorities'], []));
+        var results = list(first(report, ['observedResults', 'results'], []));
+        var hasReport = queue.length + activeProjects.length + activeTasks.length + completed.length + blockers.length + priorities.length + results.length > 0;
+        if (!hasReport) {
+          return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Meeting report</h2><p class="panel-subtitle">No reporting records are available yet</p></div></div><p class="brief-section-empty">Meeting-ready sections will appear when the server prepares the bounded factual report.</p></section>';
+        }
+        return '<div class="briefing-grid">' +
+          renderBriefSection('Waiting on school', 'Projects ready for feedback or a human decision', queue, 'project') +
+          renderBriefSection('Active projects', 'Recorded next actions for current projects', activeProjects, 'project') +
+          renderBriefSection('Active tasks', 'Current practical work', activeTasks, 'task') +
+          renderBriefSection('Blockers', 'Recorded barriers; missing blocker text stays visible', blockers, 'blocker') +
+          renderBriefSection('Upcoming priorities', 'Recorded actions, not generated recommendations', priorities, 'priority') +
+          renderBriefSection('Completed projects', 'Completed work and recorded observations', completed, 'completed') +
+          renderBriefSection('Observed results', 'Every result below is reported, not independently verified', results, 'result', true) + '</div>';
+      }
+
+      function renderBriefSection(title, subtitle, items, kind, wide) {
+        return '<section class="panel' + (wide ? ' panel-wide' : '') + '"><div class="panel-header"><div><h2 class="panel-title">' + h(title) + '</h2><p class="panel-subtitle">' + h(subtitle) + '</p></div><span class="project-count">' + items.length + '</span></div>' +
+          (items.length ? '<ul class="brief-list">' + items.map(function (item) { return renderBriefItem(item, kind); }).join('') + '</ul>' : '<p class="brief-section-empty">Nothing recorded in this section.</p>') + '</section>';
+      }
+
+      function renderBriefItem(item, kind) {
+        item = item && typeof item === 'object' ? item : {};
+        var id = text(first(item, ['projectId', 'taskId', 'itemId', 'id']));
+        var name = text(first(item, ['projectName', 'title', 'itemName', 'name'], 'Recorded item'));
+        var detail = '';
+        var hasObservedResult = kind === 'result';
+        if (kind === 'project') detail = text(first(item, ['nextAction', 'recordedAction', 'schoolFeedback', 'knownConcerns']));
+        else if (kind === 'task') detail = text(first(item, ['relatedProject', 'owner', 'dueDate']));
+        else if (kind === 'blocker') detail = text(first(item, ['blocker'])) || 'Blocker information is missing.';
+        else if (kind === 'priority') detail = text(first(item, ['recordedAction', 'nextAction']));
+        else if (kind === 'completed') {
+          var observed = first(item, ['observedResult'], '');
+          var observedValue = typeof observed === 'object' ? text(first(observed, ['value'])) : text(observed);
+          var completedWork = text(first(item, ['completedWork']));
+          hasObservedResult = !!observedValue;
+          detail = [completedWork ? 'Completed: ' + completedWork : '', observedValue ? 'Observed: ' + observedValue : ''].filter(Boolean).join(' ');
+        } else if (kind === 'result') detail = text(first(item, ['value', 'observedResult', 'result']));
+        var isTaskItem = kind === 'task' || kind === 'blocker' || equalName(first(item, ['type', 'kind']), 'task');
+        var project = isTaskItem ? null : (findProject(id) || state.projects.find(function (candidate) { return equalName(candidate.name, name); }));
+        var task = isTaskItem ? state.tasks.find(function (candidate) { return equalName(candidate.id, id) || equalName(candidate.key, id); }) : null;
+        var action = project ? '<button class="text-button" type="button" data-project-open="' + h(projectIdentifier(project)) + '">Open project →</button>' : task ? '<button class="text-button" type="button" data-open-task="' + h(task.key || task.id) + '">Open task →</button>' : '';
+        var meta = [text(first(item, ['stage', 'status'])), id].filter(Boolean);
+        return '<li><strong>' + h(name) + '</strong>' + (detail ? '<p>' + h(detail) + '</p>' : '') +
+          (hasObservedResult ? '<span class="verification-note">Reported, not independently verified</span>' : '') +
+          (meta.length ? '<div class="brief-item-meta">' + meta.map(function (value) { return '<span>' + h(value) + '</span>'; }).join('') + '</div>' : '') + action + '</li>';
+      }
+
+      function renderOperations() {
+        var target = document.getElementById('operations-content');
+        if (state.loading) { target.innerHTML = loadingState(); return; }
+        if (!state.isAdmin) {
+          target.innerHTML = '<section class="access-state"><div><div class="empty-icon" aria-hidden="true">⚙</div><h2>Coordinator access required</h2><p>The server controls access to member management and readiness checks.</p></div></section>';
+          return;
+        }
+        if (state.operationsLoading) { target.innerHTML = loadingState(); return; }
+        if (state.operationsError) {
+          target.innerHTML = '<div class="error-state" role="alert" aria-live="assertive"><div><div class="empty-icon" aria-hidden="true">!</div><h2>Operations could not be loaded</h2><p>' + h(state.operationsError) + '</p><button class="button button-primary" type="button" data-operations-action="load">Try again</button></div></div>';
+          return;
+        }
+        if (!state.operations) {
+          target.innerHTML = '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Coordinator workspace</h2><p class="panel-subtitle">Member email addresses and diagnostics load only after the server rechecks administrator access.</p></div></div><div class="operations-toolbar"><button class="button button-primary" type="button" data-operations-action="load">Load operations</button></div></section>';
+          return;
+        }
+        var data = state.operations;
+        var members = list(first(data, ['members', 'memberProfiles'], []));
+        var schema = first(data, ['schema', 'schemaInspection'], {});
+        var integrity = first(data, ['integrity', 'diagnostics', 'integrityReport'], {});
+        var taskRecovery = first(data, ['taskRecovery', 'strandedTaskRecovery'], {});
+        var features = first(data, ['features', 'featureFlags'], {});
+        var build = first(data, ['build', 'release', 'runtime'], {});
+        if (!build || typeof build !== 'object' || !Object.keys(build).length) {
+          var releaseIndicator = document.getElementById('release-indicator');
+          build = {
+            webVersion: releaseIndicator ? releaseIndicator.getAttribute('data-web-version') : '',
+            webBuild: releaseIndicator ? releaseIndicator.getAttribute('data-web-build') : ''
+          };
+        }
+        target.innerHTML = '<div class="operations-shell"><p class="briefing-note"><strong>Server-authorized controls:</strong> UI visibility is only a convenience. Every read and mutation below is independently admin-gated on the server.</p>' +
+          '<div class="operations-grid">' + renderMemberOperations(members) + renderTaskRecoveryOperations(taskRecovery) +
+          renderOperationsPanel('Schema readiness', 'Read-only workbook structure inspection', schema, 'schema') +
+          renderOperationsPanel('Integrity diagnostics', 'Bounded factual issues; production rows are never repaired automatically', integrity, 'integrity') +
+          renderOperationsPanel('Dormant future-helper flags', 'Optional automated-helper flags only; they do not control the active deterministic Briefing or reporting view, and private configuration is never displayed', features, 'features') +
+          renderOperationsPanel('Build', 'Current release metadata when supplied by the server', build, 'build') + '</div>' +
+          '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Setup helpers</h2><p class="panel-subtitle">Additive, explicit operations only</p></div></div><div class="operations-toolbar">' +
+          '<button class="button button-subtle" type="button" data-operations-action="inspect-schema"' + (state.busyKey ? ' disabled' : '') + '>Inspect schema</button>' +
+          '<button class="button button-subtle" type="button" data-operations-action="setup-members"' + (state.busyKey ? ' disabled' : '') + '>Prepare Members sheet</button>' +
+          '<button class="button button-subtle" type="button" data-operations-action="setup-projects"' + (state.busyKey ? ' disabled' : '') + '>Prepare project workflow</button></div></section></div>';
+      }
+
+      function renderMemberOperations(members) {
+        var draft = state.operationsMemberDraft || { email: '', displayName: '', active: false };
+        var listHtml = members.length ? '<ul class="operations-list">' + members.map(function (member) {
+          var email = text(first(member, ['email']));
+          var name = text(first(member, ['displayName', 'name'], 'Unnamed member'));
+          var active = bool(first(member, ['active', 'isActive'], false), false);
+          var duplicate = bool(first(member, ['duplicateEmail', 'duplicate'], false), false);
+          return '<li class="operations-member"><div><strong>' + h(name) + '</strong><span>' + h(email) + (duplicate ? ' · duplicate email requires manual cleanup' : '') + '</span></div>' +
+            '<button class="button ' + (active ? 'button-warning' : 'button-done') + '" type="button" data-member-active="' + (active ? 'false' : 'true') + '" data-member-email="' + h(email) + '"' + (!email || duplicate || state.busyKey ? ' disabled' : '') + '>' + (active ? 'Deactivate' : 'Activate') + '</button></li>';
+        }).join('') + '</ul>' : '<p class="brief-section-empty">No Members rows are available.</p>';
+        return '<section class="panel panel-wide"><div class="panel-header"><div><h2 class="panel-title">Approved members</h2><p class="panel-subtitle">New records stay inactive until a coordinator explicitly reviews and activates them</p></div><span class="project-count">' + members.length + '</span></div>' + listHtml +
+          '<form class="operations-form" data-member-form><div class="operations-form-grid"><div class="form-field"><label for="admin-member-email">School Google email</label><input id="admin-member-email" name="email" type="email" maxlength="254" value="' + h(draft.email || '') + '" required' + (state.busyKey ? ' disabled' : '') + '></div>' +
+          '<div class="form-field"><label for="admin-member-name">Student-facing display name</label><input id="admin-member-name" name="displayName" maxlength="120" value="' + h(draft.displayName || '') + '" required' + (state.busyKey ? ' disabled' : '') + '></div></div>' +
+          '<label><input type="checkbox" name="active"' + (draft.active ? ' checked' : '') + (state.busyKey ? ' disabled' : '') + '> Activate after review</label><div class="form-actions"><button class="button button-primary" type="submit"' + (state.busyKey ? ' disabled' : '') + '>Add or update member</button></div></form></section>';
+      }
+
+      function renderTaskRecoveryOperations(recovery) {
+        recovery = recovery && typeof recovery === 'object' ? recovery : {};
+        var available = bool(first(recovery, ['available'], false), false);
+        var tasks = list(first(recovery, ['tasks', 'items'], []));
+        var draft = state.operationsTaskRecoveryDraft || { taskId: '', reason: '' };
+        var unavailableCount = number(first(recovery, ['unavailableCount'], 0), 0);
+        var omitted = number(first(recovery, ['omitted'], 0), 0);
+        var listHtml = tasks.length ? '<ul class="operations-list">' + tasks.map(function (task) {
+          var taskId = text(first(task, ['taskId', 'id']));
+          var title = text(first(task, ['task', 'title'], 'Untitled task'));
+          var status = text(first(task, ['status']));
+          var owner = text(first(task, ['ownerDisplayName', 'owner']));
+          var resolution = text(first(task, ['ownerResolution', 'reason']));
+          var detail = [status, owner ? 'Recorded owner: ' + owner : '', resolution].filter(Boolean).join(' · ');
+          return '<li class="operations-member"><div><strong>' + h(taskId + ': ' + title) + '</strong><span>' + h(detail) + '</span></div>' +
+            '<button class="button button-subtle" type="button" data-task-recovery-select="' + h(taskId) + '"' + (state.busyKey ? ' disabled' : '') + '>Use ID</button></li>';
+        }).join('') + '</ul>' : '<p class="brief-section-empty">No Doing or Blocked tasks with a missing, inactive, unknown, or ambiguous active owner are currently recoverable.</p>';
+        var availabilityNote = available
+          ? ((unavailableCount ? unavailableCount + ' stranded row(s) need a unique Task ID before recovery. ' : '') + (omitted ? omitted + ' additional eligible task(s) are not shown; enter an exact ID below. ' : ''))
+          : 'Recovery is unavailable until the Members and Tasks sheets are ready. ';
+        return '<section class="panel panel-wide"><div class="panel-header"><div><h2 class="panel-title">Stranded task recovery</h2><p class="panel-subtitle">Coordinator-only release for Doing or Blocked tasks without exactly one active owner</p></div><span class="project-count">' + tasks.length + '</span></div>' + listHtml +
+          '<form class="operations-form" data-task-recovery-form><p class="field-help">' + h(availabilityNote) + 'Active owners must release their own work. Open and Done tasks are never eligible.</p><div class="operations-form-grid"><div class="form-field"><label for="admin-recovery-task-id">Exact Task ID</label><input id="admin-recovery-task-id" name="taskId" maxlength="250" value="' + h(draft.taskId || '') + '" required' + (!available || state.busyKey ? ' disabled' : '') + '></div>' +
+          '<div class="form-field"><label for="admin-recovery-reason">Short admin reason</label><input id="admin-recovery-reason" name="reason" maxlength="300" value="' + h(draft.reason || '') + '" required' + (!available || state.busyKey ? ' disabled' : '') + '></div></div>' +
+          '<div class="form-actions"><button class="button button-warning" type="submit"' + (!available || state.busyKey ? ' disabled' : '') + '>Release for a new claim</button></div></form></section>';
+      }
+
+      function renderOperationsPanel(title, subtitle, value, kind) {
+        var rows = [];
+        flattenOperationsValue(value, '', rows, 0);
+        var body = rows.length ? '<dl class="operations-definition">' + rows.slice(0, 80).map(function (row) {
+          return '<dt>' + h(row[0]) + '</dt><dd>' + h(row[1]) + '</dd>';
+        }).join('') + '</dl>' : '<p class="brief-section-empty">No ' + h(kind) + ' data supplied.</p>';
+        return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">' + h(title) + '</h2><p class="panel-subtitle">' + h(subtitle) + '</p></div></div>' + body + '</section>';
+      }
+
+      function flattenOperationsValue(value, prefix, rows, depth) {
+        if (rows.length >= 80 || depth > 4) return;
+        if (value === null || value === undefined || value === '') return;
+        if (Array.isArray(value)) {
+          if (!value.length) return;
+          if (value.every(function (item) { return item === null || ['string', 'number', 'boolean'].indexOf(typeof item) >= 0; })) {
+            rows.push([prefix || 'Items', value.map(text).join(' · ')]);
+          } else {
+            rows.push([prefix || 'Items', value.length + ' recorded']);
+            value.slice(0, 20).forEach(function (item, index) { flattenOperationsValue(item, (prefix ? prefix + ' ' : '') + (index + 1), rows, depth + 1); });
+          }
+          return;
+        }
+        if (typeof value === 'object') {
+          Object.keys(value).sort().forEach(function (key) {
+            var label = (prefix ? prefix + ' · ' : '') + key.replace(/([a-z])([A-Z])/g, '$1 $2');
+            flattenOperationsValue(value[key], label, rows, depth + 1);
+          });
+          return;
+        }
+        rows.push([prefix || 'Status', typeof value === 'boolean' ? (value ? 'Yes' : 'No') : text(value)]);
       }
 
       function projectStageClass(stage) {
@@ -2151,11 +2629,11 @@
       function renderProjectBoard() {
         var setup = state.projectWorkflowSetupNeeded
           ? '<div class="project-setup-banner" role="status"><div><strong>One-time project setup is needed</strong><p>Add the supported workflow fields and stage options without changing any existing project rows.</p></div>' +
-            '<button class="button button-subtle" type="button" data-project-action="setup"' + (state.busyKey ? ' disabled' : '') + '>' +
-            (state.busyKey.indexOf('setupProjectWorkflow') >= 0 ? 'Preparing…' : 'Finish setup') + '</button></div>'
+            (state.isAdmin ? '<button class="button button-subtle" type="button" data-project-action="setup"' + (state.busyKey ? ' disabled' : '') + '>' +
+            (state.busyKey.indexOf('setupProjectWorkflow') >= 0 ? 'Preparing…' : 'Finish setup') + '</button>' : '<span class="workflow-unavailable">Ask a coordinator to finish setup.</span>') + '</div>'
           : '';
         var toolbar = '<div class="project-board-toolbar"><div><p class="results-count">' + state.projects.length + ' ' + (state.projects.length === 1 ? 'project' : 'projects') + ' across the full workflow</p></div>' +
-          '<button class="button button-primary new-idea-button" type="button" data-project-action="new-idea"' + (state.busyKey || state.refreshing ? ' disabled' : '') + '>+ New Idea</button></div>';
+          '<button class="button button-primary new-idea-button" type="button" data-project-action="new-idea"' + (state.busyKey || state.refreshing || !state.canMutate ? ' disabled' : '') + '>+ New Idea</button></div>';
         var primary = [
           ['Idea', 'Ideas', 'New suggestions ready for a quick look'],
           ['Validation', 'Needs Work / Validation', 'Checking whether an idea is useful and realistic'],
@@ -2195,7 +2673,7 @@
         return '<article class="project-summary-card ' + h(projectStageClass(project.stage)) + '"><button type="button" data-project-open="' + h(key) + '" aria-label="Open project: ' + h(project.name) + '"><span class="project-card-top"><span class="status-badge">' + h(project.stage) + '</span>' + (project.id ? '<span class="project-id">' + h(project.id) + '</span>' : '') + '</span>' +
           '<strong class="project-card-name">' + h(project.name) + '</strong>' +
           (project.problem ? '<span class="project-card-problem">' + h(project.problem) + '</span>' : '') +
-          (bottom ? '<span class="project-card-next"><small>' + (project.stage === 'Completed' ? 'Result' : 'Next') + '</small>' + h(bottom) + '</span>' : '') +
+          (bottom ? '<span class="project-card-next"><small>' + (project.stage === 'Completed' ? 'Observed result · reported, not independently verified' : 'Next') + '</small>' + h(bottom) + '</span>' : '') +
           ((project.projectLead || metricCopy) ? '<span class="project-card-meta">' + (project.projectLead ? '<span>Lead: ' + h(project.projectLead) + '</span>' : '') + (metricCopy ? '<span>' + h(metricCopy) + '</span>' : '') + '</span>' : '') +
           '<span class="project-open-label">Open project <span aria-hidden="true">→</span></span></button></article>';
       }
@@ -2203,7 +2681,7 @@
       function renderNewIdeaScreen() {
         var draft = state.projectDrafts[projectDraftKey('new')];
         var values = draft && draft.kind === 'new' ? draft.values : {};
-        var unavailable = !!state.busyKey || state.refreshing;
+        var unavailable = !!state.busyKey || state.refreshing || !state.canMutate;
         return '<div class="project-screen project-form-screen"><button class="project-back" type="button" data-project-action="back-board">← All projects</button>' +
           '<div class="project-form-intro"><p class="eyebrow">Share a possibility</p><h2>New project idea</h2><p>Keep it lightweight. The committee can work out cost, scores, approvals, and a detailed plan later.</p></div>' +
           '<form class="workflow-form new-idea-form" data-project-form="new" data-project-key="new">' +
@@ -2235,7 +2713,7 @@
           ['Reason paused', project.pauseReason],
           ['Reason declined', project.rejectionReason],
           ['Work completed', project.completedWork],
-          ['Observed result', project.observedResult]
+          ['Observed result — reported, not independently verified', project.observedResult]
         ].filter(function (field) { return field[1]; });
         var metricBlock = project.linkedMetricNames.length
           ? '<div class="project-info-field project-info-wide"><dt>Linked START metrics</dt><dd class="project-tag-list">' + project.linkedMetricNames.map(function (metric) { return '<span class="meta-chip">' + h(metric) + '</span>'; }).join('') + '</dd></div>'
@@ -2263,12 +2741,12 @@
       }
 
       function projectControlsUnavailable(project) {
-        return !!state.busyKey || state.refreshing || !state.currentMember || !state.viewerIsActive || !projectMutationKey(project);
+        return !!state.busyKey || state.refreshing || !state.canMutate || !state.currentMember || !state.viewerIsActive || !projectMutationKey(project);
       }
 
       function projectUnavailableNote(project) {
-        if (!state.currentMember) return 'Choose a member profile before changing this project.';
-        if (!state.viewerIsActive) return 'This member profile is inactive.';
+        if (!state.canMutate) return 'This signed-in account cannot change projects.';
+        if (!state.currentMember || !state.viewerIsActive) return 'An approved active school Google identity is required.';
         if (!projectMutationKey(project)) return 'This legacy row needs a Project ID before workflow actions can be used.';
         return '';
       }
@@ -2290,12 +2768,30 @@
           return '<section class="project-workflow-panel workflow-finished"><div><h3>Project completed</h3><p>No prominent actions remain. Related tasks, updates, and recorded results are preserved below.</p></div></section>';
         }
         if (project.stage === 'Paused') {
-          return '<section class="project-workflow-panel workflow-paused"><div><h3>Project paused</h3><p>The reason and any reconsideration step remain visible. Paused projects are never deleted.</p></div></section>';
+          return renderResumeProjectForm(project, unavailable, note);
         }
         if (project.stage === 'Rejected') {
           return '<section class="project-workflow-panel workflow-rejected"><div><h3>Project not moving forward</h3><p>The school or committee reason and full history remain available for future reference.</p></div></section>';
         }
         return '<section class="project-workflow-panel"><div><h3>Legacy project stage</h3><p>This project can still be read safely. Ask the Student Lead to move it into a supported workflow stage before editing.</p></div></section>';
+      }
+
+      function renderResumeProjectForm(project, unavailable, note) {
+        var key = projectMutationKey(project);
+        var draft = state.projectDrafts[projectDraftKey(key)];
+        var values = draft && draft.kind === 'resume' ? draft.values : {
+          targetStage: 'Validation',
+          nextAction: project.nextAction || ''
+        };
+        var domId = projectDomId(project);
+        var options = ['Idea', 'Validation', 'School Review', 'Active'].map(function (stage) {
+          return '<option value="' + h(stage) + '"' + (equalName(stage, values.targetStage) ? ' selected' : '') + '>' + h(stage) + '</option>';
+        }).join('');
+        return '<section class="project-workflow-form-panel workflow-paused" aria-labelledby="resume-heading-' + h(domId) + '"><div class="workflow-panel-heading"><p class="eyebrow">Paused project</p><h3 id="resume-heading-' + h(domId) + '">Resume with a human-selected stage</h3><p>The pause reason remains in Updates. Choose where the work belongs now and name the next action.</p></div>' +
+          '<form class="workflow-form" data-project-form="resume" data-project-key="' + h(key) + '"><div class="workflow-form-grid"><div class="form-field"><label for="resume-stage-' + h(domId) + '">Resume in</label><select id="resume-stage-' + h(domId) + '" name="targetStage" required' + (unavailable ? ' disabled' : '') + '>' + options + '</select></div>' +
+          '<div class="form-field"><label for="resume-next-' + h(domId) + '">Required next action</label><textarea id="resume-next-' + h(domId) + '" name="nextAction" maxlength="600" required' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || '') + '</textarea></div></div>' +
+          (note ? '<p class="workflow-unavailable">' + h(note) + '</p>' : '') +
+          '<div class="form-actions"><button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>' + (state.busyKey.indexOf('resumeProject') >= 0 ? 'Resuming…' : 'Resume Project') + '</button></div></form></section>';
       }
 
       function feasibilityOptions(selected) {
@@ -2419,11 +2915,12 @@
             '<div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>' + (state.busyKey.indexOf('addProjectUpdate') >= 0 ? 'Saving…' : 'Save Project Update') + '</button></div></form></div>';
         }
         if (draft.kind === 'next-action') {
-          return '<div class="active-project-form"><h4>Edit next action</h4><form class="workflow-form" data-project-form="next-action" data-project-key="' + h(key) + '"><div class="form-field"><label for="next-action-' + h(domId) + '">What is the next useful step?</label><textarea id="next-action-' + h(domId) + '" name="nextAction" maxlength="600" required' + (unavailable ? ' disabled' : '') + '>' + h(values.nextAction || project.nextAction || '') + '</textarea></div><div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>Save Next Action</button></div></form></div>';
+          return '<div class="active-project-form"><h4>Edit next action</h4><form class="workflow-form" data-project-form="next-action" data-project-key="' + h(key) + '"><div class="form-field"><label for="next-action-' + h(domId) + '">What is the next useful step?</label><textarea id="next-action-' + h(domId) + '" name="nextAction" maxlength="600" required' + (unavailable ? ' disabled' : '') + '>' + h(draftField(values, 'nextAction', project.nextAction || '')) + '</textarea></div><div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>Save Next Action</button></div></form></div>';
         }
         if (draft.kind === 'lead') {
+          var selectedLead = draftField(values, 'leadProfileKey', project.projectLeadProfileKey || '');
           var options = '<option value="">No project lead</option>' + state.members.map(function (member) {
-            return '<option value="' + h(member.profileKey) + '"' + (equalName(member.profileKey, values.leadProfileKey || project.projectLeadProfileKey) ? ' selected' : '') + '>' + h(member.displayName) + '</option>';
+            return '<option value="' + h(member.profileKey) + '"' + (equalName(member.profileKey, selectedLead) ? ' selected' : '') + '>' + h(member.displayName) + '</option>';
           }).join('');
           return '<div class="active-project-form"><h4>Project lead</h4><p>This is optional. Tasks stay individually claimable by every active member.</p><form class="workflow-form" data-project-form="lead" data-project-key="' + h(key) + '"><div class="form-field"><label for="project-lead-' + h(domId) + '">Choose an active member</label><select id="project-lead-' + h(domId) + '" name="leadProfileKey"' + (unavailable ? ' disabled' : '') + '>' + options + '</select></div><div class="form-actions">' + close + '<button class="button button-primary" type="submit"' + (unavailable ? ' disabled' : '') + '>Save Project Lead</button></div></form></div>';
         }
@@ -2459,7 +2956,7 @@
         var tasks = relatedTasksForProject(project);
         return '<section class="project-info-panel related-tasks-panel" aria-labelledby="related-tasks-heading"><div class="panel-header"><div><h3 class="panel-title" id="related-tasks-heading">Related tasks</h3><p class="panel-subtitle">Tasks created for this project stay in the shared Task Pool</p></div><span class="project-count">' + tasks.length + '</span></div>' +
           (tasks.length ? '<ul class="related-task-list">' + tasks.map(function (task) {
-            var due = dueInfo(task.dueDate, task.status === 'Done');
+            var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
             return '<li><button type="button" data-open-task="' + h(task.key || task.id) + '"><span><strong>' + h(task.title) + '</strong>' + (task.claimedBy ? '<small>Owned by ' + h(task.claimedBy) + '</small>' : '<small>Unclaimed</small>') + '</span><span class="related-task-meta"><span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' + (due ? '<small>' + h(due.label) + '</small>' : '') + '</span></button></li>';
           }).join('') + '</ul>' : '<div class="project-panel-empty"><p>No related tasks yet.</p>' + (project.stage === 'Active' ? '<p>Use <strong>Add Task</strong> above to create practical work for members to claim.</p>' : '') + '</div>') + '</section>';
       }
@@ -2501,6 +2998,7 @@
         state.view = view;
         if (window.location.hash !== '#' + view) window.location.hash = view;
         render();
+        if (view === 'operations' && state.isAdmin && !state.operations) loadOperations();
         if (changed || state.projectFocusStage) {
           window.requestAnimationFrame(function () {
             var section = state.projectFocusStage ? document.querySelector('[data-project-section="' + state.projectFocusStage.replace(/"/g, '') + '"]') : null;
@@ -2514,40 +3012,6 @@
             state.projectFocusStage = '';
           });
         }
-      }
-
-      function chooseProfile(profileKey) {
-        profileKey = text(profileKey);
-        var selectedProfile = state.members.find(function (member) { return equalName(member.profileKey, profileKey); });
-        if (profileKey && !selectedProfile) {
-          showToast('Ask the Student Lead to add your profile in Members.', true);
-          return;
-        }
-        state.taskDrafts = {};
-        state.projectDrafts = {};
-        state.projectScreen = 'board';
-        state.selectedProjectKey = '';
-        state.profilePickerOpen = false;
-        state.requestedMember = profileKey;
-        state.currentMember = profileKey;
-        state.currentDisplayName = selectedProfile ? selectedProfile.displayName : '';
-        storeMember(profileKey);
-        loadDashboard({
-          profileKey: profileKey,
-          silent: false,
-          restoreIdentityFocus: true,
-          announce: selectedProfile ? 'Now showing tasks for ' + selectedProfile.displayName + '.' : 'Profile selection cleared.'
-        });
-      }
-
-      function restoreIdentityFocus() {
-        window.requestAnimationFrame(function () {
-          var select = document.getElementById('profile-select');
-          var switchButton = document.querySelector('[data-switch-profile]');
-          if (select && !select.disabled && select.offsetParent !== null) select.focus({ preventScroll: true });
-          else if (switchButton) switchButton.focus({ preventScroll: true });
-          else if (!memberChip.disabled) memberChip.focus({ preventScroll: true });
-        });
       }
 
       function focusDisplayNameEditor() {
@@ -2668,6 +3132,61 @@
         return values;
       }
 
+      function rawDraftValue(value) {
+        return value === null || value === undefined ? '' : String(value);
+      }
+
+      function draftField(values, name, fallback) {
+        return Object.prototype.hasOwnProperty.call(values || {}, name) ? values[name] : fallback;
+      }
+
+      function syncFormDraft(form) {
+        if (!form) return;
+        var data = new FormData(form);
+        if (form.matches('[data-display-name-form]')) {
+          state.displayNameDraft = rawDraftValue(data.get('displayName'));
+          return;
+        }
+        if (form.matches('[data-member-form]')) {
+          state.operationsMemberDraft = {
+            email: rawDraftValue(data.get('email')),
+            displayName: rawDraftValue(data.get('displayName')),
+            active: !!form.querySelector('[name="active"]:checked')
+          };
+          return;
+        }
+        if (form.matches('[data-task-recovery-form]')) {
+          state.operationsTaskRecoveryDraft = {
+            taskId: rawDraftValue(data.get('taskId')),
+            reason: rawDraftValue(data.get('reason'))
+          };
+          return;
+        }
+        if (form.matches('[data-task-composer-form]')) {
+          var taskKey = form.getAttribute('data-task-key');
+          var composerKind = form.getAttribute('data-task-composer-form');
+          if (!taskKey) return;
+          state.taskDrafts[taskKey] = composerKind === 'block'
+            ? { kind: 'block', blocker: rawDraftValue(data.get('blocker')) }
+            : { kind: 'update', updateText: rawDraftValue(data.get('updateText')) };
+          return;
+        }
+        if (!form.matches('[data-project-form]')) return;
+        var projectKey = form.getAttribute('data-project-key');
+        var projectKind = form.getAttribute('data-project-form');
+        var values = {};
+        Array.prototype.forEach.call(form.elements, function (field) {
+          if (!field.name || field.disabled || field.type === 'submit' || field.type === 'button') return;
+          if (field.name === 'linkedStartMetrics') return;
+          if ((field.type === 'checkbox' || field.type === 'radio') && !field.checked) return;
+          values[field.name] = rawDraftValue(field.value);
+        });
+        if (form.querySelector('[name="linkedStartMetrics"]')) {
+          values.linkedStartMetrics = data.getAll('linkedStartMetrics').map(rawDraftValue).filter(Boolean);
+        }
+        state.projectDrafts[projectDraftKey(projectKey)] = { kind: projectKind, values: values };
+      }
+
       function focusNamedField(form, name) {
         var field = form.querySelector('[name="' + name + '"]');
         if (field) field.focus({ preventScroll: true });
@@ -2734,6 +3253,26 @@
           });
           return;
         }
+        if (kind === 'resume') {
+          var resume = projectFormValues(data, ['targetStage', 'nextAction']);
+          state.projectDrafts[draftKey] = { kind: 'resume', values: resume };
+          if (['Idea', 'Validation', 'School Review', 'Active'].indexOf(resume.targetStage) < 0) {
+            showToast('Choose a supported stage for the resumed project.', true);
+            focusNamedField(form, 'targetStage');
+            return;
+          }
+          if (!resume.nextAction) {
+            showToast('Name the next action before resuming this project.', true);
+            focusNamedField(form, 'nextAction');
+            return;
+          }
+          runProjectAction('resumeProject', key, [resume.targetStage, resume.nextAction], {
+            fromForm: true,
+            successMessage: 'Project resumed in ' + resume.targetStage + ' with its next action saved.',
+            errorMessage: 'Could not resume this project.'
+          });
+          return;
+        }
         if (kind === 'task') {
           var task = projectFormValues(data, ['task', 'interestTag', 'estimatedTime', 'dueDate', 'supportingLink']);
           state.projectDrafts[draftKey] = { kind: 'task', values: task };
@@ -2780,22 +3319,32 @@
         focusTaskDraft(key);
       }
 
-      function focusIdentity() {
-        if (state.identityLocked) return;
-        state.profilePickerOpen = true;
-        renderIdentity();
-        var panel = document.getElementById('identity-panel');
-        if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        window.setTimeout(function () {
-          var control = document.getElementById('profile-select');
-          if (control) control.focus();
-        }, 180);
+      function syncSlowOperationStatus() {
+        var active = state.loading || state.refreshing || state.operationsLoading || !!state.busyKey;
+        if (!active) {
+          window.clearTimeout(slowOperationTimer);
+          slowOperationTimer = 0;
+          state.slowOperationVisible = false;
+          operationStatus.hidden = true;
+          operationStatus.textContent = '';
+          return;
+        }
+        if (state.slowOperationVisible || slowOperationTimer) return;
+        slowOperationTimer = window.setTimeout(function () {
+          slowOperationTimer = 0;
+          if (!(state.loading || state.refreshing || state.operationsLoading || state.busyKey)) return;
+          state.slowOperationVisible = true;
+          operationStatus.textContent = 'Still working. Leave this tab open; the request is continuing and has not been canceled.';
+          operationStatus.hidden = false;
+        }, 1200);
       }
 
       function showToast(message, isError) {
         window.clearTimeout(toastTimer);
         toast.textContent = text(message);
         toast.classList.toggle('error', !!isError);
+        toast.setAttribute('role', isError ? 'alert' : 'status');
+        toast.setAttribute('aria-live', isError ? 'assertive' : 'polite');
         toast.classList.add('show');
         toastTimer = window.setTimeout(function () { toast.classList.remove('show'); }, 4200);
       }
@@ -2819,7 +3368,29 @@
         if (taskOpen) {
           var taskKey = taskOpen.getAttribute('data-open-task');
           navigate('tasks', 'all');
-          if (taskKey) window.setTimeout(function () { focusTaskCard(taskKey); }, 0);
+          if (taskKey) window.setTimeout(function () { focusTaskCard(taskKey); }, 80);
+          return;
+        }
+        var operationsAction = event.target.closest('[data-operations-action]');
+        if (operationsAction) {
+          var operationName = operationsAction.getAttribute('data-operations-action');
+          if (operationName === 'load') loadOperations();
+          else if (operationName === 'inspect-schema') runOperationsCommand('inspectStartSchema', [], 'Schema inspection refreshed.');
+          else if (operationName === 'setup-members') runOperationsCommand('setupMembersSheet', [], 'Members setup completed without changing production rows.');
+          else if (operationName === 'setup-projects') runOperationsCommand('setupProjectWorkflow', [], 'Project workflow setup completed without rewriting project rows.');
+          return;
+        }
+        var memberActive = event.target.closest('[data-member-active]');
+        if (memberActive) {
+          runOperationsCommand('setMemberActive', [memberActive.getAttribute('data-member-email'), memberActive.getAttribute('data-member-active') === 'true'], memberActive.getAttribute('data-member-active') === 'true' ? 'Member activated.' : 'Member deactivated.');
+          return;
+        }
+        var recoverySelection = event.target.closest('[data-task-recovery-select]');
+        if (recoverySelection) {
+          state.operationsTaskRecoveryDraft.taskId = recoverySelection.getAttribute('data-task-recovery-select');
+          renderOperations();
+          var recoveryTaskInput = document.getElementById('admin-recovery-task-id');
+          if (recoveryTaskInput) recoveryTaskInput.focus({ preventScroll: true });
           return;
         }
         var projectAction = event.target.closest('[data-project-action]');
@@ -2872,16 +3443,6 @@
           loadDashboard({ silent: true, announce: 'Dashboard refreshed.' });
           return;
         }
-        if (event.target.closest('[data-focus-identity]')) {
-          focusIdentity();
-          return;
-        }
-        if (event.target.closest('[data-switch-profile]')) {
-          state.profilePickerOpen = true;
-          renderIdentity();
-          restoreIdentityFocus();
-          return;
-        }
         if (event.target.closest('[data-edit-display-name]')) {
           state.displayNameEditorOpen = true;
           state.displayNameDraft = state.currentDisplayName;
@@ -2911,22 +3472,54 @@
         }
       });
 
-      document.addEventListener('change', function (event) {
-        if (event.target.id !== 'profile-select') return;
-        chooseProfile(event.target.value);
+      document.addEventListener('input', function (event) {
+        syncFormDraft(event.target.closest('form'));
+        if (event.target.matches('[data-metric-search]')) {
+          var query = text(event.target.value).toLowerCase();
+          var picker = event.target.closest('.metric-picker');
+          if (!picker) return;
+          picker.querySelectorAll('[data-metric-option]').forEach(function (option) {
+            option.hidden = !!query && option.getAttribute('data-metric-label').indexOf(query) < 0;
+          });
+        }
       });
 
-      document.addEventListener('input', function (event) {
-        if (!event.target.matches('[data-metric-search]')) return;
-        var query = text(event.target.value).toLowerCase();
-        var picker = event.target.closest('.metric-picker');
-        if (!picker) return;
-        picker.querySelectorAll('[data-metric-option]').forEach(function (option) {
-          option.hidden = !!query && option.getAttribute('data-metric-label').indexOf(query) < 0;
-        });
+      document.addEventListener('change', function (event) {
+        syncFormDraft(event.target.closest('form'));
       });
 
       document.addEventListener('submit', function (event) {
+        if (event.target.matches('[data-task-recovery-form]')) {
+          event.preventDefault();
+          var recoveryData = new FormData(event.target);
+          var recoveryInput = {
+            taskId: text(recoveryData.get('taskId')),
+            reason: text(recoveryData.get('reason'))
+          };
+          state.operationsTaskRecoveryDraft = recoveryInput;
+          if (!recoveryInput.taskId || !recoveryInput.reason) {
+            showToast('Enter the exact Task ID and a short reason for the recovery.', true);
+            return;
+          }
+          runOperationsCommand('releaseStrandedTask', [recoveryInput.taskId, recoveryInput.reason], 'Task released for a new claim.');
+          return;
+        }
+        if (event.target.matches('[data-member-form]')) {
+          event.preventDefault();
+          var memberData = new FormData(event.target);
+          var memberInput = {
+            email: text(memberData.get('email')),
+            displayName: text(memberData.get('displayName')),
+            active: memberData.get('active') === 'on'
+          };
+          state.operationsMemberDraft = memberInput;
+          if (!memberInput.email || !memberInput.displayName) {
+            showToast('Enter both the school Google email and display name.', true);
+            return;
+          }
+          runOperationsCommand('addOrUpdateMember', [memberInput], 'Member record saved.');
+          return;
+        }
         if (event.target.matches('[data-display-name-form]')) {
           event.preventDefault();
           var displayName = text(new FormData(event.target).get('displayName'));
@@ -2987,12 +3580,13 @@
         if (next !== state.view) {
           state.view = next;
           render();
+          if (next === 'operations' && state.isAdmin && !state.operations) loadOperations();
         }
       });
 
       if (!window.location.hash) window.history.replaceState(null, '', '#home');
       render();
-      loadDashboard({ profileKey: state.currentMember });
+      loadDashboard();
     }());
   </script>
 </body>
