@@ -9,7 +9,9 @@ function getDashboardData(profileKey) {
 }
 
 function inspectStartSchema() {
-  return inspectStartSchema_(getSpreadsheet_());
+  var spreadsheet = getSpreadsheet_();
+  requireAdmin_(spreadsheet);
+  return inspectStartSchema_(spreadsheet);
 }
 
 function claimTask(taskKey, profileKey) {
@@ -247,7 +249,7 @@ function setProjectLead(projectKey, profileKey, leadProfileKey) {
     var leadDisplay = '';
     if (requestedLead) {
       var directory = readMemberDirectory_(context.spreadsheet);
-      var lead = findMemberProfile_(requestedLead, directory.active);
+      var lead = findUniqueActiveMemberProfile_(requestedLead, directory.all);
       if (!lead) fail_('Choose an active member as Project Lead.');
       storedLead = memberStorageKey_(lead);
       leadDisplay = lead.displayName;
@@ -268,7 +270,7 @@ function addProjectTask(projectKey, profileKey, task) {
     var taskName = validateText_(input.task, 'Task', 500, true);
     var interestTag = singleLineText_(input.interestTag, 'Interest tag', 120, true);
     var estimatedTime = singleLineText_(input.estimatedTime, 'Estimated time', 120, true);
-    var dueDate = singleLineText_(input.dueDate, 'Due date', 120, false);
+    var dueDate = validateDueDate_(input.dueDate, 'Due date');
     var supportingLink = singleLineText_(input.supportingLink, 'Supporting link', 500, false);
     var tasksTable = readTable_(context.spreadsheet, 'Tasks');
     var taskColumns = taskCreationColumns_(tasksTable);
@@ -355,14 +357,13 @@ function completeProject(projectKey, profileKey, completion) {
 function pauseProject(projectKey, profileKey, reason, nextAction) {
   return withMutationLock_(function () {
     var context = loadProjectMutation_(projectKey, profileKey,
-      ['stage', 'decisionNotes', 'nextAction', 'recommendation']);
+      ['stage', 'decisionNotes', 'nextAction']);
     assertProjectStage_(context.stage, ['Idea', 'Validation', 'School Review', 'Active'], 'pause');
     var pauseReason = validateText_(reason, 'Pause reason', 1000, true);
     var next = validateText_(nextAction, 'Next reconsideration step', 600, false);
     setCells_(context.projectsTable.sheet, context.projectRow.rowNumber, [
       { column: context.columns.decisionNotes, value: literalSheetText_(pauseReason) },
       { column: context.columns.nextAction, value: literalSheetText_(next) },
-      { column: context.columns.recommendation, value: 'Paused' },
       { column: context.columns.stage, value: 'Paused' }
     ]);
     appendProjectUpdate_(context, new Date(), 'Paused project: ' + pauseReason, next, '');
@@ -371,17 +372,18 @@ function pauseProject(projectKey, profileKey, reason, nextAction) {
   });
 }
 
+function resumeProject(projectKey, profileKey, targetStage, nextAction) {
+  return resumeProject_(projectKey, profileKey, targetStage, nextAction);
+}
+
 function saveMyDisplayName(displayName) {
   return withMutationLock_(function () {
-    var email = normalizeEmail_(activeUserEmail_());
-    if (!email) {
-      fail_('Google did not provide your email, so your display name must be managed in the Members sheet.');
-    }
+    var spreadsheet = getSpreadsheet_();
+    var member = requireActiveMember_(spreadsheet);
     var cleanName = validateText_(displayName, 'Display name', 120, true);
     if (/[\r\n]/.test(cleanName)) fail_('Display name must be a single line.');
 
-    var spreadsheet = getSpreadsheet_();
-    ensureMembersSheet_(spreadsheet);
+    var email = normalizeEmail_(member.email);
     var table = readTable_(spreadsheet, 'Members');
     var columns = indexes_(table, MEMBER_FIELDS);
     requireColumn_(columns.email, 'Email', 'Members');
@@ -390,19 +392,14 @@ function saveMyDisplayName(displayName) {
     var matches = table.rows.filter(function (row) {
       return normalizeEmail_(cell_(row.values, columns.email)) === email;
     });
-
     if (matches.length > 1) {
       fail_('Your email appears more than once in Members. Remove the duplicate before saving a display name.');
     }
-    if (matches.length === 1) {
-      table.sheet.getRange(matches[0].rowNumber, columns.displayName + 1).setValue(literalSheetText_(cleanName));
-    } else {
-      var row = table.headers.map(function () { return ''; });
-      row[columns.email] = literalSheetText_(email);
-      row[columns.displayName] = literalSheetText_(cleanName);
-      row[columns.active] = true;
-      table.sheet.getRange(table.sheet.getLastRow() + 1, 1, 1, row.length).setValues([row]);
+    if (memberIdentityNamespaceConflict_(table, columns, email, cleanName)) {
+      fail_('Choose a display name that is unique and does not match any member email.');
     }
+    if (matches.length !== 1) fail_('Your active member profile could not be matched uniquely.');
+    table.sheet.getRange(matches[0].rowNumber, columns.displayName + 1).setValue(literalSheetText_(cleanName));
 
     flush_();
     return buildDashboardData_(spreadsheet, email);
@@ -412,6 +409,7 @@ function saveMyDisplayName(displayName) {
 function setupMembersSheet() {
   return withMutationLock_(function () {
     var spreadsheet = getSpreadsheet_();
+    requireAdmin_(spreadsheet);
     var setup = ensureMembersSheet_(spreadsheet);
     flush_();
     var dashboard = buildDashboardData_(spreadsheet, '');
@@ -423,6 +421,7 @@ function setupMembersSheet() {
 function setupProjectWorkflow() {
   return withMutationLock_(function () {
     var spreadsheet = getSpreadsheet_();
+    requireAdmin_(spreadsheet);
     var projectsTable = readTable_(spreadsheet, 'Projects');
     var settingsTable = readTable_(spreadsheet, 'Settings');
     var addedHeaders = appendMissingProjectWorkflowHeaders_(projectsTable);
@@ -440,4 +439,20 @@ function setupProjectWorkflow() {
     };
     return dashboard;
   });
+}
+
+function getAdminData() {
+  return getAdminData_();
+}
+
+function saveMemberProfile(member) {
+  return saveMemberProfile_(member);
+}
+
+function setMemberActive(email, active) {
+  return setMemberActive_(email, active);
+}
+
+function releaseStrandedTask(taskId, reason) {
+  return releaseStrandedTask_(taskId, reason);
 }

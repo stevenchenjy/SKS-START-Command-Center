@@ -8,8 +8,11 @@
 var START_SPREADSHEET_ID = '1XFTIrKIcckrwavS-tJ5E_fReKVR3BlLtsbLUXRhto6I';
 var START_SCHOOL_TIME_ZONE = 'America/New_York';
 var START_SCHEMA_VERSION = 1;
+var START_WEB_VERSION = '0.4.0';
+var START_WEB_BUILD = '20260826a';
 var START_PROPERTY_KEYS = {
   spreadsheetId: 'START_SPREADSHEET_ID',
+  coordinatorEmails: 'START_COORDINATOR_EMAILS',
   openAiApiKey: 'OPENAI_API_KEY',
   openAiModel: 'OPENAI_MODEL',
   sksStartFolderId: 'SKS_START_FOLDER_ID',
@@ -142,6 +145,18 @@ function getConfiguredString_(propertyName) {
 
 function getConfiguredSpreadsheetId_() {
   return getConfiguredString_(START_PROPERTY_KEYS.spreadsheetId) || START_SPREADSHEET_ID;
+}
+
+function getConfiguredCoordinatorEmails_() {
+  var emails = [];
+  getConfiguredString_(START_PROPERTY_KEYS.coordinatorEmails)
+    .split(/[|,;\n]+/)
+    .forEach(function (value) {
+      var email = normalizeEmail_(value);
+      if (!email || emails.indexOf(email) >= 0) return;
+      emails.push(email);
+    });
+  return emails;
 }
 
 function isFeatureEnabled_(propertyName) {

@@ -126,6 +126,19 @@ function verifyServerSyntax() {
   return serverFiles.length;
 }
 
+function parseRuntimeReleaseMetadata(source) {
+  const versionMatch = String(source).match(/\bvar\s+START_WEB_VERSION\s*=\s*['"]([^'"]+)['"]\s*;/);
+  const buildMatch = String(source).match(/\bvar\s+START_WEB_BUILD\s*=\s*['"]([^'"]+)['"]\s*;/);
+  if (!versionMatch || !buildMatch) {
+    fail('Config.gs must define self-contained START_WEB_VERSION and START_WEB_BUILD string constants.');
+  }
+  if (!/^\d+\.\d+\.\d+$/.test(versionMatch[1])) fail('Config.gs has an invalid Web version.');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$/.test(buildMatch[1])) {
+    fail('Config.gs has an invalid build token.');
+  }
+  return { version: versionMatch[1], build: buildMatch[1] };
+}
+
 function verifyWebReleaseMetadata() {
   const html = fs.readFileSync(path.join(SOURCE_ROOT, 'Index.html'), 'utf8');
   const tag = html.match(/<[^>]+\bid=["']release-indicator["'][^>]*>/i);
@@ -142,8 +155,17 @@ function verifyWebReleaseMetadata() {
   }
   const marker = `Web v${version} · build ${build}`;
   if (!html.includes(marker)) fail('Release indicator text does not match its machine-readable metadata.');
+  const runtime = parseRuntimeReleaseMetadata(fs.readFileSync(path.join(SOURCE_ROOT, 'Config.gs'), 'utf8'));
+  if (runtime.version !== version || runtime.build !== build) {
+    fail('Config.gs release metadata must match the visible Web version and build.');
+  }
   const packageVersion = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'package.json'), 'utf8')).version;
   if (packageVersion !== version) fail('package.json version must match the visible Web version.');
+  const packageLock = JSON.parse(fs.readFileSync(path.join(REPOSITORY_ROOT, 'package-lock.json'), 'utf8'));
+  const lockedRootVersion = packageLock.packages && packageLock.packages[''] && packageLock.packages[''].version;
+  if (packageLock.version !== version || lockedRootVersion !== version) {
+    fail('package-lock.json version must match the visible Web version.');
+  }
   return { version, build, marker };
 }
 
@@ -260,6 +282,7 @@ if (require.main === module) {
 module.exports = {
   REPOSITORY_ROOT,
   SOURCE_ROOT,
+  parseRuntimeReleaseMetadata,
   repositoryTextFiles,
   verifyBrowserSyntax,
   verifyManifest,

@@ -29,7 +29,7 @@ function readMemberDirectory_(spreadsheet) {
       source: 'members',
       rowNumber: row.rowNumber
     };
-    addUniqueProfile_(profiles, profile);
+    profiles.push(profile);
   });
 
   return {
@@ -74,94 +74,15 @@ function readLegacyMemberProfiles_(table) {
   });
 }
 
-function resolveViewer_(requestedProfileKey, directory) {
-  var email = normalizeEmail_(activeUserEmail_());
-  var profile;
-
-  if (email) {
-    profile = findMemberProfile_(email, directory.all);
-    if (!profile) profile = temporaryEmailProfile_(email);
-    return viewerFromProfile_(profile, 'google', email);
-  }
-
-  var requested = validateText_(requestedProfileKey, 'Member profile', 160, false);
-  if (/[\r\n]/.test(requested)) fail_('Member profile must be a single line.');
-  profile = findMemberProfile_(requested, directory.active);
-  if (!profile) {
-    return {
-      email: '',
-      identity: '',
-      profileKey: '',
-      displayName: '',
-      authMode: directory.source === 'members' ? 'members_selector' : 'settings_selector',
-      needsDisplayName: false,
-      needsProfileSelection: true,
-      isActive: false
-    };
-  }
-  return viewerFromProfile_(profile, directory.source === 'members' ? 'members_selector' : 'settings_selector', '');
-}
-
 function resolveMutationMember_(spreadsheet, requestedProfileKey) {
-  var directory = readMemberDirectory_(spreadsheet);
-  var email = normalizeEmail_(activeUserEmail_());
-  var profile;
-
-  if (email) {
-    profile = findMemberProfile_(email, directory.all);
-    if (profile && !profile.active) {
-      fail_('Your member profile is inactive. Ask a coordinator to mark it Active before making changes.');
-    }
-    return profile || temporaryEmailProfile_(email);
-  }
-
-  var requested = validateText_(requestedProfileKey, 'Member profile', 160, true);
-  if (/[\r\n]/.test(requested)) fail_('Member profile must be a single line.');
-  profile = findMemberProfile_(requested, directory.active);
-  if (!profile) {
-    fail_('Choose an active member profile before making changes.');
-  }
-  return profile;
-}
-
-function activeUserEmail_() {
-  try {
-    var email = Session.getActiveUser().getEmail();
-    return string_(email).trim();
-  } catch (error) {
-    return '';
-  }
-}
-
-function viewerFromProfile_(profile, authMode, googleEmail) {
-  return {
-    email: googleEmail || profile.email || '',
-    identity: profile.profileKey,
-    profileKey: profile.profileKey,
-    displayName: profile.displayName,
-    authMode: authMode,
-    needsDisplayName: !!profile.needsDisplayName,
-    needsProfileSelection: false,
-    isActive: profile.active !== false
-  };
+  return requireActiveMember_(spreadsheet);
 }
 
 function publicMember_(profile) {
   return {
-    profileKey: profile.profileKey,
+    profileKey: profile.displayName,
     displayName: profile.displayName,
     needsDisplayName: !!profile.needsDisplayName
-  };
-}
-
-function temporaryEmailProfile_(email) {
-  return {
-    email: email,
-    profileKey: email,
-    displayName: temporaryDisplayName_(email),
-    active: true,
-    needsDisplayName: true,
-    source: 'google'
   };
 }
 
@@ -186,14 +107,6 @@ function memberIsActive_(value) {
     key === 'active' || key === 'enabled';
 }
 
-function addUniqueProfile_(profiles, profile) {
-  var key = normalizeIdentity_(profile.profileKey);
-  var exists = profiles.some(function (candidate) {
-    return normalizeIdentity_(candidate.profileKey) === key;
-  });
-  if (!exists) profiles.push(profile);
-}
-
 function findMemberProfile_(identity, profiles) {
   var target = normalizeIdentity_(identity);
   if (!target) return null;
@@ -212,22 +125,47 @@ function findMemberProfile_(identity, profiles) {
   return null;
 }
 
+function findUniqueActiveMemberProfile_(identity, profiles) {
+  var target = normalizeIdentity_(identity);
+  if (!target) return null;
+  var matches = (profiles || []).filter(function (profile) {
+    return profile.active && (
+      normalizeIdentity_(profile.profileKey) === target ||
+      normalizeIdentity_(profile.email) === target ||
+      normalizeIdentity_(profile.displayName) === target
+    );
+  });
+  if (matches.length > 1) {
+    fail_('That member selection is ambiguous. Ask a coordinator to make member emails and display names unique.');
+  }
+  return matches.length === 1 ? matches[0] : null;
+}
+
 function memberStorageKey_(member) {
   return member.email || member.profileKey || member.displayName;
 }
 
-function memberMatchesIdentity_(storedIdentity, member, profiles) {
+function memberMatchesIdentity_(storedIdentity, member) {
   var stored = normalizeIdentity_(storedIdentity);
   if (!stored || !member) return false;
-  if (stored === normalizeIdentity_(member.profileKey) ||
-      stored === normalizeIdentity_(member.email) ||
-      stored === normalizeIdentity_(member.identity)) return true;
-  if (stored !== normalizeIdentity_(member.displayName)) return false;
-  if (!profiles) return true;
-  var displayMatches = profiles.filter(function (profile) {
-    return normalizeIdentity_(profile.displayName) === stored;
+  return stored === normalizeIdentity_(member.profileKey) ||
+    stored === normalizeIdentity_(member.email);
+}
+
+function memberIdentityNamespaceConflict_(table, columns, emailValue, displayNameValue) {
+  var email = normalizeEmail_(emailValue);
+  var displayName = normalizeIdentity_(displayNameValue);
+  if (!email || !displayName) return true;
+  if (normalizeIdentity_(email) === displayName) return true;
+
+  return table.rows.some(function (row) {
+    var rowEmail = normalizeEmail_(cell_(row.values, columns.email));
+    var rowDisplayName = normalizeIdentity_(cell_(row.values, columns.displayName));
+    var sameMember = !!rowEmail && rowEmail === email;
+    if (rowEmail && normalizeIdentity_(rowEmail) === displayName) return true;
+    if (!sameMember && rowDisplayName && rowDisplayName === displayName) return true;
+    return !sameMember && rowDisplayName && rowDisplayName === normalizeIdentity_(email);
   });
-  return displayMatches.length === 1;
 }
 
 function ownerDisplayName_(storedIdentity, profiles) {

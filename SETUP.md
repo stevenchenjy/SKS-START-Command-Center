@@ -13,9 +13,10 @@ script project, or deployment.
 - Permanent URL:
   `https://script.google.com/macros/s/AKfycbwuBPUusFBHHILfJ8ySalyHmI5Fk5tVff4z5cEUUZo0sgPviBwc2szUMqi4tVixyayZ/exec`
 
-Use a durable, school-managed Storm King Google Workspace account that owns or
-can edit the Apps Script project and has **Editor** access to the workbook. Do
-not use a graduating student's personal account.
+Use a durable, school-managed Storm King Google Workspace account that owns the
+current permanent deployment and has **Editor** access to the workbook. An Apps
+Script project editor is not automatically the owner of an existing versioned
+deployment. Do not use a graduating student's personal account.
 
 ## 1. Install the pinned tooling
 
@@ -42,6 +43,11 @@ commands below instead of an unrelated global clasp installation.
 4. Complete Google's OAuth prompt with that same account. OAuth files and local
    target files are ignored by Git and must never be committed.
 
+Never commit `.clasprc.json`, `.clasp.json`, `.gas-deploy.json`, OAuth/client
+secret files, refresh tokens, passwords, API keys, Script Property values or
+coordinator allowlists, private Drive folder IDs, student-data exports, or
+private student information.
+
 ## 3. Create the local project/deployment files
 
 Run:
@@ -57,6 +63,19 @@ those values; do not replace them with a newly created target.
 
 No Script Properties are required for the current student product. Future
 feature flags remain absent and therefore disabled.
+
+For an additional coordinator, set the private Script Property
+`START_COORDINATOR_EMAILS` to the approved Google emails separated by commas,
+semicolons, pipes, or newlines. Each coordinator must also have exactly one
+active `Members` row. Do not put this allowlist in the Sheet or repository.
+
+The Web App executes as the durable school-managed deployment account so
+ordinary members do not need to edit the workbook. Operational access still
+fails closed unless `Session.getActiveUser().getEmail()` exactly matches one
+active Members row. Google commonly exposes that identity for users in the same
+Workspace domain as the deployer, but can withhold it for external/personal
+accounts. Use school Google accounts; never restore a client-side profile picker
+as an authentication fallback.
 
 ## 4. Establish the remote baseline
 
@@ -107,7 +126,8 @@ npm run gas:release -- "Short reviewed release description"
 
 The command:
 
-1. runs all tests and static checks;
+1. requires a clean, attached `main` exactly synchronized with `origin/main`,
+   then runs all tests and static checks;
 2. verifies the pinned clasp version, local IDs, clean Git state, and existing
    permanent Deployment ID and Web App entry point;
 3. compares local source with remote HEAD and the deployed version;
@@ -129,11 +149,16 @@ immutable version automatically.
 It never calls `create-deployment`. Do not use **New deployment** for a normal
 release.
 
+The branch guard deliberately does not apply to `gas:recover`: an already-known
+immutable production version must remain recoverable even when the local Git
+branch is damaged or unavailable.
+
 To deliberately restore a known immutable version without pushing or creating
-anything, use:
+anything, replace `<version>` with the exact previous version printed by
+`gas:release`—do not guess—and use:
 
 ```bash
-npm run gas:recover -- 1 "Restore reviewed version 1"
+npm run gas:recover -- <version> "Restore reviewed version <version>"
 ```
 
 Recovery validates that version's manifest and Web App handler, updates the
@@ -153,11 +178,21 @@ served START UI.
   explicit preservation/removal decision before retrying.
 - **Dirty worktree:** commit the exact reviewed release state; do not bypass the
   guard.
-- **Visible build token unchanged:** update `data-web-build` in `Index.html`
-  when runtime source changes, then commit the reviewed marker with the code.
+- **Not synchronized with `origin/main`:** fetch, review the difference, and
+  resolve it normally. Do not detach HEAD, force-push, or bypass the release
+  guard.
+- **Visible build token unchanged:** update `START_WEB_BUILD` in `Config.gs` and
+  the matching `data-web-build` value/text in `Index.html` whenever runtime
+  source changes, then commit the reviewed marker with the code. Keep the Web
+  version aligned with `package.json` and `package-lock.json`.
 - **Web App invariant failure:** keep `doGet`, the manifest `webapp` block, and
   the existing `USER_DEPLOYING` / `ANYONE_ANONYMOUS` policy. Do not add an
   `executionApi` block or create a replacement deployment.
 - **Workbook access error after deployment:** confirm the execution identity has
   Editor access to the existing spreadsheet and `START_SPREADSHEET_ID` was not
   overridden with a different Script Property.
+
+For routine member administration, diagnostics, version history, and ownership
+continuity, use [OPERATIONS.md](OPERATIONS.md). Existing versioned Apps Script
+deployments do not change owner when a script project is transferred, so keep
+the current deployment account active through any planned handoff.

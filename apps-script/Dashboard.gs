@@ -1,35 +1,125 @@
 function buildDashboardData_(spreadsheet, requestedProfileKey) {
-  var directory = readMemberDirectory_(spreadsheet);
-  var viewer = resolveViewer_(requestedProfileKey, directory);
+  var access = resolveOperationalAccess_(spreadsheet);
+  if (!access.allowed) return buildAccessDeniedDashboard_(access);
+  var directory = access.directory;
+  var viewer = authorizedViewer_(access);
 
-  var tasks = mapTasks_(readTable_(spreadsheet, 'Tasks'), viewer, directory.all);
+  var tasks = mapTasks_(readTable_(spreadsheet, 'Tasks'), access.member, directory.all);
   var metrics = mapMetrics_(readTable_(spreadsheet, 'Metrics'), directory.all);
   var allUpdates = mapUpdates_(readTable_(spreadsheet, 'Updates'), directory.all);
+  enrichTasks_(tasks, allUpdates);
   var projectsTable = readTable_(spreadsheet, 'Projects');
   var projects = enrichProjects_(mapProjects_(projectsTable, directory.all), tasks, allUpdates, metrics);
   var recentUpdates = allUpdates.slice(0, 20);
   var workflow = projectWorkflowState_(projectsTable, readTable_(spreadsheet, 'Settings'));
   var generatedNow = new Date();
+  var today = dashboardMachineDateOnly_(generatedNow);
+  var summary = summarize_(tasks, projects, recentUpdates);
+  var snapshot = buildProgramSnapshot_({
+    tasks: tasks,
+    projects: projects,
+    metrics: metrics,
+    updates: allUpdates,
+    summary: summary,
+    today: today,
+    generatedAt: generatedNow.toISOString()
+  });
+  var decisionProjects = projects.filter(function (project) {
+    return project.stage !== 'Completed' && project.stage !== 'Rejected';
+  });
 
   return {
+    accessDenied: false,
+    accessReason: '',
     viewer: viewer,
-    members: directory.active.map(publicMember_),
+    members: publicMembers_(directory.active),
     membersSource: directory.source,
     membersSheetMissing: directory.source === 'settings',
     tasks: tasks,
     projects: projects,
     metrics: metrics,
     updates: recentUpdates,
-    summary: summarize_(tasks, projects, recentUpdates),
+    summary: summary,
+    decisionComparison: buildProjectDecisionComparison_(decisionProjects),
+    reporting: buildStartReportingData_(snapshot),
     capabilities: getPublicCapabilities_(),
     projectWorkflowSetupNeeded: workflow.setupNeeded,
     projectWorkflow: workflow,
+    today: today,
+    generatedAt: generatedNow.toISOString()
+  };
+}
+
+function buildAccessDeniedDashboard_(access) {
+  var context = access && typeof access === 'object'
+    ? access
+    : deniedAccessContext_(access || 'access_denied');
+  var reason = context.reason || 'access_denied';
+  var generatedNow = new Date();
+  return {
+    accessDenied: true,
+    accessReason: reason || 'access_denied',
+    viewer: deniedViewer_(reason, context.canAdmin),
+    members: [],
+    membersSource: 'unavailable',
+    membersSheetMissing: false,
+    tasks: [],
+    projects: [],
+    metrics: [],
+    updates: [],
+    summary: {
+      openTasks: 0,
+      claimedTasks: 0,
+      doingTasks: 0,
+      blockedTasks: 0,
+      myTasks: 0,
+      activeProjects: 0,
+      ideasNeedingValidation: 0,
+      waitingOnSchoolProjects: 0,
+      waitingOnSchool: 0,
+      waitingItems: [],
+      recentUpdates: 0
+    },
+    decisionComparison: {
+      schemaVersion: 'project-decision-comparison/v1',
+      comparisonFields: [],
+      requestedProjectIds: [],
+      notFoundProjectIds: [],
+      projects: [],
+      selection: {},
+      humanDecisionRequired: true
+    },
+    reporting: {
+      schemaVersion: 'start-reporting-data/v1',
+      schoolDecisionQueue: [],
+      completedProjects: [],
+      activeWork: { projects: [], tasks: [] },
+      blockers: [],
+      upcomingPriorities: [],
+      observedResults: [],
+      humanDecisionRequired: true
+    },
+    capabilities: getPublicCapabilities_(),
+    projectWorkflowSetupNeeded: false,
+    projectWorkflow: { setupNeeded: false },
     today: dashboardMachineDateOnly_(generatedNow),
     generatedAt: generatedNow.toISOString()
   };
 }
 
-function mapTasks_(table, viewer, members) {
+function publicMembers_(profiles) {
+  var result = [];
+  (profiles || []).forEach(function (profile) {
+    var publicProfile = publicMember_(profile);
+    var exists = result.some(function (candidate) {
+      return sameIdentity_(candidate.displayName, publicProfile.displayName);
+    });
+    if (!exists) result.push(publicProfile);
+  });
+  return result;
+}
+
+function mapTasks_(table, viewerMember, members) {
   if (!table.headers.length) return [];
 
   var columns = indexes_(table, TASK_FIELDS);
@@ -43,7 +133,7 @@ function mapTasks_(table, viewer, members) {
     var taskId = cell_(row.values, columns.taskId).trim();
     var claimedBy = cell_(row.values, columns.claimedBy).trim();
     var status = normalizeReadStatus_(cell_(row.values, columns.status));
-    var ownerProfile = findMemberProfile_(claimedBy, members);
+    var claimedByDisplay = ownerDisplayName_(claimedBy, members);
 
     return {
       taskKey: taskId || taskFallbackKey_(row, columns),
@@ -56,15 +146,15 @@ function mapTasks_(table, viewer, members) {
       dueDate: cell_(row.values, columns.dueDate),
       dueDateMachine: dashboardMachineDateOnly_(rawCell_(row.rawValues, columns.dueDate)),
       status: status,
-      claimedBy: claimedBy,
-      claimedByProfileKey: ownerProfile ? ownerProfile.profileKey : claimedBy,
-      claimedByDisplay: ownerDisplayName_(claimedBy, members),
+      claimedBy: claimedByDisplay,
+      claimedByProfileKey: claimedByDisplay,
+      claimedByDisplay: claimedByDisplay,
       lastUpdate: cell_(row.values, columns.lastUpdate),
       lastUpdateMachine: dashboardMachineTimestamp_(rawCell_(row.rawValues, columns.lastUpdate)),
       blocker: cell_(row.values, columns.blocker),
       supportingLink: cell_(row.values, columns.supportingLink),
       isOpen: status === 'Open' && !claimedBy,
-      isMine: !!viewer.profileKey && viewer.isActive && memberMatchesIdentity_(claimedBy, viewer, members)
+      isMine: !!viewerMember && memberMatchesIdentity_(claimedBy, viewerMember, members)
     };
   });
 }
@@ -104,7 +194,7 @@ function mapProjects_(table, members) {
       schoolFeedback: cell_(row.values, columns.schoolFeedback),
       nextAction: cell_(row.values, columns.nextAction),
       projectLead: ownerDisplayName_(projectLead, members),
-      projectLeadProfileKey: leadProfile ? leadProfile.profileKey : projectLead,
+      projectLeadProfileKey: leadProfile ? leadProfile.displayName : ownerDisplayName_(projectLead, members),
       resultsLink: cell_(row.values, columns.resultsLink),
       validationEvidence: cell_(row.values, columns.validationEvidence),
       successMeasure: cell_(row.values, columns.successMeasure),
@@ -129,6 +219,48 @@ function mapProjects_(table, members) {
   });
 }
 
+function enrichTasks_(tasks, updates) {
+  var titleCounts = {};
+  (tasks || []).forEach(function (task) {
+    var titleKey = normalizeIdentity_(task.task);
+    if (titleKey) titleCounts[titleKey] = (titleCounts[titleKey] || 0) + 1;
+  });
+  (tasks || []).forEach(function (task) {
+    var matching = (updates || []).filter(function (update) {
+      return taskUpdateMatches_(update.taskProject, task, titleCounts);
+    });
+    task.recentUpdates = matching.slice(0, 8).map(function (update) {
+      return {
+        timestamp: update.timestamp,
+        timestampMachine: update.timestampMachine,
+        member: update.member,
+        taskProject: update.taskProject,
+        update: update.update,
+        blocker: update.blocker,
+        nextStep: update.nextStep,
+        link: update.link,
+        associationType: 'task',
+        taskKey: task.taskKey
+      };
+    });
+  });
+  return tasks;
+}
+
+function taskUpdateMatches_(storedReference, task, titleCounts) {
+  var reference = string_(storedReference).trim();
+  if (!reference) return false;
+  var taskId = string_(task.taskId).trim();
+  var title = string_(task.task).trim();
+  if (taskId) {
+    if (sameIdentity_(reference, taskId)) return true;
+    if (sameIdentity_(reference, taskId + ': ' + title)) return true;
+    if (reference.toLowerCase().indexOf(taskId.toLowerCase() + ':') === 0) return true;
+  }
+  var titleKey = normalizeIdentity_(title);
+  return !!titleKey && titleCounts[titleKey] === 1 && sameIdentity_(reference, title);
+}
+
 function mapMetrics_(table, members) {
   if (!table.headers.length) return [];
   var columns = indexes_(table, METRIC_FIELDS);
@@ -149,7 +281,7 @@ function mapMetrics_(table, members) {
       lastAction: cell_(row.values, columns.lastAction),
       lastUpdated: cell_(row.values, columns.lastUpdated),
       updatedBy: ownerDisplayName_(updatedBy, members),
-      updatedByProfileKey: updatedByProfile ? updatedByProfile.profileKey : updatedBy,
+      updatedByProfileKey: updatedByProfile ? updatedByProfile.displayName : ownerDisplayName_(updatedBy, members),
       supportingLink: cell_(row.values, columns.supportingLink),
       legacyAssignedTo: ownerDisplayName_(legacyAssignedTo, members)
     };
@@ -233,7 +365,7 @@ function mapUpdates_(table, members) {
       timestamp: cell_(row.values, columns.timestamp),
       timestampMachine: dashboardMachineTimestamp_(rawCell_(row.rawValues, columns.timestamp)),
       member: ownerDisplayName_(memberValue, members),
-      memberProfileKey: memberProfile ? memberProfile.profileKey : memberValue,
+      memberProfileKey: memberProfile ? memberProfile.displayName : ownerDisplayName_(memberValue, members),
       taskProject: cell_(row.values, columns.taskProject),
       update: cell_(row.values, columns.update),
       blocker: cell_(row.values, columns.blocker),

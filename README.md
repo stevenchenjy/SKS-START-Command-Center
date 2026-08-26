@@ -11,13 +11,25 @@ source of truth and Google Apps Script serves the responsive web app.
   completion while retaining paused and rejected history.
 - See active projects, work waiting on school, recent progress, and related
   tasks and updates.
-- Use school Google identity when available, with an active `Members` profile
-  selector as the constrained fallback.
+- Use the signed-in school Google identity matched exactly to one active
+  `Members` row; browser-selected profiles are never authorization.
+- Use the member email/profile key—not a changeable display name—as task
+  mutation authority; legacy name-owned tasks go through coordinator recovery.
 - Link projects to existing START metrics without scoring or changing official
   tiers.
 
 The app does not calculate carbon, certify outcomes, send reminders, or make
 project decisions. AI and other future helpers are disabled by default.
+
+Coordinators also have a small authorization-gated Operations view for member
+status, schema readiness, and read-only data-integrity diagnostics. Students can
+use factual project comparison and meeting-briefing views without arbitrary
+scores or automated decisions. See [OPERATIONS.md](OPERATIONS.md) for the access
+model and the weekly owner checklist.
+
+The deterministic factual Briefing and project comparison are always-on core,
+non-AI features. They do not require or activate `FEATURE_DECISION_HELPER` or
+`FEATURE_REPORTING`.
 
 ## Platform foundation
 
@@ -45,8 +57,10 @@ Future flags use exact, case-sensitive Script Property values:
 | `FEATURE_DECISION_HELPER` | disabled |
 | `FEATURE_REPORTING` | disabled |
 
-Only the usable `aiHelper` capability is exposed to browser code. Private
-configuration, folder IDs, model names, and API keys are never returned.
+The ordinary dashboard capability payload exposes only a usable `aiHelper`
+boolean. The admin-only Operations response also shows the four non-secret flag
+states so an owner can confirm that dormant helpers remain off. Private values,
+folder IDs, model names, and API keys are never returned.
 
 ## Repository layout
 
@@ -54,10 +68,11 @@ configuration, folder IDs, model names, and API keys are never returned.
 apps-script/                 Apps Script runtime source and manifest
 scripts/gas-tooling.js       guarded local compare, push, and release workflow
 scripts/verify.js            static and safety checks
-tests/                       in-memory workflow, platform, snapshot, and tooling tests
+tests/                       workflow, auth, reporting, integrity, client, and tooling tests
 .clasp.json.example          existing Apps Script project binding template
 .gas-deploy.example.json     existing permanent deployment template
 SETUP.md                     one-time local setup and release instructions
+OPERATIONS.md                school-year access, diagnostics, and continuity guide
 AGENTS.md                    product and engineering constraints
 ```
 
@@ -74,7 +89,7 @@ npm run gas:status
 npm run gas:compare
 npm run gas:dev
 npm run gas:release -- "Reviewed release description"
-npm run gas:recover -- 1 "Restore reviewed version"
+npm run gas:recover -- <version> "Restore reviewed version <version>"
 ```
 
 `gas:status` shows local upload candidates and then performs the authenticated
@@ -84,8 +99,14 @@ remote comparison; clasp's local status alone is not a synchronization check.
 deployment—never a new deployment—so the existing `/exec` URL is preserved. It
 re-reads deployment state through the Apps Script API, checks the served build
 marker, and automatically restores the previous version if post-update
-verification fails. `gas:recover` is the guarded path for explicitly restoring
+verification fails. Production release is allowed only from a clean `main`
+exactly synchronized with `origin/main`. `gas:recover` is the guarded path for explicitly restoring
 an already-existing immutable version to that same permanent deployment.
+
+Each created Apps Script version is described as
+`Web v<version> · build <build> · git <short-sha>` (after the human release
+description), which is the lightweight link between an immutable Apps Script
+version and its reviewed Git commit.
 
 Automated tests use local Sheet simulations and mocks. They never write to the
 production workbook, deploy Apps Script, or call a paid service.
