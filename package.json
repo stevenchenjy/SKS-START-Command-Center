@@ -1,0 +1,25 @@
+{
+  "name": "sks-start-command-center",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Local development and release tooling for the SKS START Command Center Apps Script web app.",
+  "scripts": {
+    "test": "node tests/run-tests.js && node tests/platform-config-schema-tests.js && node tests/program-snapshot-tests.js && node tests/tooling-tests.js",
+    "check": "node scripts/verify.js",
+    "verify": "npm test && npm run check",
+    "gas:configure": "node scripts/gas-tooling.js configure",
+    "gas:login": "node scripts/gas-tooling.js login",
+    "gas:status": "node scripts/gas-tooling.js status",
+    "gas:compare": "node scripts/gas-tooling.js compare",
+    "gas:push": "node scripts/gas-tooling.js push",
+    "gas:open": "node scripts/gas-tooling.js open",
+    "gas:dev": "node scripts/gas-tooling.js dev",
+    "gas:release": "node scripts/gas-tooling.js release"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@google/clasp": "3.3.0"
+  }
+}

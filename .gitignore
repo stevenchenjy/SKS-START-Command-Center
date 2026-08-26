@@ -1,0 +1,21 @@
+# Dependencies and generated local state
+node_modules/
+.DS_Store
+
+# Google Apps Script OAuth credentials and machine-local project binding
+.clasprc.json
+**/.clasprc.json
+.clasp.json
+client_secret*.json
+credentials*.json
+.env
+.env.*
+!.env.example
+
+# Local deployment configuration. Copy from the tracked example.
+.gas-deploy.json
+
+# Temporary remote comparison output and local reports
+.gas-remote/
+coverage/
+*.log

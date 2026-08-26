@@ -67,10 +67,10 @@ class FakeRange {
   getDisplayValues() {
     return Array.from({ length: this.rowCount }, (_, rowOffset) => (
       Array.from({ length: this.columnCount }, (_, columnOffset) => (
-        displayValue(this.sheet.valueAt(
+        this.sheet.displayValueAt(
           this.row + rowOffset,
           this.column + columnOffset
-        ))
+        )
       ))
     ));
   }
@@ -114,6 +114,7 @@ class FakeSheet {
     this.name = name;
     this.rows = rows.map((row) => row.slice());
     this.frozenRows = 0;
+    this.displayFormatter = options.displayFormatter || displayValue;
     this.maxColumns = options.maxColumns || Math.max(
       rows.reduce((maximum, row) => Math.max(maximum, row.length), 0),
       rows.length ? 1 : 26
@@ -173,6 +174,10 @@ class FakeSheet {
 
   valueAt(row, column) {
     return this.rows[row - 1]?.[column - 1] ?? '';
+  }
+
+  displayValueAt(row, column) {
+    return this.displayFormatter(this.valueAt(row, column), row, column);
   }
 
   setValueAt(row, column, value) {
@@ -352,6 +357,19 @@ let sessionEmail = '';
 let flushCount = 0;
 let lockHeld = false;
 
+function dateOnlyInTimeZone(value, timeZone) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(value).filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value])
+  );
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 const sandbox = {
   console,
   Date,
@@ -364,6 +382,13 @@ const sandbox = {
   Math,
   JSON,
   isNaN,
+  Utilities: {
+    formatDate(value, timeZone, pattern) {
+      assert.equal(timeZone, 'America/New_York');
+      assert.equal(pattern, 'yyyy-MM-dd');
+      return dateOnlyInTimeZone(value, timeZone);
+    }
+  },
   SpreadsheetApp: {
     openById(id) {
       assert.equal(id, '1XFTIrKIcckrwavS-tJ5E_fReKVR3BlLtsbLUXRhto6I');
@@ -411,17 +436,46 @@ const sandbox = {
   }
 };
 
+const serverDirectory = path.join(__dirname, '..', 'apps-script');
+const serverFiles = fs.readdirSync(serverDirectory)
+  .filter((fileName) => fileName.endsWith('.gs'))
+  .sort();
+
+function loadServerFiles(context, fileNames) {
+  fileNames.forEach((fileName) => {
+    const serverPath = path.join(serverDirectory, fileName);
+    vm.runInContext(fs.readFileSync(serverPath, 'utf8'), context, {
+      filename: serverPath
+    });
+  });
+}
+
 vm.createContext(sandbox);
-const serverPath = path.join(__dirname, '..', 'apps-script', 'Code.gs');
-vm.runInContext(fs.readFileSync(serverPath, 'utf8'), sandbox, {
-  filename: serverPath
-});
+loadServerFiles(sandbox, serverFiles);
+
+const reverseOrderSandbox = {};
+vm.createContext(reverseOrderSandbox);
+loadServerFiles(reverseOrderSandbox, serverFiles.slice().reverse());
 
 const tests = [];
 
 function test(name, work) {
   tests.push({ name, work });
 }
+
+test('loads every Apps Script module in reverse order without top-level dependencies', () => {
+  assert.ok(serverFiles.length > 1);
+  assert.equal(typeof reverseOrderSandbox.doGet, 'function');
+  assert.equal(typeof reverseOrderSandbox.buildDashboardData_, 'function');
+  assert.equal(typeof reverseOrderSandbox.mutateTask_, 'function');
+  assert.equal(typeof reverseOrderSandbox.loadProjectMutation_, 'function');
+  assert.equal(typeof reverseOrderSandbox.readMemberDirectory_, 'function');
+  assert.equal(typeof reverseOrderSandbox.readTable_, 'function');
+  assert.equal(
+    reverseOrderSandbox.PROJECT_STAGE_OPTIONS,
+    'Idea | Validation | School Review | Active | Completed | Paused | Rejected'
+  );
+});
 
 function reset(options) {
   spreadsheet = makeFixture(options);
@@ -489,6 +543,54 @@ test('opens the dashboard HTML entry point', () => {
   assert.equal(output.file, 'Index');
   assert.equal(output.title, 'START Command Center');
   assert.equal(output.meta.viewport, 'width=device-width, initial-scale=1');
+});
+
+test('normalizes raw Sheet Dates for snapshots without changing UI display values', () => {
+  reset({ empty: true });
+  const dueDate = new Date('2026-08-20T04:00:00.000Z');
+  const activityTime = new Date('2026-08-21T00:15:00.000Z');
+  spreadsheet.sheets.Tasks = new FakeSheet('Tasks', [
+    TASK_HEADERS,
+    [
+      'T-DATE', 'Date-backed task', '', '', '', '', dueDate,
+      'Open', '', activityTime, '', ''
+    ]
+  ], {
+    displayFormatter(value, row, column) {
+      if (Object.prototype.toString.call(value) !== '[object Date]') return displayValue(value);
+      if (column === 7) return '8/20/2026';
+      return '8/20/2026 8:15:00 PM';
+    }
+  });
+  spreadsheet.sheets.Updates = new FakeSheet('Updates', [
+    UPDATE_HEADERS,
+    [activityTime, 'Steven Chen', 'T-DATE: Date-backed task', 'Worked on it', '', '', '']
+  ], {
+    displayFormatter(value) {
+      return Object.prototype.toString.call(value) === '[object Date]'
+        ? '8/20/2026 8:15:00 PM'
+        : displayValue(value);
+    }
+  });
+
+  const dashboard = sandbox.buildDashboardData_(spreadsheet, '');
+  assert.equal(dashboard.tasks[0].dueDate, '8/20/2026');
+  assert.equal(dashboard.tasks[0].dueDateMachine, '2026-08-20');
+  assert.equal(dashboard.tasks[0].lastUpdate, '8/20/2026 8:15:00 PM');
+  assert.equal(dashboard.tasks[0].lastUpdateMachine, '2026-08-21T00:15:00.000Z');
+  assert.equal(dashboard.updates[0].timestamp, '8/20/2026 8:15:00 PM');
+  assert.equal(dashboard.updates[0].timestampMachine, '2026-08-21T00:15:00.000Z');
+
+  const programSnapshot = sandbox.buildProgramSnapshot_(dashboard, {
+    asOf: '2026-08-21T02:00:00.000Z',
+    today: '2026-08-20'
+  });
+  assert.equal(programSnapshot.tasks.open[0].isOverdue, false);
+  assert.equal(programSnapshot.tasks.open[0].lastUpdatedAt, '2026-08-21T00:15:00.000Z');
+  assert.equal(programSnapshot.activity.recentUpdates.length, 1);
+  assert.equal(programSnapshot.dataQuality.tasks.invalidDueDate, 0);
+  assert.equal(programSnapshot.dataQuality.tasks.invalidLastUpdate, 0);
+  assert.equal(programSnapshot.dataQuality.activity.invalidTimestamp, 0);
 });
 
 test('reads active Members profiles, display names, updates, and summary counts', () => {

@@ -1,69 +1,91 @@
 # SKS START Command Center
 
-A small internal dashboard for The Storm King School's student START committee.
-The app is a bound Google Apps Script web app: Google Sheets stores the
-operational data, `Code.gs` provides the server functions, and `Index.html`
-provides the complete responsive interface.
+The START Command Center is The Storm King School student sustainability
+committee's lightweight work dashboard. Google Sheets remains the operational
+source of truth and Google Apps Script serves the responsive web app.
 
-## What the current app does
+## Current student workflow
 
-- Shows open, doing, blocked, and completed tasks; active projects; items
-  waiting on school; and recent updates.
-- Lets a member claim an open task directly into **Doing**, add a short update,
-  mark it **Blocked**, resume it, finish it, or release it for someone else.
-- Moves a lightweight student idea through **Validation**, **School Review**,
-  **Active**, and **Completed**, while preserving paused or rejected history.
-- Turns an active project into a practical hub for related tasks, short project
-  updates, its next action, optional lead, and observed results.
-- Reads the existing Metrics tab for a small project metric selector without
-  adding scoring or a separate Metrics workflow.
-- Uses the Google account email as a stable identity when Apps Script makes it
-  available, while showing the person's display name from `Members`. Otherwise,
-  it uses an active-member profile selector remembered by that browser.
-- Maps the existing sheet headers defensively instead of changing the workbook.
+- Find, claim, update, block, resume, finish, or release practical tasks.
+- Move student ideas through Idea, Validation, School Review, Active work, and
+  completion while retaining paused and rejected history.
+- See active projects, work waiting on school, recent progress, and related
+  tasks and updates.
+- Use school Google identity when available, with an active `Members` profile
+  selector as the constrained fallback.
+- Link projects to existing START metrics without scoring or changing official
+  tiers.
 
-The app intentionally does not score official START metrics, calculate carbon,
-send reminders, or add an AI assistant. Those remain outside this version.
+The app does not calculate carbon, certify outcomes, send reminders, or make
+project decisions. AI and other future helpers are disabled by default.
+
+## Platform foundation
+
+The server is split into small `.gs` modules while preserving every existing
+browser-callable function. The foundation also provides:
+
+- centralized, private Script Property access;
+- alias-aware, read-only schema inspection with `inspectStartSchema()`;
+- safe, explicit additive setup helpers;
+- a reusable deterministic, bounded, privacy-minimized program snapshot layer;
+- pinned clasp tooling that compares local source with both Apps Script HEAD and
+  the current permanent deployment before a push or release;
+- checks for syntax, secrets, conflicts, manifest scopes, source-root drift,
+  and accidental deployment replacement.
+
+Future flags use exact, case-sensitive Script Property values:
+
+| Script Property | Default |
+| --- | --- |
+| `FEATURE_AI_HELPER` | disabled |
+| `FEATURE_DRIVE_KNOWLEDGE` | disabled |
+| `FEATURE_DECISION_HELPER` | disabled |
+| `FEATURE_REPORTING` | disabled |
+
+Only the usable `aiHelper` capability is exposed to browser code. Private
+configuration, folder IDs, model names, and API keys are never returned.
 
 ## Repository layout
 
 ```text
-.
-├── README.md
-├── AGENTS.md
-├── SETUP.md
-├── apps-script/
-│   ├── Code.gs
-│   └── Index.html
-└── tests/
-    └── run-tests.js
+apps-script/                 Apps Script runtime source and manifest
+scripts/gas-tooling.js       guarded local compare, push, and release workflow
+scripts/verify.js            static and safety checks
+tests/                       in-memory workflow, platform, snapshot, and tooling tests
+.clasp.json.example          existing Apps Script project binding template
+.gas-deploy.example.json     existing permanent deployment template
+SETUP.md                     one-time local setup and release instructions
+AGENTS.md                    product and engineering constraints
 ```
 
-There is no package install, build step, database, or secret configuration.
+## Development and release commands
 
-## Deploy
-
-Follow [SETUP.md](SETUP.md) to copy the two Apps Script files into the existing
-`START Control Center` spreadsheet and deploy the web app.
-
-## Test locally
-
-The lightweight test runner uses only Node.js built-ins and a small in-memory
-Google Sheets simulation:
+Node.js 20 or newer is required. Complete the one-time steps in
+[SETUP.md](SETUP.md), then use:
 
 ```bash
-node tests/run-tests.js
+npm test
+npm run check
+npm run verify
+npm run gas:status
+npm run gas:compare
+npm run gas:dev
+npm run gas:release -- "Reviewed release description"
 ```
 
-It checks the server workflow without writing to the live spreadsheet. Final
-deployment verification is a short manual check described in `SETUP.md`.
+`gas:status` shows local upload candidates and then performs the authenticated
+remote comparison; clasp's local status alone is not a synchronization check.
+`gas:dev` synchronizes reviewed source for an editor-only `/dev` test deployment.
+`gas:release` creates a version and updates only the configured permanent
+deployment—never a new deployment—so the existing `/exec` URL is preserved.
 
-## Data source
+Automated tests use local Sheet simulations and mocks. They never write to the
+production workbook, deploy Apps Script, or call a paid service.
 
-The bound workbook is `START Control Center` and contains `Metrics`, `Tasks`,
-`Projects`, `Updates`, `Settings`, and the lightweight `Members` identity tab.
-The web app reads `Tasks`, `Projects`, `Updates`, `Settings`, and `Members`;
-it also reads metric names and context from `Metrics` for project linking. Task
-and project history continues to use the single existing `Updates` tab.
-`Code.gs` opens the known workbook ID explicitly because Apps Script does not
-provide bound-container “active spreadsheet” methods during web-app execution.
+## Operational data
+
+The existing `START Control Center` workbook contains `Metrics`, `Tasks`,
+`Projects`, `Updates`, `Settings`, and `Members`. The server opens its known
+spreadsheet ID explicitly because bound-container active-spreadsheet methods are
+not available during web-app execution. Setup helpers add only missing supported
+headers/settings and never seed or rewrite operational rows.
