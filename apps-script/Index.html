@@ -39,6 +39,7 @@
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
 
     html { scroll-behavior: smooth; }
 
@@ -2121,7 +2122,10 @@
           return;
         }
         if (!state.canRead) {
-          identityPanel.innerHTML = '<div class="identity-card"><div class="identity-topline"><span class="identity-label">Access needed</span><span class="temp-label">Google sign-in</span></div><p class="identity-note">' + h(state.accessMessage) + '</p></div>';
+          var identityUnavailable = state.error && !state.accessMessage;
+          identityPanel.innerHTML = '<div class="identity-card"><div class="identity-topline"><span class="identity-label">' + (identityUnavailable ? 'Access check unavailable' : 'Access needed') + '</span><span class="temp-label">' + (identityUnavailable ? 'Try again' : 'Google sign-in') + '</span></div><p class="identity-note">' + h(identityUnavailable
+            ? 'We could not confirm your school identity because the dashboard did not load. Try again when the connection is available.'
+            : state.accessMessage) + '</p></div>';
           return;
         }
         var editingName = state.displayNameEditorOpen || state.needsDisplayName;

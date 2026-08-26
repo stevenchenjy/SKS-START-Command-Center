@@ -46,6 +46,7 @@ test('clears and withholds operational state when read access is denied', () => 
     'state.projectDrafts = {}',
     'target.innerHTML = accessState()'
   ], 'denied-state sanitization is incomplete');
+  assert(html.includes('[hidden] { display: none !important; }'), 'hidden navigation and controls must remain visually hidden');
 });
 
 test('keeps deployment-owner bootstrap operations separate from student data access', () => {
@@ -182,7 +183,9 @@ test('includes accessible errors, slow-operation feedback, and mobile targets', 
     'Still working. Leave this tab open; the request is continuing and has not been canceled.',
     '}, 1200);',
     'button, select, input:not([type="checkbox"]):not([type="radio"]) { min-height: 44px; }',
-    '.task-history summary { min-height: 44px;'
+    '.task-history summary { min-height: 44px;',
+    'Access check unavailable',
+    'We could not confirm your school identity because the dashboard did not load.'
   ], 'accessibility or slow-operation feedback is incomplete');
 });
 
