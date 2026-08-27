@@ -6,11 +6,15 @@ source of truth and Google Apps Script serves the responsive web app.
 
 ## Current student workflow
 
-- Find, claim, update, block, resume, finish, or release practical tasks.
-- Move student ideas through Idea, Validation, School Review, Active work, and
-  completion while retaining paused and rejected history.
-- See active projects, work waiting on school, recent progress, and related
-  tasks and updates.
+- **Today** answers “What should I do next?” with one primary personal action,
+  a short remaining queue, and compact links to available or stuck work.
+- **Tasks** is the execution workspace for claiming, updating, blocking,
+  resuming, finishing, or releasing practical work.
+- **Projects** moves student ideas through Idea, Validation, School Review,
+  Active work, and completion while retaining paused and rejected history.
+- **Review** is the committee meeting agenda for human decisions, blockers,
+  recent progress, and optional factual project comparison. Decisions are
+  recorded back in the source Task or Project rather than in a parallel store.
 - Use the signed-in school Google identity matched exactly to one active
   `Members` row; browser-selected profiles are never authorization.
 - Use the member email/profile key—not a changeable display name—as task
@@ -23,13 +27,13 @@ project decisions. AI and other future helpers are disabled by default.
 
 Coordinators also have a small authorization-gated Operations view for member
 status, schema readiness, and read-only data-integrity diagnostics. Students can
-use factual project comparison and meeting-briefing views without arbitrary
-scores or automated decisions. See [OPERATIONS.md](OPERATIONS.md) for the access
-model and the weekly owner checklist.
+use factual project comparison inside Review without arbitrary scores or
+automated decisions. See [OPERATIONS.md](OPERATIONS.md) for the access model and
+the weekly owner checklist.
 
-The deterministic factual Briefing and project comparison are always-on core,
-non-AI features. They do not require or activate `FEATURE_DECISION_HELPER` or
-`FEATURE_REPORTING`.
+The deterministic factual Review agenda and its project comparison are
+always-on, core non-AI features. They do not require or activate
+`FEATURE_DECISION_HELPER` or `FEATURE_REPORTING`.
 
 ## Platform foundation
 

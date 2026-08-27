@@ -143,5 +143,5 @@ private Script Property value is `true`. Do not enable them as part of ordinary
 operations, and never add an API key or private Drive folder ID to the Sheet,
 HTML, logs, or repository.
 
-The deterministic factual Briefing, project comparison, and meeting report are
+The deterministic factual Review agenda and optional project comparison are
 core non-AI views; they do not depend on those dormant future-helper flags.

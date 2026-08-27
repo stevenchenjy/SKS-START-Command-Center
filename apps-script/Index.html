@@ -168,6 +168,28 @@
       font-weight: 700;
     }
 
+    .nav-copy {
+      display: grid;
+      min-width: 0;
+      gap: 2px;
+    }
+
+    .nav-label {
+      color: inherit;
+      font-size: 14px;
+      font-weight: 760;
+      line-height: 1.15;
+    }
+
+    .nav-description {
+      color: #9fb2ba;
+      font-size: 10px;
+      font-weight: 620;
+      line-height: 1.2;
+    }
+
+    .nav-button[aria-current="page"] .nav-description { color: #d5e1e4; }
+
     .nav-icon {
       display: grid;
       place-items: center;
@@ -347,6 +369,7 @@
     }
 
     .view[hidden] { display: none; }
+    .view [tabindex="-1"]:focus { outline: none; }
     .page-heading {
       display: flex;
       align-items: flex-end;
@@ -360,41 +383,61 @@
     .generated-at { color: var(--muted); font-size: 12px; white-space: nowrap; }
 
     .eyebrow { color: var(--forest-700); margin-bottom: 7px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 25px; }
-    .stat-card {
-      position: relative;
-      min-height: 139px;
-      padding: 20px;
+    .today-shell { display: grid; gap: 18px; }
+    .today-focus {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 26px;
+      min-height: 216px;
+      padding: clamp(24px, 4vw, 42px);
       overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: var(--cream-50);
+      border: 1px solid #b8cfc4;
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at 90% 15%, rgba(255,255,255,0.75), transparent 28%),
+        linear-gradient(135deg, #edf6f1, #f8f5e9);
       box-shadow: var(--shadow-sm);
+    }
+    .today-focus-copy { min-width: 0; }
+    .today-focus-kicker { margin: 0 0 9px; color: var(--forest-700); font-size: 11px; font-weight: 820; letter-spacing: 0.09em; text-transform: uppercase; }
+    .today-focus h2 { max-width: 780px; margin: 0; color: var(--navy-900); font-size: clamp(24px, 3vw, 36px); line-height: 1.12; letter-spacing: -0.035em; }
+    .today-focus-detail { max-width: 720px; margin: 10px 0 0; color: #52606c; font-size: 14px; line-height: 1.5; }
+    .today-focus-meta { display: flex; flex-wrap: wrap; gap: 7px 13px; margin-top: 15px; color: var(--muted); font-size: 12px; }
+    .today-focus-action { min-width: 150px; }
+    .today-signals {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.68);
+      overflow: hidden;
+    }
+    .today-signal {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      min-height: 62px;
+      padding: 12px 16px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
       cursor: pointer;
       text-align: left;
     }
-
-    .stat-card::after {
-      content: "";
-      position: absolute;
-      right: -22px;
-      bottom: -28px;
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      background: var(--forest-100);
-      opacity: 0.68;
-    }
-
-    .stat-card:hover { border-color: #b7c5bd; transform: translateY(-1px); }
-    .stat-card-static { cursor: default; }
-    .stat-card-static:hover { border-color: var(--line); transform: none; }
-    .stat-label { display: block; margin-bottom: 12px; color: var(--muted); font-size: 12px; font-weight: 760; letter-spacing: 0.035em; text-transform: uppercase; }
-    .stat-value { display: block; color: var(--navy-900); font-size: 36px; font-weight: 800; line-height: 1; letter-spacing: -0.045em; }
-    .stat-note { display: block; margin-top: 9px; color: var(--muted); font-size: 12px; }
-
-    .home-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.9fr); gap: 18px; align-items: start; }
-    .home-stack { display: grid; gap: 18px; }
+    .today-signal:last-child { border-right: 0; }
+    .today-signal:hover { background: white; }
+    .today-signal span { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .today-signal strong { color: var(--navy-900); font-size: 21px; line-height: 1; }
+    .today-signal.is-attention strong { color: #8a5d12; }
+    .today-queue { padding-top: 4px; }
+    .today-queue-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+    .today-queue-header h2 { margin: 0; color: var(--navy-900); font-size: 18px; letter-spacing: -0.02em; }
+    .today-queue-header p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .today-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+    .today-list .queue-item { padding-inline: 3px; }
     .panel {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
@@ -427,43 +470,26 @@
     }
 
     .text-button:hover { background: var(--forest-100); }
-    .queue-list, .update-list, .waiting-list { list-style: none; margin: 0; padding: 0; }
-    .queue-item, .update-item, .waiting-item { padding: 16px 21px; border-bottom: 1px solid #edf0ed; }
-    .queue-item:last-child, .update-item:last-child, .waiting-item:last-child { border-bottom: 0; }
+    .queue-item { padding: 16px 21px; border-bottom: 1px solid #edf0ed; }
+    .queue-item:last-child { border-bottom: 0; }
     .queue-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
     .queue-title { margin: 0; color: var(--ink); font-size: 14px; font-weight: 740; }
     .queue-meta { display: flex; flex-wrap: wrap; gap: 6px 13px; margin-top: 6px; color: var(--muted); font-size: 12px; }
     .queue-action { flex: 0 0 auto; min-height: 44px; padding: 6px 10px; }
 
-    .update-who { color: var(--forest-700); font-size: 12px; font-weight: 760; }
-    .update-time { float: right; color: var(--muted); font-size: 11px; }
-    .update-text { margin: 5px 0 0; color: var(--ink); font-size: 13px; overflow-wrap: anywhere; }
-    .update-context { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
     .blocker-note { margin-top: 8px; padding-left: 9px; border-left: 3px solid var(--gold); color: #795316; font-size: 12px; }
-
-    .waiting-item { display: grid; grid-template-columns: 29px minmax(0, 1fr); gap: 10px; }
-    .waiting-mark {
-      display: grid;
-      place-items: center;
-      width: 27px;
-      height: 27px;
-      border-radius: 9px;
-      background: var(--gold-soft);
-      color: #885e16;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .waiting-title { margin: 1px 0 2px; font-size: 13px; font-weight: 740; }
-    .waiting-detail { margin: 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 
     .toolbar {
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
       gap: 15px;
       margin-bottom: 18px;
     }
+
+    .task-view-controls { display: grid; gap: 8px; }
+    .task-view-row { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+    .control-label { margin: 0; color: var(--muted); font-size: 11px; font-weight: 790; letter-spacing: 0.065em; text-transform: uppercase; }
 
     .segmented {
       display: inline-grid;
@@ -489,6 +515,19 @@
     }
 
     .segment-button[aria-pressed="true"] { background: var(--navy-900); color: white; box-shadow: 0 3px 10px rgba(16,42,67,0.18); }
+    .task-scope-links { display: inline-flex; align-items: center; gap: 3px; }
+    .scope-button {
+      min-height: 44px;
+      padding: 7px 10px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .scope-button:hover, .scope-button[aria-pressed="true"] { background: var(--forest-100); color: var(--forest-800); }
     .results-count { margin: 0; color: var(--muted); font-size: 12px; }
 
     .task-list { display: grid; gap: 14px; }
@@ -528,6 +567,7 @@
     .status-doing { background: var(--blue-soft); color: var(--navy-700); }
     .task-context { margin: 0; color: var(--muted); font-size: 13px; }
     .task-context strong { color: var(--ink); font-weight: 700; }
+    .task-context .text-button { min-height: 36px; padding-inline: 4px; }
 
     .meta-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
     .meta-chip {
@@ -685,31 +725,53 @@
       font-size: 12px;
       font-weight: 800;
     }
-    .project-card-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 14px; }
-    .project-summary-card { min-width: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--white); overflow: hidden; }
+    .project-lifecycle-scroll { overflow-x: auto; }
+    .project-lifecycle {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(138px, 1fr));
+      min-width: 720px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.68);
+      overflow: hidden;
+    }
+    .project-lifecycle li { position: relative; min-width: 0; padding: 13px 15px 14px; border-right: 1px solid var(--line); }
+    .project-lifecycle li:last-child { border-right: 0; }
+    .project-lifecycle-step { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .project-lifecycle-step strong { color: var(--navy-900); font-size: 12px; }
+    .project-lifecycle-step span { display: inline-grid; place-items: center; min-width: 25px; height: 25px; padding: 0 7px; border-radius: 99px; background: var(--forest-100); color: var(--forest-800); font-size: 11px; font-weight: 800; }
+    .project-lifecycle p { margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .project-card-list { display: grid; grid-template-columns: 1fr; gap: 0; padding: 0; }
+    .project-summary-card { --stage-color: var(--navy-700); min-width: 0; border-bottom: 1px solid #edf0ed; background: var(--white); overflow: hidden; }
+    .project-summary-card:last-child { border-bottom: 0; }
     .project-summary-card > button {
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
+      display: grid;
+      grid-template-columns: 112px minmax(170px, 0.85fr) minmax(220px, 1.25fr) auto;
+      grid-template-rows: auto auto;
+      align-items: center;
+      gap: 4px 16px;
       width: 100%;
       height: 100%;
-      min-height: 208px;
-      padding: 16px;
+      min-height: 112px;
+      padding: 15px 18px;
       border: 0;
-      border-top: 4px solid var(--navy-700);
+      border-left: 4px solid var(--stage-color);
       background: transparent;
       color: inherit;
       cursor: pointer;
       text-align: left;
     }
     .project-summary-card > button:hover { background: #fbfcf9; }
-    .project-summary-card.project-stage-idea > button { border-top-color: var(--forest-700); }
-    .project-summary-card.project-stage-validation > button { border-top-color: #527aa0; }
-    .project-summary-card.project-stage-school-review > button { border-top-color: var(--gold); }
-    .project-summary-card.project-stage-active > button { border-top-color: var(--navy-700); }
-    .project-summary-card.project-stage-completed > button { border-top-color: #77877f; }
-    .project-summary-card.project-stage-paused > button { border-top-color: #9b7b42; }
-    .project-summary-card.project-stage-rejected > button { border-top-color: #9b5955; }
+    .project-summary-card.project-stage-idea { --stage-color: var(--forest-700); }
+    .project-summary-card.project-stage-validation { --stage-color: #527aa0; }
+    .project-summary-card.project-stage-school-review { --stage-color: var(--gold); }
+    .project-summary-card.project-stage-active { --stage-color: var(--navy-700); }
+    .project-summary-card.project-stage-completed { --stage-color: #77877f; }
+    .project-summary-card.project-stage-paused { --stage-color: #9b7b42; }
+    .project-summary-card.project-stage-rejected { --stage-color: #9b5955; }
     .status-badge.project-stage-idea { background: var(--forest-100); color: var(--forest-800); }
     .status-badge.project-stage-validation { background: var(--blue-soft); color: var(--navy-700); }
     .status-badge.project-stage-school-review { background: var(--gold-soft); color: #7a5312; }
@@ -717,20 +779,24 @@
     .status-badge.project-stage-completed { background: #e8ecea; color: #53605a; }
     .status-badge.project-stage-paused { background: #f3ead7; color: #765016; }
     .status-badge.project-stage-rejected { background: var(--red-soft); color: var(--red); }
-    .project-card-top { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
-    .project-card-name { display: block; margin-top: 12px; color: var(--navy-900); font-size: 16px; line-height: 1.3; }
+    .project-card-top { display: grid; align-content: center; justify-items: start; gap: 6px; grid-column: 1; grid-row: 1 / 3; }
+    .project-card-name { display: block; grid-column: 2; grid-row: 1; margin: 0; color: var(--navy-900); font-size: 15px; line-height: 1.3; }
     .project-card-problem {
       display: -webkit-box;
-      margin-top: 7px;
+      grid-column: 2;
+      grid-row: 2;
+      margin: 2px 0 0;
       overflow: hidden;
       color: #52606c;
-      font-size: 12px;
+      font-size: 11px;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
     }
     .project-card-next {
       display: -webkit-box;
-      margin-top: 12px;
+      grid-column: 3;
+      grid-row: 1 / 3;
+      margin: 0;
       padding: 9px 10px;
       overflow: hidden;
       border-radius: 9px;
@@ -741,8 +807,8 @@
       -webkit-line-clamp: 3;
     }
     .project-card-next small { display: block; margin-bottom: 2px; color: var(--forest-700); font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-    .project-card-meta { display: flex; flex-wrap: wrap; gap: 5px 10px; margin-top: 11px; color: var(--muted); font-size: 10px; }
-    .project-open-label { margin-top: auto; padding-top: 13px; color: var(--forest-700); font-size: 11px; font-weight: 780; }
+    .project-card-meta { display: none; }
+    .project-open-label { grid-column: 4; grid-row: 1 / 3; margin: 0; padding: 0; color: var(--forest-700); font-size: 11px; font-weight: 780; white-space: nowrap; }
     .project-section-empty { margin: 0; padding: 22px 19px; color: var(--muted); font-size: 12px; }
     .project-secondary-control { display: flex; justify-content: center; padding: 2px 0 6px; }
     .project-board-empty { padding: 28px; border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); text-align: center; }
@@ -825,13 +891,17 @@
     .metric-option strong, .metric-option small { display: block; }
     .metric-option strong { color: var(--ink); font-size: 11px; }
     .metric-option small { margin-top: 2px; color: var(--muted); font-size: 9px; }
-    .project-action-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
-    .project-action-card { min-height: 84px; padding: 12px; border: 1px solid var(--line); border-radius: 11px; background: #fbfcf9; cursor: pointer; text-align: left; }
-    .project-action-card:hover { border-color: #aac4b7; background: white; }
-    .project-action-card.primary { border-color: #8db8a4; background: var(--forest-100); }
+    .project-primary-action { margin-bottom: 13px; }
+    .project-secondary-actions { display: flex; flex-wrap: wrap; gap: 7px; padding-top: 13px; border-top: 1px solid #e5ebe7; }
+    .project-action-card { cursor: pointer; text-align: left; }
+    .project-action-card.primary { width: 100%; min-height: 84px; padding: 14px 16px; border: 1px solid #8db8a4; border-radius: 11px; background: var(--forest-100); }
+    .project-action-card.secondary { min-height: 44px; padding: 7px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); }
+    .project-action-card:hover { background: white; color: var(--navy-900); }
     .project-action-card strong, .project-action-card span { display: block; }
-    .project-action-card strong { color: var(--navy-900); font-size: 12px; }
+    .project-action-card strong { color: inherit; font-size: 12px; }
+    .project-action-card.primary strong { color: var(--navy-900); font-size: 14px; }
     .project-action-card span { margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .project-action-card.secondary span { display: none; }
     .project-action-card[disabled] { opacity: 0.52; cursor: not-allowed; }
     .active-project-form { margin-top: 16px; padding: 17px; border: 1px solid #cbd8d1; border-radius: 14px; background: #f8fbf9; }
     .active-project-form .workflow-form { margin-top: 13px; background: transparent; }
@@ -880,15 +950,13 @@
     .access-state p { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
     .access-state .access-help { margin-top: 18px; padding: 13px 15px; border-radius: 11px; background: white; color: #5f4a22; font-size: 12px; text-align: left; }
 
-    .attention-panel { border-color: #efdba9; }
-    .attention-list, .brief-list, .operations-list { list-style: none; margin: 0; padding: 0; }
-    .attention-item, .brief-list li, .operations-list li { padding: 14px 19px; border-bottom: 1px solid #edf0ed; }
-    .attention-item:last-child, .brief-list li:last-child, .operations-list li:last-child { border-bottom: 0; }
-    .attention-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    .attention-item strong, .brief-list strong { display: block; color: var(--ink); font-size: 13px; }
-    .attention-item p, .brief-list p { margin: 3px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+    .brief-list, .operations-list { list-style: none; margin: 0; padding: 0; }
+    .brief-list li, .operations-list li { padding: 14px 19px; border-bottom: 1px solid #edf0ed; }
+    .brief-list li:last-child, .operations-list li:last-child { border-bottom: 0; }
+    .brief-list strong { display: block; color: var(--ink); font-size: 13px; }
+    .brief-list p { margin: 3px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
 
-    .briefing-shell, .operations-shell { display: grid; gap: 18px; }
+    .review-shell, .operations-shell { display: grid; gap: 18px; }
     .briefing-note {
       margin: 0;
       padding: 14px 16px;
@@ -898,8 +966,27 @@
       color: #31594b;
       font-size: 12px;
     }
-    .briefing-grid, .operations-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
-    .briefing-grid .panel-wide, .operations-grid .panel-wide { grid-column: 1 / -1; }
+    .operations-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: start; }
+    .operations-grid .panel-wide { grid-column: 1 / -1; }
+    .review-agenda { overflow: hidden; }
+    .review-section { display: grid; grid-template-columns: 150px minmax(0, 1fr); border-top: 1px solid #edf0ed; }
+    .review-section:first-of-type { border-top: 0; }
+    .review-section-heading { padding: 18px 19px; background: #fafbf8; }
+    .review-step { display: inline-grid; place-items: center; width: 27px; height: 27px; margin-bottom: 9px; border-radius: 9px; background: var(--forest-100); color: var(--forest-800); font-size: 11px; font-weight: 820; }
+    .review-section-heading h3 { margin: 0; color: var(--navy-900); font-size: 14px; }
+    .review-section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .review-section-body { min-width: 0; }
+    .review-section .brief-list li { padding: 14px 18px; }
+    .review-update-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .review-update-top time { color: var(--muted); font-size: 10px; }
+    .review-outcome { margin-top: 9px; padding: 9px 10px; border-radius: 9px; background: var(--forest-100); color: #31594b; font-size: 11px; line-height: 1.45; }
+    .review-close { display: flex; align-items: flex-start; gap: 10px; padding: 15px 18px; border-top: 1px solid #d8e3dd; background: #f6faf8; color: #31594b; font-size: 12px; line-height: 1.45; }
+    .review-close strong { color: var(--forest-800); }
+    .review-comparison { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .review-comparison > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 58px; padding: 13px 19px; color: var(--navy-900); cursor: pointer; font-size: 13px; font-weight: 780; }
+    .review-comparison > summary small { color: var(--muted); font-size: 10px; font-weight: 620; }
+    .review-comparison[open] > summary { border-bottom: 1px solid #edf0ed; }
+    .review-comparison .panel { border: 0; border-radius: 0; box-shadow: none; }
     .comparison-scroll { overflow-x: auto; }
     .comparison-table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 12px; }
     .comparison-table caption { padding: 0 20px 13px; color: var(--muted); text-align: left; }
@@ -1021,16 +1108,11 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 1100px) {
-      .stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .home-grid { grid-template-columns: 1fr; }
-      .home-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .projects-grid { grid-template-columns: 1fr; }
-      .project-card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .project-action-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .project-detail-layout { grid-template-columns: 1fr; }
       .project-detail-side { grid-template-columns: 1fr; }
-      .briefing-grid, .operations-grid { grid-template-columns: 1fr; }
-      .briefing-grid .panel-wide, .operations-grid .panel-wide { grid-column: auto; }
+      .operations-grid { grid-template-columns: 1fr; }
+      .operations-grid .panel-wide { grid-column: auto; }
     }
 
     @media (max-width: 820px) {
@@ -1074,8 +1156,12 @@
         box-shadow: 0 16px 40px rgba(10,29,48,0.28);
         backdrop-filter: blur(12px);
       }
+      .mobile-nav[hidden] { display: none; }
       .mobile-nav .nav-button { flex-direction: column; justify-content: center; min-height: 51px; padding: 6px 4px; gap: 2px; border-radius: 12px; font-size: 10px; text-align: center; }
       .mobile-nav .nav-icon { width: 19px; height: 19px; font-size: 16px; }
+      .mobile-nav .nav-copy { display: block; }
+      .mobile-nav .nav-label { font-size: 10px; }
+      .mobile-nav .nav-description { display: none; }
       .toast { right: 16px; bottom: calc(90px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
       .operation-status { right: 16px; bottom: calc(150px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
       .mobile-nav.has-admin { grid-template-columns: repeat(5, 1fr); }
@@ -1088,13 +1174,20 @@
       .page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 20px; }
       .page-heading h1 { font-size: 31px; }
       .generated-at { white-space: normal; }
-      .stats-grid, .home-stack, .skeleton-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .stat-card, .skeleton { min-height: 122px; height: auto; padding: 16px; }
-      .stat-value { font-size: 31px; }
-      .stat-note { font-size: 11px; }
+      .skeleton-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .skeleton { min-height: 122px; height: auto; padding: 16px; }
+      .today-focus { grid-template-columns: 1fr; min-height: 0; gap: 20px; }
+      .today-focus-action { width: 100%; }
+      .today-signals { grid-template-columns: 1fr; }
+      .today-signal { border-right: 0; border-bottom: 1px solid var(--line); }
+      .today-signal:last-child { border-bottom: 0; }
+      .today-queue-header { align-items: flex-start; flex-direction: column; }
       .toolbar { align-items: flex-start; flex-direction: column; }
-      .segmented { width: 100%; grid-template-columns: repeat(5, 1fr); grid-auto-flow: initial; }
+      .task-view-controls, .task-view-row, .segmented { width: 100%; }
+      .task-view-row { align-items: stretch; flex-direction: column; }
+      .segmented { grid-template-columns: repeat(3, 1fr); grid-auto-flow: initial; }
       .segment-button { min-width: 0; padding-inline: 7px; }
+      .task-scope-links { justify-content: flex-start; }
       .task-card { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
       .task-card.is-mine { padding-left: 15px; }
       .task-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-width: 0; }
@@ -1105,10 +1198,16 @@
       .project-card.waiting { padding-top: 15px; }
       .project-details { grid-template-columns: 1fr; }
       .project-detail.wide { grid-column: auto; }
-      .project-card-list { grid-template-columns: 1fr; }
+      .project-summary-card > button { display: flex; flex-direction: column; align-items: stretch; min-height: 0; border-left: 0; border-top: 4px solid var(--stage-color); }
+      .project-card-top, .project-card-name, .project-card-problem, .project-card-next, .project-open-label { grid-column: auto; grid-row: auto; }
+      .project-card-top { display: flex; justify-content: space-between; }
+      .project-card-name { margin-top: 10px; }
+      .project-card-problem { margin-top: 5px; }
+      .project-card-next { margin-top: 10px; }
+      .project-open-label { margin-top: 10px; }
       .project-board-toolbar, .project-setup-banner, .project-workflow-panel { align-items: stretch; flex-direction: column; }
       .project-board-toolbar .new-idea-button, .project-setup-banner .button, .project-workflow-panel .button { width: 100%; }
-      .project-action-grid, .workflow-form-grid, .metric-options, .project-info-grid { grid-template-columns: 1fr; }
+      .workflow-form-grid, .metric-options, .project-info-grid { grid-template-columns: 1fr; }
       .project-info-field, .project-info-field:nth-last-child(-n+2) { border-bottom: 1px solid #edf0ed; }
       .project-info-field:last-child { border-bottom: 0; }
       .project-info-field.project-info-wide { grid-column: auto; }
@@ -1120,6 +1219,9 @@
       .operations-member .button { width: 100%; }
       .operations-definition { grid-template-columns: 1fr; }
       .operations-definition dd { padding-top: 2px; border-top: 0; }
+      .review-section { grid-template-columns: 1fr; }
+      .review-section-heading { padding-bottom: 12px; }
+      .review-comparison > summary { align-items: flex-start; flex-direction: column; gap: 3px; }
     }
 
     @media (max-width: 390px) {
@@ -1127,8 +1229,6 @@
       .topbar-actions { gap: 6px; }
       .topbar-title { font-size: 15px; }
       .member-chip { max-width: 105px; }
-      .stats-grid, .home-stack { grid-template-columns: 1fr; }
-      .stat-card { min-height: 111px; }
       .task-actions { grid-template-columns: 1fr; }
       .task-actions .button-primary, .task-actions .action-note, .owned-by { grid-column: auto; }
       .project-header { flex-direction: column; gap: 9px; }
@@ -1154,11 +1254,11 @@
       </div>
 
       <nav class="desktop-nav" aria-label="Main navigation">
-        <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
-        <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
-        <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
-        <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span>Briefing</button>
-        <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span>Operations</button>
+        <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-copy"><span class="nav-label">Today</span><span class="nav-description">Start here</span></span></button>
+        <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-copy"><span class="nav-label">Tasks</span><span class="nav-description">Claim &amp; finish</span></span></button>
+        <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span><span class="nav-copy"><span class="nav-label">Projects</span><span class="nav-description">Move each idea</span></span></button>
+        <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-copy"><span class="nav-label">Review</span><span class="nav-description">Discuss &amp; decide</span></span></button>
+        <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span><span class="nav-copy"><span class="nav-label">Operations</span><span class="nav-description">Coordinator tools</span></span></button>
       </nav>
 
       <div class="identity-panel" id="identity-panel"></div>
@@ -1167,8 +1267,8 @@
     <div class="workspace">
       <header class="topbar">
         <div>
-          <p class="topbar-title" id="topbar-title">Committee overview</p>
-          <p class="topbar-subtitle" id="topbar-subtitle">What needs attention across START right now</p>
+          <p class="topbar-title" id="topbar-title">Today</p>
+          <p class="topbar-subtitle" id="topbar-subtitle">Start with your own next task</p>
         </div>
         <div class="topbar-actions">
           <button class="member-chip" id="member-chip" type="button" disabled>Checking access…</button>
@@ -1182,9 +1282,9 @@
         <section class="view" id="view-home" data-view="home" aria-labelledby="home-title">
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Today at a glance</p>
-              <h1 id="home-title">Committee overview</h1>
-              <p>Pick up the next useful task and keep the committee moving.</p>
+              <p class="eyebrow">Start here</p>
+              <h1 id="home-title">What should I do next?</h1>
+              <p>Continue your current task—or choose one from the open pool.</p>
             </div>
             <span class="generated-at" id="home-generated"></span>
           </div>
@@ -1194,9 +1294,9 @@
         <section class="view" id="view-tasks" data-view="tasks" aria-labelledby="tasks-title" hidden>
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Student action board</p>
-              <h1 id="tasks-title">Tasks</h1>
-              <p>Claim something useful, share progress, and flag anything that needs help.</p>
+              <p class="eyebrow">Execution workspace</p>
+              <h1 id="tasks-title">Do the work</h1>
+              <p>Start with My work, claim from Available, and use Needs help when something is stuck.</p>
             </div>
           </div>
           <div id="tasks-content" aria-live="polite"></div>
@@ -1205,9 +1305,9 @@
         <section class="view" id="view-projects" data-view="projects" aria-labelledby="projects-title" hidden>
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Sustainability work</p>
-              <h1 id="projects-title">Projects</h1>
-              <p>Turn a student idea into validated, approved, practical work.</p>
+              <p class="eyebrow">Project lifecycle</p>
+              <h1 id="projects-title">Move each idea forward</h1>
+              <p>Use the current stage to find the one human step that moves a project next.</p>
             </div>
           </div>
           <div id="projects-content" aria-live="polite"></div>
@@ -1216,9 +1316,9 @@
         <section class="view" id="view-briefing" data-view="briefing" aria-labelledby="briefing-title" hidden>
           <div class="page-heading">
             <div>
-              <p class="eyebrow">Recorded facts for discussion</p>
-              <h1 id="briefing-title">Committee briefing</h1>
-              <p>Compare what is known, spot missing information, and prepare a factual meeting update.</p>
+              <p class="eyebrow">Committee meeting</p>
+              <h1 id="briefing-title">Discuss, decide, record</h1>
+              <p>Work through decisions, blockers, and progress—then record each outcome in its source task or project.</p>
             </div>
           </div>
           <div id="briefing-content" aria-live="polite"></div>
@@ -1239,19 +1339,19 @@
           class="release-indicator"
           id="release-indicator"
           aria-label="Web app version"
-          data-web-version="0.4.0"
-          data-web-build="20260826a"
-        >Web v0.4.0 · build 20260826a</footer>
+          data-web-version="0.5.0"
+          data-web-build="20260827a"
+        >Web v0.5.0 · build 20260827a</footer>
       </main>
     </div>
   </div>
 
   <nav class="mobile-nav" id="mobile-nav" aria-label="Main navigation">
-    <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span>Home</button>
-    <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span>Tasks</button>
-    <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span>Projects</button>
-    <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span>Briefing</button>
-    <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span>Admin</button>
+    <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-copy"><span class="nav-label">Today</span><span class="nav-description">Start here</span></span></button>
+    <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-copy"><span class="nav-label">Tasks</span><span class="nav-description">Claim &amp; finish</span></span></button>
+    <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span><span class="nav-copy"><span class="nav-label">Projects</span><span class="nav-description">Move each idea</span></span></button>
+    <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-copy"><span class="nav-label">Review</span><span class="nav-description">Discuss &amp; decide</span></span></button>
+    <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span><span class="nav-copy"><span class="nav-label">Admin</span><span class="nav-description">Coordinator tools</span></span></button>
   </nav>
 
   <div class="operation-status" id="operation-status" role="status" aria-live="polite" aria-atomic="true" hidden></div>
@@ -1262,12 +1362,12 @@
       'use strict';
 
       var VIEWS = ['home', 'tasks', 'projects', 'briefing', 'operations'];
-      var TASK_FILTERS = ['open', 'mine', 'overdue', 'blocked', 'completed', 'all'];
+      var TASK_FILTERS = ['mine', 'open', 'attention', 'completed', 'all'];
       var PROJECT_STAGES = ['Idea', 'Validation', 'School Review', 'Active', 'Completed', 'Paused', 'Rejected'];
 
       var state = {
         view: viewFromHash(),
-        taskFilter: 'open',
+        taskFilter: 'mine',
         loading: true,
         refreshing: false,
         loadToken: 0,
@@ -1653,52 +1753,11 @@
 
       function counts() {
         var open = state.tasks.filter(function (task) { return task.isOpen; }).length;
-        var doing = state.tasks.filter(function (task) { return task.status === 'Doing'; }).length;
         var mine = state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; }).length;
-        var blocked = state.tasks.filter(function (task) { return task.status === 'Blocked'; }).length;
-        var overdue = state.tasks.filter(isTaskOverdue).length;
-        var active = state.projects.filter(function (project) { return project.stage === 'Active'; }).length;
-        var waitingProjects = state.projects.filter(function (project) { return project.stage === 'School Review'; }).length;
-        var ideas = state.projects.filter(function (project) { return project.stage === 'Idea'; }).length;
         return {
           open: summaryCount('openTasks', open),
-          doing: summaryCount('doingTasks', doing),
-          mine: mine,
-          blocked: summaryCount('blockedTasks', blocked),
-          overdue: summaryCount('overdueTasks', overdue),
-          active: summaryCount('activeProjects', active),
-          waitingProjects: summaryCount('waitingOnSchoolProjects', waitingProjects),
-          ideas: summaryCount('ideasNeedingValidation', ideas)
+          mine: mine
         };
-      }
-
-      function waitingItems() {
-        var hasProvidedList = Array.isArray(state.summary.waitingItems);
-        var provided = list(state.summary.waitingItems).map(function (item, index) {
-          if (typeof item === 'string' || typeof item === 'number') {
-            return { key: 'summary-' + index, title: text(item), detail: 'Waiting on school or staff', type: 'Item' };
-          }
-          item = item && typeof item === 'object' ? item : {};
-          return {
-            key: text(first(item, ['key', 'id'])) || 'summary-' + index,
-            title: text(first(item, ['title', 'name', 'item', 'task', 'project'], 'Waiting item')),
-            detail: text(first(item, ['detail', 'blocker', 'schoolFeedback', 'feedback', 'reason'])),
-            type: text(first(item, ['type', 'kind'], 'Item'))
-          };
-        }).filter(function (item) { return item.title; });
-        if (hasProvidedList) return provided;
-
-        var taskItems = state.tasks.filter(function (task) {
-          return task.status === 'Blocked';
-        }).map(function (task) {
-          return { key: 'task-' + task.renderKey, title: task.title, detail: task.blocker || 'Task is marked Blocked', type: 'Task' };
-        });
-        var projectItems = state.projects.filter(function (project) {
-          return project.isWaitingOnSchool;
-        }).map(function (project) {
-          return { key: 'project-' + project.renderKey, title: project.name, detail: project.schoolFeedback || project.nextAction || 'Waiting on school input', type: 'Project' };
-        });
-        return taskItems.concat(projectItems);
       }
 
       function serverCall(method, args) {
@@ -2082,6 +2141,7 @@
         });
         var mobileNav = document.getElementById('mobile-nav');
         if (mobileNav) {
+          mobileNav.hidden = !state.loading && !state.canRead && !state.isAdmin;
           mobileNav.classList.toggle('has-admin', state.isAdmin);
           mobileNav.classList.toggle('admin-only', state.isAdmin && !state.canRead);
         }
@@ -2099,10 +2159,10 @@
 
       function renderHeader() {
         var copy = {
-          home: ['Committee overview', 'What needs attention across START right now'],
-          tasks: ['Task board', 'Claim work, record progress, and finish the next step'],
-          projects: ['Project workflow', 'Move an idea from suggestion to real school action'],
-          briefing: ['Committee briefing', 'Recorded facts, missing information, and meeting-ready updates'],
+          home: ['Today', 'Start with your own next task'],
+          tasks: ['Tasks', 'Claim, update, unblock, finish'],
+          projects: ['Projects', 'Move each idea through the START workflow'],
+          briefing: ['Review', 'Discuss decisions, unblock work, acknowledge progress'],
           operations: ['Operations', 'Approved-member management and bounded readiness checks']
         }[state.view] || ['START Command Center', 'Student sustainability work'];
         document.getElementById('topbar-title').textContent = copy[0];
@@ -2155,38 +2215,52 @@
         if (!state.canRead) { target.innerHTML = accessState(); return; }
 
         var tally = counts();
-        var stats = [
-          { label: 'Open tasks', value: tally.open, note: tally.open === 1 ? 'Ready for someone to claim' : 'Ready for someone to claim', view: 'tasks', filter: 'open' },
-          { label: 'My tasks', value: tally.mine, note: 'Assigned to ' + state.currentDisplayName, view: 'tasks', filter: 'mine' },
-          { label: 'Overdue', value: tally.overdue, note: 'Past due by the school server date', view: 'tasks', filter: 'overdue' },
-          { label: 'Blocked', value: tally.blocked, note: 'Waiting for help, a decision, or a resource', view: 'tasks', filter: 'blocked' },
-          { label: 'Active projects', value: tally.active, note: 'Work the committee is carrying out', view: 'projects', projectStage: 'Active' },
-          { label: 'Waiting on school', value: tally.waitingProjects, note: 'Projects ready for school input', view: 'projects', projectStage: 'School Review' },
-          { label: 'Ideas to validate', value: tally.ideas, note: 'Suggestions ready for a closer look', view: 'projects', projectStage: 'Idea' }
-        ];
-        var html = '<div class="stats-grid">' + stats.map(function (stat) {
-          var content = '<span class="stat-label">' + h(stat.label) + '</span><span class="stat-value">' + h(stat.value) + '</span><span class="stat-note">' + h(stat.note) + '</span>';
-          if (!stat.view && !stat.scrollTarget) return '<div class="stat-card stat-card-static">' + content + '</div>';
-          return '<button class="stat-card" type="button"' + (stat.view ? ' data-view-target="' + h(stat.view) + '"' : '') +
-            (stat.filter ? ' data-set-task-filter="' + h(stat.filter) + '"' : '') +
-            (stat.projectStage ? ' data-project-stage="' + h(stat.projectStage) + '"' : '') +
-            (stat.scrollTarget ? ' data-scroll-target="' + h(stat.scrollTarget) + '"' : '') + '>' + content + '</button>';
-        }).join('') + '</div>';
+        var mine = sortTasks(state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; }));
+        var focus = mine.filter(function (task) { return task.status === 'Doing'; })[0] ||
+          mine.filter(function (task) { return task.status === 'Blocked'; })[0] || mine[0] || null;
+        var remaining = mine.filter(function (task) { return task !== focus; }).slice(0, 4);
+        var attention = state.tasks.filter(needsTaskAttention).length;
+        var html = '<div class="today-shell">' + renderTodayFocus(focus, tally.open) +
+          '<div class="today-signals" aria-label="Task shortcuts">' +
+          renderTodaySignal('My work', tally.mine, 'mine', false) +
+          renderTodaySignal('Available', tally.open, 'open', false) +
+          renderTodaySignal('Needs help', attention, 'attention', attention > 0) + '</div>';
+        if (remaining.length) {
+          html += '<section class="today-queue" aria-labelledby="today-queue-title"><div class="today-queue-header"><div><h2 id="today-queue-title">After that</h2>' +
+            '<p>Your remaining claimed work, ordered by due date</p></div><button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="mine">View all my work →</button></div>' +
+            '<ul class="today-list">' + remaining.map(renderQueueItem).join('') + '</ul></section>';
+        }
+        target.innerHTML = html + '</div>';
+      }
 
-        var queue = state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; });
-        queue = sortTasks(queue).slice(0, 5);
-        var queueTitle = 'Your next tasks';
-        var queueSubtitle = 'Work assigned to ' + state.currentDisplayName;
-        html += '<div class="home-grid"><section class="panel"><div class="panel-header"><div><h2 class="panel-title">' + h(queueTitle) + '</h2>' +
-          '<p class="panel-subtitle">' + h(queueSubtitle) + '</p></div><button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="mine">View all →</button></div>' +
-          (queue.length ? '<ul class="queue-list">' + queue.map(renderQueueItem).join('') + '</ul>' : emptyState(
-            'You’re all caught up',
-            'Claim an open task when you are ready for something new.',
-            'Browse open tasks', 'tasks', true, 'open'
-          )) + '</section>';
+      function renderTodayFocus(task, openCount) {
+        if (task) {
+          var due = dueInfo(task.dueDate, task.dueDateMachine, false);
+          var blocked = task.status === 'Blocked';
+          var detail = blocked
+            ? 'Waiting for: ' + (task.blocker || 'No blocker reason has been recorded yet.')
+            : (task.lastUpdate || 'Open the task to add progress, flag a blocker, finish it, or release it.');
+          var meta = ['<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>'];
+          if (task.relatedProject) meta.push('<span>Project: ' + h(task.relatedProject) + '</span>');
+          if (due) meta.push('<span class="' + h(due.className.trim()) + '">' + h(due.label) + '</span>');
+          return '<section class="today-focus" aria-labelledby="today-focus-title"><div class="today-focus-copy"><p class="today-focus-kicker">' + (blocked ? 'Resolve before continuing' : 'Next up') + '</p>' +
+            '<h2 id="today-focus-title">' + h(task.title) + '</h2><p class="today-focus-detail">' + h(detail) + '</p>' +
+            '<div class="today-focus-meta">' + meta.join('') + '</div></div>' +
+            '<button class="button button-primary today-focus-action" type="button" data-open-task="' + h(task.key || task.id) + '">' + (blocked ? 'Review blocker' : 'Continue task') + '</button></section>';
+        }
+        if (openCount) {
+          return '<section class="today-focus" aria-labelledby="today-focus-title"><div class="today-focus-copy"><p class="today-focus-kicker">Choose your next contribution</p>' +
+            '<h2 id="today-focus-title">' + h(openCount) + ' ' + (openCount === 1 ? 'task is' : 'tasks are') + ' ready to claim</h2>' +
+            '<p class="today-focus-detail">Pick something practical that matches your time and interests. Claiming it makes the next owner clear.</p></div>' +
+            '<button class="button button-primary today-focus-action" type="button" data-view-target="tasks" data-set-task-filter="open">Browse available tasks</button></section>';
+        }
+        return '<section class="today-focus" aria-labelledby="today-focus-title"><div class="today-focus-copy"><p class="today-focus-kicker">All clear</p>' +
+          '<h2 id="today-focus-title">You’re caught up</h2><p class="today-focus-detail">There is no claimed or available task right now. Check the project lifecycle for the next useful committee step.</p></div>' +
+          '<button class="button button-primary today-focus-action" type="button" data-view-target="projects">View projects</button></section>';
+      }
 
-        html += '<div class="home-stack">' + renderAttentionPanel() + renderRecentUpdates() + renderWaitingPanel() + '</div></div>';
-        target.innerHTML = html;
+      function renderTodaySignal(label, value, filter, attention) {
+        return '<button class="today-signal' + (attention ? ' is-attention' : '') + '" type="button" data-view-target="tasks" data-set-task-filter="' + h(filter) + '"><span>' + h(label) + '</span><strong>' + h(value) + '</strong></button>';
       }
 
       function sortTasks(tasks) {
@@ -2197,56 +2271,16 @@
         });
       }
 
+      function needsTaskAttention(task) {
+        return task.status === 'Blocked' || isTaskOverdue(task);
+      }
+
       function renderQueueItem(task) {
         var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
         return '<li class="queue-item"><div class="queue-row"><div><p class="queue-title">' + h(task.title) + '</p><div class="queue-meta">' +
           '<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' +
           (task.relatedProject ? '<span>' + h(task.relatedProject) + '</span>' : '') + (due ? '<span>' + h(due.label) + '</span>' : '') +
           '</div></div><button class="button button-subtle queue-action" type="button" data-open-task="' + h(task.key || task.id) + '">Open</button></div></li>';
-      }
-
-      function renderAttentionPanel() {
-        var items = state.tasks.filter(function (task) {
-          return task.status === 'Blocked' || isTaskOverdue(task);
-        }).sort(function (left, right) {
-          if (isTaskOverdue(left) !== isTaskOverdue(right)) return isTaskOverdue(left) ? -1 : 1;
-          var leftDue = machineDateKey(left.dueDateMachine) || '9999-12-31';
-          var rightDue = machineDateKey(right.dueDateMachine) || '9999-12-31';
-          return leftDue.localeCompare(rightDue) || left.title.localeCompare(right.title);
-        }).slice(0, 6);
-        return '<section class="panel attention-panel"><div class="panel-header"><div><h2 class="panel-title">Needs attention</h2><p class="panel-subtitle">Overdue or blocked work, based on the school server date</p></div>' +
-          (items.length ? '<button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="all">View all →</button>' : '') + '</div>' +
-          (items.length ? '<ul class="attention-list">' + items.map(function (task) {
-            var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
-            var detail = task.status === 'Blocked' ? (task.blocker || 'Blocker reason not recorded') : (due ? due.label : 'Overdue');
-            return '<li class="attention-item"><div><strong>' + h(task.title) + '</strong><p>' + h(detail) + '</p></div>' +
-              '<button class="button button-subtle" type="button" data-open-task="' + h(task.key || task.id) + '">Open</button></li>';
-          }).join('') + '</ul>' : '<p class="brief-section-empty">No overdue or blocked tasks right now.</p>') + '</section>';
-      }
-
-      function renderRecentUpdates() {
-        var updates = state.updates.slice(0, 5);
-        return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Recent progress</h2><p class="panel-subtitle">Latest notes from the committee</p></div></div>' +
-          (updates.length ? '<ul class="update-list">' + updates.map(function (update) {
-            var link = safeUrl(update.link);
-            return '<li class="update-item"><span class="update-who">' + h(update.member) + '</span>' +
-              (update.timestamp ? '<span class="update-time">' + h(formatDate(update.timestamp, false)) + '</span>' : '') +
-              (update.update ? '<p class="update-text">' + h(update.update) + '</p>' : '<p class="update-text">Status updated</p>') +
-              (update.context ? '<p class="update-context">' + h(update.context) + '</p>' : '') +
-              (update.blocker ? '<div class="blocker-note"><strong>Blocker:</strong> ' + h(update.blocker) + '</div>' : '') +
-              (link ? '<a class="task-link" href="' + h(link) + '" target="_blank" rel="noopener noreferrer">Open link ↗</a>' : '') + '</li>';
-          }).join('') + '</ul>' : emptyState('No progress notes yet', 'Updates will appear here as members work on tasks.', '', '', true)) + '</section>';
-      }
-
-      function renderWaitingPanel() {
-        var items = state.projects.filter(function (project) { return project.stage === 'School Review'; }).slice(0, 5);
-        return '<section class="panel" id="waiting-panel" tabindex="-1"><div class="panel-header"><div><h2 class="panel-title">Waiting on school</h2><p class="panel-subtitle">Projects ready for feedback or a decision</p></div>' +
-          (items.length ? '<button class="text-button" type="button" data-view-target="projects" data-project-stage="School Review">View all →</button>' : '') + '</div>' +
-          (items.length ? '<ul class="waiting-list">' + items.map(function (project) {
-            return '<li class="waiting-item"><span class="waiting-mark" aria-hidden="true">!</span><div><p class="waiting-title">' + h(project.name) + '</p>' +
-              '<p class="waiting-detail">' + h(project.nextAction || project.schoolFeedback || 'School feedback is the next step.') + '</p>' +
-              '<button class="text-button" type="button" data-project-open="' + h(project.projectKey || project.id || project.renderKey) + '">Open project →</button></div></li>';
-          }).join('') + '</ul>' : emptyState('Nothing is waiting on school', 'Projects will appear here when they reach School Review.', '', '', true)) + '</section>';
       }
 
       function renderTasks() {
@@ -2257,22 +2291,26 @@
         var filtered = state.tasks.filter(function (task) {
           if (state.taskFilter === 'open') return task.isOpen;
           if (state.taskFilter === 'mine') return task.isMine && task.status !== 'Done';
-          if (state.taskFilter === 'overdue') return isTaskOverdue(task);
-          if (state.taskFilter === 'blocked') return task.status === 'Blocked';
+          if (state.taskFilter === 'attention') return needsTaskAttention(task);
           if (state.taskFilter === 'completed') return task.status === 'Done';
           return true;
         });
         filtered = sortTasks(filtered);
-        var filterLabels = { open: 'Open', mine: 'My tasks', overdue: 'Overdue', blocked: 'Blocked', completed: 'Completed', all: 'All' };
-        var html = '<div class="toolbar"><div class="segmented" role="group" aria-label="Filter tasks">' + TASK_FILTERS.map(function (filter) {
-          return '<button class="segment-button" type="button" data-task-filter="' + filter + '" aria-pressed="' + (state.taskFilter === filter ? 'true' : 'false') + '">' + filterLabels[filter] + '</button>';
-        }).join('') + '</div><p class="results-count">' + filtered.length + ' ' + (filtered.length === 1 ? 'task' : 'tasks') + '</p></div>';
+        var filterLabels = { mine: 'My work', open: 'Available', attention: 'Needs help', completed: 'Done', all: 'All tasks' };
+        var primaryFilters = ['mine', 'open', 'attention'];
+        var scopeFilters = ['completed', 'all'];
+        var html = '<div class="toolbar"><div class="task-view-controls"><p class="control-label">Choose a queue</p><div class="task-view-row">' +
+          '<div class="segmented" role="group" aria-label="Work queues">' + primaryFilters.map(function (filter) {
+            return '<button class="segment-button" type="button" data-task-filter="' + filter + '" aria-pressed="' + (state.taskFilter === filter ? 'true' : 'false') + '">' + filterLabels[filter] + '</button>';
+          }).join('') + '</div><div class="task-scope-links" role="group" aria-label="Task history and full list">' + scopeFilters.map(function (filter) {
+            return '<button class="scope-button" type="button" data-task-filter="' + filter + '" aria-pressed="' + (state.taskFilter === filter ? 'true' : 'false') + '">' + filterLabels[filter] + '</button>';
+          }).join('') + '</div></div></div><p class="results-count">' + filtered.length + ' ' + (filtered.length === 1 ? 'task' : 'tasks') + '</p></div>';
         if (!state.tasks.length) {
           html += emptyState('No tasks have been added yet', 'When the Tasks sheet has rows, they will appear here automatically.', '', '', false);
         } else if (!filtered.length) {
           html += emptyState(
-            state.taskFilter === 'open' ? 'No open tasks right now' : state.taskFilter === 'mine' ? 'No tasks assigned to you' : state.taskFilter === 'overdue' ? 'No overdue tasks' : state.taskFilter === 'blocked' ? 'No blocked tasks' : state.taskFilter === 'completed' ? 'No completed tasks yet' : 'No tasks to show',
-            state.taskFilter === 'open' ? 'Everything is claimed or complete. Check back after new work is added.' : state.taskFilter === 'mine' ? 'Browse Open tasks when you are ready to claim one.' : 'Try another filter.',
+            state.taskFilter === 'open' ? 'No available tasks right now' : state.taskFilter === 'mine' ? 'No work assigned to you' : state.taskFilter === 'attention' ? 'Nothing needs help right now' : state.taskFilter === 'completed' ? 'No completed tasks yet' : 'No tasks to show',
+            state.taskFilter === 'open' ? 'Everything is claimed or complete. Check back after new work is added.' : state.taskFilter === 'mine' ? 'Browse Available when you are ready to claim one.' : 'Try another queue.',
             state.taskFilter === 'mine' ? 'Browse open tasks' : '', 'tasks', false, state.taskFilter === 'mine' ? 'open' : ''
           );
         } else {
@@ -2289,6 +2327,7 @@
         var unavailable = !!state.busyKey || state.refreshing || !state.canMutate;
         var draft = state.taskDrafts[task.key] || null;
         var taskDomId = 'task-' + (text(task.renderKey).toLowerCase().replace(/[^a-z0-9_-]+/g, '-') || 'item');
+        var relatedProject = task.relatedProject ? state.projects.find(function (project) { return projectContextMatches(task.relatedProject, project); }) : null;
         var meta = [];
         if (due) meta.push('<span class="meta-chip' + due.className + '">' + h(due.label) + '</span>');
         if (task.estimatedTime) meta.push('<span class="meta-chip">Time: ' + h(task.estimatedTime) + '</span>');
@@ -2336,7 +2375,7 @@
         return '<article class="task-card' + (task.isMine ? ' is-mine' : '') + '" data-task-card-key="' + h(task.key) + '" tabindex="-1" aria-labelledby="' + h(taskDomId) + '"><div class="task-main"><div class="task-topline">' +
           '<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' + (task.id ? '<span class="task-key">' + h(task.id) + '</span>' : '') + '</div>' +
           '<h2 class="task-title" id="' + h(taskDomId) + '">' + h(task.title) + '</h2>' +
-          (task.relatedProject ? '<p class="task-context">Project: <strong>' + h(task.relatedProject) + '</strong></p>' : '') +
+          (task.relatedProject ? '<p class="task-context">Project: ' + (relatedProject ? '<button class="text-button" type="button" data-project-open="' + h(projectIdentifier(relatedProject)) + '">' + h(relatedProject.name) + ' →</button>' : '<strong>' + h(task.relatedProject) + '</strong>') + '</p>' : '') +
           (meta.length ? '<div class="meta-list">' + meta.join('') + '</div>' : '') +
           ((task.lastUpdate || task.status === 'Blocked') ? '<div class="task-notes">' +
             (task.lastUpdate ? '<div class="task-note"><strong>Updated:</strong> ' + h(task.lastUpdate) + '</div>' : '') +
@@ -2385,8 +2424,14 @@
         if (!state.canRead) { target.innerHTML = accessState(); return; }
         var comparison = state.decisionComparison && typeof state.decisionComparison === 'object' ? state.decisionComparison : {};
         var report = state.reporting && typeof state.reporting === 'object' ? state.reporting : {};
-        target.innerHTML = '<div class="briefing-shell"><p class="briefing-note"><strong>For human discussion:</strong> This view compares recorded facts only. It does not rank projects, create a score, or make a decision. Missing fields stay visibly missing.</p>' +
-          renderDecisionComparison(comparison) + renderMeetingReport(report) + '</div>';
+        target.innerHTML = '<div class="review-shell"><p class="briefing-note"><strong>Use this page in the meeting:</strong> work from decisions to blockers to progress. Everything shown is recorded fact; this view never ranks projects, creates a score, or makes a decision.</p>' +
+          renderReviewAgenda(report) + renderDecisionComparisonDisclosure(comparison) + '</div>';
+      }
+
+      function renderDecisionComparisonDisclosure(comparison) {
+        var projects = list(first(comparison, ['projects', 'records', 'items'], []));
+        if (!projects.length) return '';
+        return '<details class="review-comparison"><summary><span>Compare project facts</span><small>Optional · use when a decision needs side-by-side evidence</small></summary>' + renderDecisionComparison(comparison) + '</details>';
       }
 
       function renderDecisionComparison(comparison) {
@@ -2438,33 +2483,75 @@
         return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Project fact comparison</h2><p class="panel-subtitle">Human decision required; rows follow the server’s deterministic field order</p></div></div><div class="comparison-scroll"><table class="comparison-table"><caption>' + projects.length + ' recorded project ' + (projects.length === 1 ? 'record' : 'records') + '</caption><thead><tr><th scope="col">Recorded field</th>' + header + '</tr></thead><tbody>' + rows + missingRow + '</tbody></table></div></section>';
       }
 
-      function renderMeetingReport(report) {
-        var activeWork = first(report, ['activeWork'], {});
-        activeWork = activeWork && typeof activeWork === 'object' ? activeWork : {};
+      function renderReviewAgenda(report) {
         var queue = list(first(report, ['schoolDecisionQueue', 'waitingOnSchool'], []));
-        var activeProjects = list(first(activeWork, ['projects', 'activeProjects'], first(report, ['activeProjects'], [])));
-        var activeTasks = list(first(activeWork, ['tasks', 'activeTasks'], first(report, ['activeTasks'], [])));
         var completed = list(first(report, ['completedProjects', 'completed'], []));
         var blockers = list(first(report, ['blockers', 'blockedItems'], []));
-        var priorities = list(first(report, ['upcomingPriorities', 'priorities'], []));
-        var results = list(first(report, ['observedResults', 'results'], []));
-        var hasReport = queue.length + activeProjects.length + activeTasks.length + completed.length + blockers.length + priorities.length + results.length > 0;
-        if (!hasReport) {
-          return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Meeting report</h2><p class="panel-subtitle">No reporting records are available yet</p></div></div><p class="brief-section-empty">Meeting-ready sections will appear when the server prepares the bounded factual report.</p></section>';
+        var recent = state.updates.filter(function (update) {
+          if (update.blocker) return false;
+          return !queue.some(function (project) { return reviewUpdateMatchesProject(update, project); });
+        }).slice(0, 6);
+        var additionalCompleted = completed.filter(function (project) {
+          return !recent.some(function (update) { return reviewUpdateMatchesProject(update, project); });
+        }).slice(0, 4);
+        var sections = [];
+        var step = 0;
+        if (queue.length) {
+          sections.push(renderReviewSection(++step, 'Decisions needed', 'School Review projects that need feedback or a human decision',
+            '<ul class="brief-list">' + queue.map(function (item) { return renderBriefItem(item, 'project'); }).join('') + '</ul>'));
         }
-        return '<div class="briefing-grid">' +
-          renderBriefSection('Waiting on school', 'Projects ready for feedback or a human decision', queue, 'project') +
-          renderBriefSection('Active projects', 'Recorded next actions for current projects', activeProjects, 'project') +
-          renderBriefSection('Active tasks', 'Current practical work', activeTasks, 'task') +
-          renderBriefSection('Blockers', 'Recorded barriers; missing blocker text stays visible', blockers, 'blocker') +
-          renderBriefSection('Upcoming priorities', 'Recorded actions, not generated recommendations', priorities, 'priority') +
-          renderBriefSection('Completed projects', 'Completed work and recorded observations', completed, 'completed') +
-          renderBriefSection('Observed results', 'Every result below is reported, not independently verified', results, 'result', true) + '</div>';
+        if (blockers.length) {
+          sections.push(renderReviewSection(++step, 'Needs help', 'Blocked work that the committee can unblock together',
+            '<ul class="brief-list">' + blockers.map(function (item) { return renderBriefItem(item, 'blocker'); }).join('') + '</ul>'));
+        }
+        if (recent.length || additionalCompleted.length) {
+          sections.push(renderReviewSection(++step, 'Progress to acknowledge', 'Recent recorded changes plus completed outcomes not already shown above',
+            '<ul class="brief-list">' + recent.map(function (update) { return renderReviewUpdateItem(update, completed); }).join('') + additionalCompleted.map(function (item) { return renderBriefItem(item, 'completed'); }).join('') + '</ul>'));
+        }
+        if (!sections.length) {
+          return '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Agenda clear</h2><p class="panel-subtitle">No decisions, blockers, or recent progress are recorded for review</p></div></div><p class="brief-section-empty">Return after the committee records work in Tasks, Projects, or Updates.</p></section>';
+        }
+        return '<section class="panel review-agenda" aria-labelledby="review-agenda-title"><div class="panel-header"><div><h2 class="panel-title" id="review-agenda-title">Meeting agenda</h2><p class="panel-subtitle">Only items that change the conversation appear here</p></div><span class="project-count" aria-label="' + sections.length + ' agenda sections">' + sections.length + '</span></div>' +
+          sections.join('') + '<div class="review-close"><span aria-hidden="true">✓</span><div><strong>Before the meeting ends:</strong> open the source Task or Project and record the decision, blocker update, or next action there. Review stays read-only.</div></div></section>';
       }
 
-      function renderBriefSection(title, subtitle, items, kind, wide) {
-        return '<section class="panel' + (wide ? ' panel-wide' : '') + '"><div class="panel-header"><div><h2 class="panel-title">' + h(title) + '</h2><p class="panel-subtitle">' + h(subtitle) + '</p></div><span class="project-count">' + items.length + '</span></div>' +
-          (items.length ? '<ul class="brief-list">' + items.map(function (item) { return renderBriefItem(item, kind); }).join('') + '</ul>' : '<p class="brief-section-empty">Nothing recorded in this section.</p>') + '</section>';
+      function renderReviewSection(step, title, subtitle, body) {
+        var id = 'review-step-' + step;
+        return '<section class="review-section" aria-labelledby="' + id + '"><div class="review-section-heading"><span class="review-step" aria-hidden="true">' + step + '</span><h3 id="' + id + '">' + h(title) + '</h3><p>' + h(subtitle) + '</p></div><div class="review-section-body">' + body + '</div></section>';
+      }
+
+      function reviewUpdateMatchesProject(update, project) {
+        var id = text(first(project, ['projectId', 'id']));
+        var name = text(first(project, ['projectName', 'name']));
+        var values = [update.projectId, update.projectKey, update.context].map(function (value) { return text(value).toLowerCase(); }).filter(Boolean);
+        return values.some(function (value) {
+          return (id && (value === id.toLowerCase() || value.indexOf(id.toLowerCase()) >= 0)) ||
+            (name && (value === name.toLowerCase() || value.indexOf(name.toLowerCase()) >= 0));
+        });
+      }
+
+      function renderReviewUpdateItem(update, completedProjects) {
+        var link = safeUrl(update.link);
+        var completedProject = list(completedProjects).find(function (project) { return reviewUpdateMatchesProject(update, project); });
+        var observed = completedProject ? first(completedProject, ['observedResult'], '') : '';
+        var observedValue = typeof observed === 'object' ? text(first(observed, ['value'])) : text(observed);
+        var completedWork = completedProject ? text(first(completedProject, ['completedWork'])) : '';
+        var outcome = [completedWork ? 'Completed: ' + completedWork : '', observedValue ? 'Observed: ' + observedValue : ''].filter(Boolean).join(' ');
+        var task = state.tasks.find(function (candidate) {
+          return equalName(candidate.key, update.taskKey) || equalName(candidate.id, update.taskKey) || equalName(candidate.title, update.context);
+        });
+        var project = task ? null : (findProject(update.projectKey || update.projectId) || state.projects.find(function (candidate) {
+          return projectContextMatches(update.context, candidate);
+        }));
+        var action = task ? '<button class="text-button" type="button" data-open-task="' + h(task.key || task.id) + '">Open task →</button>' :
+          project ? '<button class="text-button" type="button" data-project-open="' + h(projectIdentifier(project)) + '">Open project →</button>' : '';
+        return '<li><div class="review-update-top"><strong>' + h(update.member || 'Committee member') + '</strong>' +
+          (update.timestamp ? '<time>' + h(formatDate(update.timestamp, false)) + '</time>' : '') + '</div>' +
+          '<p>' + h(update.update || update.nextStep || 'Status updated') + '</p>' +
+          (update.context ? '<div class="brief-item-meta"><span>' + h(update.context) + '</span></div>' : '') +
+          (update.blocker ? '<div class="blocker-note"><strong>Blocker:</strong> ' + h(update.blocker) + '</div>' : '') +
+          (outcome ? '<div class="review-outcome"><strong>Recorded outcome:</strong> ' + h(outcome) + '</div><span class="verification-note">Reported, not independently verified</span>' : '') +
+          (link ? '<a class="task-link" href="' + h(link) + '" target="_blank" rel="noopener noreferrer">Open link ↗</a>' : '') + action + '</li>';
       }
 
       function renderBriefItem(item, kind) {
@@ -2528,7 +2615,7 @@
           '<div class="operations-grid">' + renderMemberOperations(members) + renderTaskRecoveryOperations(taskRecovery) +
           renderOperationsPanel('Schema readiness', 'Read-only workbook structure inspection', schema, 'schema') +
           renderOperationsPanel('Integrity diagnostics', 'Bounded factual issues; production rows are never repaired automatically', integrity, 'integrity') +
-          renderOperationsPanel('Dormant future-helper flags', 'Optional automated-helper flags only; they do not control the active deterministic Briefing or reporting view, and private configuration is never displayed', features, 'features') +
+          renderOperationsPanel('Dormant future-helper flags', 'Optional automated-helper flags only; they do not control the active deterministic Review or reporting view, and private configuration is never displayed', features, 'features') +
           renderOperationsPanel('Build', 'Current release metadata when supplied by the server', build, 'build') + '</div>' +
           '<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Setup helpers</h2><p class="panel-subtitle">Additive, explicit operations only</p></div></div><div class="operations-toolbar">' +
           '<button class="button button-subtle" type="button" data-operations-action="inspect-schema"' + (state.busyKey ? ' disabled' : '') + '>Inspect schema</button>' +
@@ -2638,25 +2725,47 @@
           : '';
         var toolbar = '<div class="project-board-toolbar"><div><p class="results-count">' + state.projects.length + ' ' + (state.projects.length === 1 ? 'project' : 'projects') + ' across the full workflow</p></div>' +
           '<button class="button button-primary new-idea-button" type="button" data-project-action="new-idea"' + (state.busyKey || state.refreshing || !state.canMutate ? ' disabled' : '') + '>+ New Idea</button></div>';
-        var primary = [
-          ['Idea', 'Ideas', 'New suggestions ready for a quick look'],
-          ['Validation', 'Needs Work / Validation', 'Checking whether an idea is useful and realistic'],
-          ['School Review', 'Waiting on School', 'Ready for feedback or a simple decision'],
-          ['Active', 'Active', 'Approved work now moving through tasks and updates'],
-          ['Completed', 'Completed', 'Finished projects with their results and history']
-        ].map(function (section) { return renderProjectSection(section[0], section[1], section[2]); }).join('');
+        var lifecycleStages = [
+          { stage: 'Idea', title: 'Idea · Clarify the opportunity', description: 'Name the problem or possibility before doing more work', guide: 'Clarify the opportunity' },
+          { stage: 'Validation', title: 'Validation · Check usefulness', description: 'Record evidence, feasibility, and who must be consulted', guide: 'Check usefulness' },
+          { stage: 'School Review', title: 'School Review · Get a decision', description: 'Bring a prepared question to the right school contact', guide: 'Get a human decision' },
+          { stage: 'Active', title: 'Active · Deliver through tasks', description: 'Turn the approved project into claimable practical work', guide: 'Deliver through tasks' },
+          { stage: 'Completed', title: 'Completed · Keep the result', description: 'Preserve what was done and what was actually observed', guide: 'Keep the result' }
+        ];
+        var lifecycle = renderProjectLifecycle(lifecycleStages);
+        var primary = lifecycleStages.map(function (section) {
+          return {
+            stage: section.stage,
+            title: section.title,
+            description: section.description,
+            projects: state.projects.filter(function (project) { return project.stage === section.stage; })
+          };
+        }).filter(function (section) { return section.projects.length; }).map(function (section) {
+          return renderProjectSection(section.stage, section.title, section.description, section.projects);
+        }).join('');
         var legacyProjects = state.projects.filter(function (project) { return PROJECT_STAGES.indexOf(project.stage) < 0; });
         if (legacyProjects.length) primary += renderProjectSection('Needs stage review', 'Needs Stage Review', 'Legacy projects kept visible until a supported stage is chosen', legacyProjects);
         var secondaryProjects = state.projects.filter(function (project) { return project.stage === 'Paused' || project.stage === 'Rejected'; });
-        var secondary = '<div class="project-secondary-control"><button class="text-button" type="button" data-project-action="toggle-secondary" aria-expanded="' + (state.projectSecondaryVisible ? 'true' : 'false') + '">' +
+        var secondary = secondaryProjects.length ? '<div class="project-secondary-control"><button class="text-button" type="button" data-project-action="toggle-secondary" aria-expanded="' + (state.projectSecondaryVisible ? 'true' : 'false') + '">' +
           (state.projectSecondaryVisible ? 'Hide' : 'Show') + ' Paused / Rejected (' + secondaryProjects.length + ')</button></div>' +
-          (state.projectSecondaryVisible
-            ? '<div class="project-secondary-sections">' + renderProjectSection('Paused', 'Paused', 'Saved for reconsideration later') + renderProjectSection('Rejected', 'Rejected', 'Decisions and reasons kept for future reference') + '</div>'
-            : '');
+          (state.projectSecondaryVisible ? '<div class="project-secondary-sections">' + [
+            ['Paused', 'Paused · Preserve the reason', 'Saved for reconsideration later'],
+            ['Rejected', 'Rejected · Preserve the decision', 'Decisions and reasons kept for future reference']
+          ].map(function (section) {
+            var projects = state.projects.filter(function (project) { return project.stage === section[0]; });
+            return projects.length ? renderProjectSection(section[0], section[1], section[2], projects) : '';
+          }).join('') + '</div>' : '') : '';
         var empty = !state.projects.length
           ? '<div class="project-board-empty"><div class="empty-icon" aria-hidden="true">◇</div><h2>No project ideas yet</h2><p>Add the first lightweight idea. You only need a name and the problem or opportunity you noticed.</p></div>'
           : '';
-        return '<div class="projects-shell">' + setup + toolbar + empty + '<div class="project-sections">' + primary + '</div>' + secondary + '</div>';
+        return '<div class="projects-shell">' + setup + toolbar + lifecycle + empty + (primary ? '<div class="project-sections">' + primary + '</div>' : '') + secondary + '</div>';
+      }
+
+      function renderProjectLifecycle(stages) {
+        return '<div class="project-lifecycle-scroll" role="region" aria-label="Project lifecycle"><ol class="project-lifecycle">' + stages.map(function (item) {
+          var count = state.projects.filter(function (project) { return project.stage === item.stage; }).length;
+          return '<li><div class="project-lifecycle-step"><strong>' + h(item.stage) + '</strong><span aria-label="' + count + ' projects">' + count + '</span></div><p>' + h(item.guide) + '</p></li>';
+        }).join('') + '</ol></div>';
       }
 
       function renderProjectSection(stage, title, description, providedProjects) {
@@ -2883,9 +2992,10 @@
       function renderActiveProjectHub(project, unavailable, note) {
         var key = projectMutationKey(project);
         var draft = state.projectDrafts[projectDraftKey(key)];
-        return '<section class="active-project-hub" aria-labelledby="active-tools-' + h(projectDomId(project)) + '"><div class="workflow-panel-heading"><p class="eyebrow">Project hub</p><h3 id="active-tools-' + h(projectDomId(project)) + '">Move the work forward</h3><p>Add practical open tasks and short updates. A project lead is optional.</p></div>' +
-          '<div class="project-action-grid">' +
-          activeProjectAction('task', 'Add Task', 'Create an unassigned task in the open pool', key, unavailable, true) +
+        return '<section class="active-project-hub" aria-labelledby="active-tools-' + h(projectDomId(project)) + '"><div class="workflow-panel-heading"><p class="eyebrow">Current stage · Active</p><h3 id="active-tools-' + h(projectDomId(project)) + '">Create the next claimable step</h3><p>Project work moves through Tasks. Use the main action first; maintenance actions stay secondary.</p></div>' +
+          '<div class="project-primary-action">' +
+          activeProjectAction('task', 'Add the next task', 'Create one practical, unassigned task in the Available pool', key, unavailable, true) + '</div>' +
+          '<div class="project-secondary-actions" role="group" aria-label="Other project actions">' +
           activeProjectAction('update', 'Add Project Update', 'Share what changed and what happens next', key, unavailable, false) +
           activeProjectAction('next-action', 'Edit Next Action', 'Keep the next useful step obvious', key, unavailable, false) +
           activeProjectAction('lead', project.projectLead ? 'Change Project Lead' : 'Set Project Lead', 'Optional owner for the overall project', key, unavailable, false) +
@@ -2896,7 +3006,7 @@
       }
 
       function activeProjectAction(kind, label, description, key, unavailable, primary) {
-        return '<button class="project-action-card' + (primary ? ' primary' : '') + '" type="button" data-project-action="show-form" data-project-form-kind="' + h(kind) + '" data-project-key="' + h(key) + '"' + (unavailable ? ' disabled' : '') + '><strong>' + h(label) + '</strong><span>' + h(description) + '</span></button>';
+        return '<button class="project-action-card ' + (primary ? 'primary' : 'secondary') + '" type="button" data-project-action="show-form" data-project-form-kind="' + h(kind) + '" data-project-key="' + h(key) + '"' + (unavailable ? ' disabled' : '') + '><strong>' + h(label) + '</strong><span>' + h(description) + '</span></button>';
       }
 
       function renderActiveProjectForm(project, draft, unavailable) {

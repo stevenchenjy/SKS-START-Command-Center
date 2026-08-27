@@ -44,6 +44,7 @@ test('clears and withholds operational state when read access is denied', () => 
     'if (!state.canRead) {',
     'state.taskDrafts = {}',
     'state.projectDrafts = {}',
+    'mobileNav.hidden = !state.loading && !state.canRead && !state.isAdmin',
     'target.innerHTML = accessState()'
   ], 'denied-state sanitization is incomplete');
   assert(html.includes('[hidden] { display: none !important; }'), 'hidden navigation and controls must remain visually hidden');
@@ -90,29 +91,39 @@ test('provides the narrow administrator stranded-task recovery contract', () => 
   ], 'stranded-task recovery client contract is incomplete');
 });
 
-test('provides factual Briefing comparison and reporting views without deciding', () => {
+test('keeps Review as a factual meeting agenda instead of a second dashboard', () => {
   includesAll(html, [
     'data-view-target="briefing"',
     'id="view-briefing"',
+    '<span class="nav-label">Review</span>',
+    'Use this page in the meeting',
+    'Decisions needed',
+    'Needs help',
+    'Progress to acknowledge',
+    'Compare project facts',
     'Project fact comparison',
     'Human decision required',
     'Missing information',
-    'Waiting on school',
-    'Active projects',
-    'Completed projects',
-    'Upcoming priorities',
+    'Review stays read-only',
     'Reported, not independently verified',
-    'It does not rank projects'
-  ], 'Briefing is missing a required factual section');
-  includesAll(script, ['state.decisionComparison', 'state.reporting'], 'Briefing must use server-prepared data');
+    'never ranks projects'
+  ], 'Review is missing a required factual meeting step');
+  includesAll(script, ['state.decisionComparison', 'state.reporting'], 'Review must use server-prepared data');
+  [
+    "renderBriefSection('Active projects'",
+    "renderBriefSection('Active tasks'",
+    "renderBriefSection('Upcoming priorities'",
+    "renderBriefSection('Observed results'"
+  ].forEach((value) => assert(!script.includes(value), `Review still duplicates an operational inventory: ${value}`));
 });
 
 test('supports the complete task board and exact task navigation', () => {
   includesAll(script, [
-    "var TASK_FILTERS = ['open', 'mine', 'overdue', 'blocked', 'completed', 'all']",
-    "if (state.taskFilter === 'blocked') return task.status === 'Blocked'",
-    "if (state.taskFilter === 'overdue') return isTaskOverdue(task)",
+    "var TASK_FILTERS = ['mine', 'open', 'attention', 'completed', 'all']",
+    "if (state.taskFilter === 'attention') return needsTaskAttention(task)",
     "if (state.taskFilter === 'completed') return task.status === 'Done'",
+    "var primaryFilters = ['mine', 'open', 'attention']",
+    "var scopeFilters = ['completed', 'all']",
     'data-open-task=',
     "navigate('tasks', 'all')",
     'data-task-action="release"',
@@ -121,14 +132,39 @@ test('supports the complete task board and exact task navigation', () => {
   ], 'task workflow completion is missing');
 });
 
-test('routes the Home overdue count to an actionable overdue-only task filter', () => {
+test('makes Today a single next-action view with compact task shortcuts', () => {
+  includesAll(html, [
+    '<span class="nav-label">Today</span>',
+    '<span class="nav-description">Start here</span>',
+    'What should I do next?',
+    'Claim &amp; finish',
+    'Move each idea',
+    'Discuss &amp; decide'
+  ], 'navigation responsibilities are unclear');
   includesAll(script, [
-    "label: 'Overdue'",
-    "filter: 'overdue'",
-    "overdue: 'Overdue'",
-    "state.taskFilter === 'overdue' ? 'No overdue tasks'",
-    "task.status !== 'Done' && dueKey < todayKey"
-  ], 'overdue filtering is incomplete');
+    'function renderTodayFocus(task, openCount)',
+    "mine.filter(function (task) { return task.status === 'Doing'; })[0]",
+    "renderTodaySignal('My work'",
+    "renderTodaySignal('Available'",
+    "renderTodaySignal('Needs help'",
+    "task.status === 'Blocked' || isTaskOverdue(task)",
+    'Continue task',
+    'Browse available tasks'
+  ], 'Today is missing its next-action hierarchy');
+  assert(!html.includes('class="stats-grid"'), 'Today must not restore the equal-weight KPI card grid');
+});
+
+test('shows one project lifecycle and separates the primary active-project action', () => {
+  includesAll(script, [
+    'function renderProjectLifecycle(stages)',
+    "{ stage: 'Idea', title: 'Idea · Clarify the opportunity'",
+    "{ stage: 'School Review', title: 'School Review · Get a decision'",
+    '.filter(function (section) { return section.projects.length; })',
+    '<div class="project-primary-action">',
+    '<div class="project-secondary-actions"',
+    "activeProjectAction('task', 'Add the next task'"
+  ], 'project workflow hierarchy is incomplete');
+  assert(!html.includes('class="project-action-grid"'), 'active projects must not show six equal action cards');
 });
 
 test('keeps unsent form drafts across navigation, refresh, and safe rerenders', () => {

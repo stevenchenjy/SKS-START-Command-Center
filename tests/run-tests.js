@@ -1021,8 +1021,8 @@ test('allows the authenticated deployment owner to inspect, set up, and manage M
   });
   assert.equal(adminData.authorization.canAdmin, true);
   assert.equal(adminData.authorization.isDeploymentOwner, true);
-  assert.equal(adminData.runtime.webVersion, '0.4.0');
-  assert.equal(adminData.runtime.webBuild, '20260826a');
+  assert.equal(adminData.runtime.webVersion, '0.5.0');
+  assert.equal(adminData.runtime.webBuild, '20260827a');
   assert.equal(adminData.runtime.sourceOfTruth, 'Google Sheets');
   assert.equal(adminData.configuration.membersReady, true);
   assert.equal(adminData.integrity.schemaVersion, 'start-integrity-report/v1');
