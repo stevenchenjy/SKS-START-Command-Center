@@ -40,8 +40,8 @@ function releaseTask(taskKey, profileKey) {
 
 /**
  * Backwards-compatible entry point for a briefly deployed v0.1 client.
- * Legacy status labels are accepted as input, but this function only writes
- * the four canonical statuses.
+ * Legacy status labels are accepted as input. The task service keeps the
+ * four-state model canonical while honoring the Sheet's validated labels.
  */
 
 function updateTask(taskKey, profileKey, status, updateText, blocker) {

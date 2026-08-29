@@ -9,6 +9,7 @@ function mutateTask_(taskKey, profileKey, action, input) {
       action === 'release' || action === 'legacy_update';
     var taskColumns = taskColumnsForWrite_(tasksTable, needsBlocker);
     var currentStatus = normalizeReadStatus_(cell_(taskRow.values, taskColumns.status));
+    var currentStoredStatus = cell_(taskRow.values, taskColumns.status).trim();
     var currentOwner = cell_(taskRow.values, taskColumns.claimedBy).trim();
     var currentBlocker = cell_(taskRow.values, taskColumns.blocker).trim();
     var nextStatus = currentStatus;
@@ -85,8 +86,18 @@ function mutateTask_(taskKey, profileKey, action, input) {
     }
 
     var now = new Date();
+    var storedStatus = taskStatusForWrite_(
+      tasksTable.sheet,
+      taskRow.rowNumber,
+      taskColumns.status,
+      nextStatus,
+      action,
+      currentStatus,
+      currentStoredStatus,
+      action === 'legacy_update' && input ? input.status : ''
+    );
     var changes = [
-      { column: taskColumns.status, value: nextStatus },
+      { column: taskColumns.status, value: storedStatus },
       { column: taskColumns.claimedBy, value: literalSheetText_(nextOwner) },
       { column: taskColumns.lastUpdate, value: now }
     ];
@@ -108,6 +119,84 @@ function mutateTask_(taskKey, profileKey, action, input) {
     flush_();
     return buildDashboardData_(spreadsheet, member.profileKey);
   });
+}
+
+function taskStatusForWrite_(sheet, rowNumber, statusColumn, canonicalStatus, action,
+    currentStatus, currentStoredStatus, requestedStatus) {
+  var options = taskStatusValidationOptions_(
+    sheet.getRange(rowNumber, statusColumn + 1)
+  );
+  if (!options.length) return canonicalStatus;
+
+  var preferred = [];
+  if (action === 'legacy_update' && requestedStatus) preferred.push(requestedStatus);
+  if (canonicalStatus === currentStatus && currentStoredStatus) {
+    preferred.push(currentStoredStatus);
+  }
+  if (canonicalStatus === 'Doing') {
+    if (action === 'claim') preferred.push('Claimed');
+    if (action === 'resume') preferred.push('In Progress');
+    preferred.push('Doing', 'In Progress', 'Claimed');
+  } else if (canonicalStatus === 'Blocked') {
+    preferred.push('Blocked', 'Waiting');
+  } else {
+    preferred.push(canonicalStatus);
+  }
+
+  var matched = taskMatchingStatusOption_(options, canonicalStatus, preferred);
+  if (matched) return matched;
+  fail_(
+    'The Tasks Status validation does not include a supported value for "' +
+    canonicalStatus + '". Ask a coordinator to allow one of: ' +
+    taskStatusAliases_(canonicalStatus).join(', ') + '.'
+  );
+}
+
+function taskStatusValidationOptions_(range) {
+  if (!range || typeof range.getDataValidation !== 'function') return [];
+  try {
+    var rule = range.getDataValidation();
+    if (!rule || typeof rule.getCriteriaValues !== 'function') return [];
+    var criteriaValues = rule.getCriteriaValues();
+    var source = criteriaValues && criteriaValues[0];
+    if (Array.isArray(source)) return source.map(string_).filter(function (value) { return !!value.trim(); });
+    if (source && typeof source.getDisplayValues === 'function') {
+      var values = source.getDisplayValues();
+      var flattened = [];
+      values.forEach(function (row) {
+        row.forEach(function (value) {
+          value = string_(value).trim();
+          if (value) flattened.push(value);
+        });
+      });
+      return flattened;
+    }
+  } catch (_error) {
+    return [];
+  }
+  return [];
+}
+
+function taskMatchingStatusOption_(options, canonicalStatus, preferred) {
+  var normalizedPreferred = preferred.map(normalizeHeader_);
+  for (var preferredIndex = 0; preferredIndex < normalizedPreferred.length; preferredIndex += 1) {
+    for (var optionIndex = 0; optionIndex < options.length; optionIndex += 1) {
+      if (normalizeHeader_(options[optionIndex]) === normalizedPreferred[preferredIndex] &&
+          normalizeReadStatus_(options[optionIndex]) === canonicalStatus) {
+        return options[optionIndex];
+      }
+    }
+  }
+  for (var index = 0; index < options.length; index += 1) {
+    if (normalizeReadStatus_(options[index]) === canonicalStatus) return options[index];
+  }
+  return '';
+}
+
+function taskStatusAliases_(canonicalStatus) {
+  if (canonicalStatus === 'Doing') return ['Doing', 'Claimed', 'In Progress'];
+  if (canonicalStatus === 'Blocked') return ['Blocked', 'Waiting'];
+  return [canonicalStatus];
 }
 
 function assertTaskOwner_(storedOwner, member, spreadsheet) {

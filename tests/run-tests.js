@@ -84,6 +84,11 @@ class FakeRange {
     ));
   }
 
+  getDataValidation() {
+    if (this.rowCount !== 1 || this.columnCount !== 1) return null;
+    return this.sheet.dataValidationAt(this.row, this.column);
+  }
+
   setValue(value) {
     this.sheet.setValueAt(this.row, this.column, value);
     return this;
@@ -116,6 +121,7 @@ class FakeSheet {
     this.rows = rows.map((row) => row.slice());
     this.frozenRows = 0;
     this.displayFormatter = options.displayFormatter || displayValue;
+    this.validationOptionsByColumn = options.validationOptionsByColumn || {};
     this.maxColumns = options.maxColumns || Math.max(
       rows.reduce((maximum, row) => Math.max(maximum, row.length), 0),
       rows.length ? 1 : 26
@@ -181,7 +187,23 @@ class FakeSheet {
     return this.displayFormatter(this.valueAt(row, column), row, column);
   }
 
+  dataValidationAt(row, column) {
+    const options = row > 1 ? this.validationOptionsByColumn[column] : null;
+    if (!options) return null;
+    return {
+      getCriteriaValues() {
+        return [options.slice(), true];
+      }
+    };
+  }
+
   setValueAt(row, column, value) {
+    const options = row > 1 ? this.validationOptionsByColumn[column] : null;
+    if (options && !options.includes(value)) {
+      throw new Error(
+        `The data entered in cell ${column}:${row} violates validation: ${options.join(', ')}`
+      );
+    }
     while (this.rows.length < row) this.rows.push([]);
     while (this.rows[row - 1].length < column) this.rows[row - 1].push('');
     this.rows[row - 1][column - 1] = value;
@@ -228,7 +250,8 @@ function makeFixture({
   includeMembers = true,
   nameless = false,
   includeMetrics = true,
-  projectWorkflowReady = true
+  projectWorkflowReady = true,
+  taskStatusOptions = null
 } = {}) {
   const taskRows = empty ? [] : [
     [
@@ -294,7 +317,11 @@ function makeFixture({
   ];
 
   const sheets = [
-    new FakeSheet('Tasks', [TASK_HEADERS, ...taskRows]),
+    new FakeSheet('Tasks', [TASK_HEADERS, ...taskRows], {
+      validationOptionsByColumn: taskStatusOptions
+        ? { [TASK_HEADERS.indexOf('Status') + 1]: taskStatusOptions }
+        : {}
+    }),
     new FakeSheet(
       'Projects',
       [
@@ -701,6 +728,35 @@ test('claims an Open task as Doing using email as the stable owner key', () => {
   assert.equal(flushCount, 1);
 });
 
+test('honors the legacy task-status validation used by the operational Sheet', () => {
+  reset({ taskStatusOptions: ['Open', 'Claimed', 'In Progress', 'Waiting', 'Done'] });
+
+  let data = sandbox.claimTask('T-001', STEVEN_KEY);
+  assert.equal(taskRow('T-001').Status, 'Claimed');
+  assert.equal(taskFrom(data, 'T-001').status, 'Doing');
+
+  data = sandbox.blockTask('T-001', STEVEN_KEY, 'Need dining staff confirmation');
+  assert.equal(taskRow('T-001').Status, 'Waiting');
+  assert.equal(taskFrom(data, 'T-001').status, 'Blocked');
+
+  data = sandbox.resumeTask('T-001', STEVEN_KEY);
+  assert.equal(taskRow('T-001').Status, 'In Progress');
+  assert.equal(taskFrom(data, 'T-001').status, 'Doing');
+
+  data = sandbox.completeTask('T-001', STEVEN_KEY);
+  assert.equal(taskRow('T-001').Status, 'Done');
+  assert.equal(taskFrom(data, 'T-001').status, 'Done');
+});
+
+test('continues to honor canonical task-status validation when configured', () => {
+  reset({ taskStatusOptions: ['Open', 'Doing', 'Blocked', 'Done'] });
+
+  sandbox.claimTask('T-001', STEVEN_KEY);
+  assert.equal(taskRow('T-001').Status, 'Doing');
+  sandbox.blockTask('T-001', STEVEN_KEY, 'Need dining staff confirmation');
+  assert.equal(taskRow('T-001').Status, 'Blocked');
+});
+
 test('requires a blocker explanation before Doing can become Blocked', () => {
   reset();
   sandbox.claimTask('T-001', STEVEN_KEY);
@@ -1022,7 +1078,7 @@ test('allows the authenticated deployment owner to inspect, set up, and manage M
   assert.equal(adminData.authorization.canAdmin, true);
   assert.equal(adminData.authorization.isDeploymentOwner, true);
   assert.equal(adminData.runtime.webVersion, '0.5.0');
-  assert.equal(adminData.runtime.webBuild, '20260827a');
+  assert.equal(adminData.runtime.webBuild, '20260828a');
   assert.equal(adminData.runtime.sourceOfTruth, 'Google Sheets');
   assert.equal(adminData.configuration.membersReady, true);
   assert.equal(adminData.integrity.schemaVersion, 'start-integrity-report/v1');
@@ -1318,7 +1374,7 @@ test('requires stable task-owner identities and recovers legacy display-name own
   assert.equal(newestUpdate().Member, 'Steven Chen');
 });
 
-test('keeps the legacy updateTask entry point but writes only canonical statuses', () => {
+test('keeps the legacy updateTask entry point and canonicalizes unvalidated writes', () => {
   reset();
   sandbox.updateTask(
     'T-005',
