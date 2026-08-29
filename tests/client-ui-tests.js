@@ -132,26 +132,24 @@ test('supports the complete task board and exact task navigation', () => {
   ], 'task workflow completion is missing');
 });
 
-test('makes Today a single next-action view with compact task shortcuts', () => {
+test('merges Today into Tasks and makes Tasks the single starting workspace', () => {
   includesAll(html, [
-    '<span class="nav-label">Today</span>',
-    '<span class="nav-description">Start here</span>',
-    'What should I do next?',
-    'Claim &amp; finish',
+    'data-view-target="tasks" data-requires-access aria-current="page"',
+    '<span class="nav-description">Start, claim &amp; finish</span>',
+    'Start here with My work',
     'Move each idea',
     'Discuss &amp; decide'
   ], 'navigation responsibilities are unclear');
   includesAll(script, [
-    'function renderTodayFocus(task, openCount)',
-    "mine.filter(function (task) { return task.status === 'Doing'; })[0]",
-    "renderTodaySignal('My work'",
-    "renderTodaySignal('Available'",
-    "renderTodaySignal('Needs help'",
-    "task.status === 'Blocked' || isTaskOverdue(task)",
-    'Continue task',
-    'Browse available tasks'
-  ], 'Today is missing its next-action hierarchy');
-  assert(!html.includes('class="stats-grid"'), 'Today must not restore the equal-weight KPI card grid');
+    "var VIEWS = ['tasks', 'projects', 'briefing', 'operations']",
+    "if (candidate === 'home') return 'tasks'",
+    "return VIEWS.indexOf(candidate) >= 0 ? candidate : 'tasks'",
+    "window.history.replaceState(null, '', '#tasks')"
+  ], 'Tasks is not the default or legacy-home destination');
+  ['data-view-target="home"', 'id="view-home"', 'function renderHome()', 'function renderTodayFocus', 'function renderTodaySignal']
+    .forEach((value) => assert(!html.includes(value), `obsolete Today UI remains: ${value}`));
+  assert(html.includes('.mobile-nav {') && html.includes('grid-template-columns: repeat(3, 1fr);'),
+    'mobile navigation must use three member destinations after the merge');
 });
 
 test('shows one project lifecycle and separates the primary active-project action', () => {

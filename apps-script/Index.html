@@ -380,64 +380,7 @@
 
     .page-heading h1 { margin: 0; color: var(--navy-900); font-size: clamp(28px, 3.4vw, 42px); line-height: 1.12; letter-spacing: -0.045em; }
     .page-heading p { max-width: 650px; margin: 8px 0 0; color: var(--muted); font-size: 15px; }
-    .generated-at { color: var(--muted); font-size: 12px; white-space: nowrap; }
-
     .eyebrow { color: var(--forest-700); margin-bottom: 7px; }
-    .today-shell { display: grid; gap: 18px; }
-    .today-focus {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 26px;
-      min-height: 216px;
-      padding: clamp(24px, 4vw, 42px);
-      overflow: hidden;
-      border: 1px solid #b8cfc4;
-      border-radius: var(--radius-lg);
-      background:
-        radial-gradient(circle at 90% 15%, rgba(255,255,255,0.75), transparent 28%),
-        linear-gradient(135deg, #edf6f1, #f8f5e9);
-      box-shadow: var(--shadow-sm);
-    }
-    .today-focus-copy { min-width: 0; }
-    .today-focus-kicker { margin: 0 0 9px; color: var(--forest-700); font-size: 11px; font-weight: 820; letter-spacing: 0.09em; text-transform: uppercase; }
-    .today-focus h2 { max-width: 780px; margin: 0; color: var(--navy-900); font-size: clamp(24px, 3vw, 36px); line-height: 1.12; letter-spacing: -0.035em; }
-    .today-focus-detail { max-width: 720px; margin: 10px 0 0; color: #52606c; font-size: 14px; line-height: 1.5; }
-    .today-focus-meta { display: flex; flex-wrap: wrap; gap: 7px 13px; margin-top: 15px; color: var(--muted); font-size: 12px; }
-    .today-focus-action { min-width: 150px; }
-    .today-signals {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(255,255,255,0.68);
-      overflow: hidden;
-    }
-    .today-signal {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      min-height: 62px;
-      padding: 12px 16px;
-      border: 0;
-      border-right: 1px solid var(--line);
-      background: transparent;
-      color: var(--ink);
-      cursor: pointer;
-      text-align: left;
-    }
-    .today-signal:last-child { border-right: 0; }
-    .today-signal:hover { background: white; }
-    .today-signal span { color: var(--muted); font-size: 12px; font-weight: 700; }
-    .today-signal strong { color: var(--navy-900); font-size: 21px; line-height: 1; }
-    .today-signal.is-attention strong { color: #8a5d12; }
-    .today-queue { padding-top: 4px; }
-    .today-queue-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
-    .today-queue-header h2 { margin: 0; color: var(--navy-900); font-size: 18px; letter-spacing: -0.02em; }
-    .today-queue-header p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
-    .today-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-    .today-list .queue-item { padding-inline: 3px; }
     .panel {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
@@ -470,13 +413,6 @@
     }
 
     .text-button:hover { background: var(--forest-100); }
-    .queue-item { padding: 16px 21px; border-bottom: 1px solid #edf0ed; }
-    .queue-item:last-child { border-bottom: 0; }
-    .queue-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    .queue-title { margin: 0; color: var(--ink); font-size: 14px; font-weight: 740; }
-    .queue-meta { display: flex; flex-wrap: wrap; gap: 6px 13px; margin-top: 6px; color: var(--muted); font-size: 12px; }
-    .queue-action { flex: 0 0 auto; min-height: 44px; padding: 6px 10px; }
-
     .blocker-note { margin-top: 8px; padding-left: 9px; border-left: 3px solid var(--gold); color: #795316; font-size: 12px; }
 
     .toolbar {
@@ -1147,7 +1083,7 @@
         bottom: max(12px, env(safe-area-inset-bottom));
         left: 12px;
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 4px;
         padding: 6px;
         border: 1px solid rgba(255,255,255,0.22);
@@ -1164,7 +1100,7 @@
       .mobile-nav .nav-description { display: none; }
       .toast { right: 16px; bottom: calc(90px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
       .operation-status { right: 16px; bottom: calc(150px + env(safe-area-inset-bottom)); left: 16px; max-width: none; }
-      .mobile-nav.has-admin { grid-template-columns: repeat(5, 1fr); }
+      .mobile-nav.has-admin { grid-template-columns: repeat(4, 1fr); }
       .mobile-nav.admin-only { grid-template-columns: 1fr; }
     }
 
@@ -1173,15 +1109,8 @@
       .identity-card.is-locked:not(.needs-name) { display: none; }
       .page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 20px; }
       .page-heading h1 { font-size: 31px; }
-      .generated-at { white-space: normal; }
       .skeleton-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
       .skeleton { min-height: 122px; height: auto; padding: 16px; }
-      .today-focus { grid-template-columns: 1fr; min-height: 0; gap: 20px; }
-      .today-focus-action { width: 100%; }
-      .today-signals { grid-template-columns: 1fr; }
-      .today-signal { border-right: 0; border-bottom: 1px solid var(--line); }
-      .today-signal:last-child { border-bottom: 0; }
-      .today-queue-header { align-items: flex-start; flex-direction: column; }
       .toolbar { align-items: flex-start; flex-direction: column; }
       .task-view-controls, .task-view-row, .segmented { width: 100%; }
       .task-view-row { align-items: stretch; flex-direction: column; }
@@ -1254,8 +1183,7 @@
       </div>
 
       <nav class="desktop-nav" aria-label="Main navigation">
-        <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-copy"><span class="nav-label">Today</span><span class="nav-description">Start here</span></span></button>
-        <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-copy"><span class="nav-label">Tasks</span><span class="nav-description">Claim &amp; finish</span></span></button>
+        <button class="nav-button" type="button" data-view-target="tasks" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-copy"><span class="nav-label">Tasks</span><span class="nav-description">Start, claim &amp; finish</span></span></button>
         <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span><span class="nav-copy"><span class="nav-label">Projects</span><span class="nav-description">Move each idea</span></span></button>
         <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-copy"><span class="nav-label">Review</span><span class="nav-description">Discuss &amp; decide</span></span></button>
         <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span><span class="nav-copy"><span class="nav-label">Operations</span><span class="nav-description">Coordinator tools</span></span></button>
@@ -1267,8 +1195,8 @@
     <div class="workspace">
       <header class="topbar">
         <div>
-          <p class="topbar-title" id="topbar-title">Today</p>
-          <p class="topbar-subtitle" id="topbar-subtitle">Start with your own next task</p>
+          <p class="topbar-title" id="topbar-title">Tasks</p>
+          <p class="topbar-subtitle" id="topbar-subtitle">Start, claim, update, unblock, finish</p>
         </div>
         <div class="topbar-actions">
           <button class="member-chip" id="member-chip" type="button" disabled>Checking access…</button>
@@ -1279,24 +1207,12 @@
       </header>
 
       <main id="main-content" tabindex="-1">
-        <section class="view" id="view-home" data-view="home" aria-labelledby="home-title">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">Start here</p>
-              <h1 id="home-title">What should I do next?</h1>
-              <p>Continue your current task—or choose one from the open pool.</p>
-            </div>
-            <span class="generated-at" id="home-generated"></span>
-          </div>
-          <div id="home-content" aria-live="polite"></div>
-        </section>
-
-        <section class="view" id="view-tasks" data-view="tasks" aria-labelledby="tasks-title" hidden>
+        <section class="view" id="view-tasks" data-view="tasks" aria-labelledby="tasks-title">
           <div class="page-heading">
             <div>
               <p class="eyebrow">Execution workspace</p>
               <h1 id="tasks-title">Do the work</h1>
-              <p>Start with My work, claim from Available, and use Needs help when something is stuck.</p>
+              <p>Start here with My work, claim from Available, and use Needs help when something is stuck.</p>
             </div>
           </div>
           <div id="tasks-content" aria-live="polite"></div>
@@ -1340,15 +1256,14 @@
           id="release-indicator"
           aria-label="Web app version"
           data-web-version="0.5.0"
-          data-web-build="20260828a"
-        >Web v0.5.0 · build 20260828a</footer>
+          data-web-build="20260828b"
+        >Web v0.5.0 · build 20260828b</footer>
       </main>
     </div>
   </div>
 
   <nav class="mobile-nav" id="mobile-nav" aria-label="Main navigation">
-    <button class="nav-button" type="button" data-view-target="home" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">⌂</span><span class="nav-copy"><span class="nav-label">Today</span><span class="nav-description">Start here</span></span></button>
-    <button class="nav-button" type="button" data-view-target="tasks" data-requires-access><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-copy"><span class="nav-label">Tasks</span><span class="nav-description">Claim &amp; finish</span></span></button>
+    <button class="nav-button" type="button" data-view-target="tasks" data-requires-access aria-current="page"><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-copy"><span class="nav-label">Tasks</span><span class="nav-description">Start, claim &amp; finish</span></span></button>
     <button class="nav-button" type="button" data-view-target="projects" data-requires-access><span class="nav-icon" aria-hidden="true">◇</span><span class="nav-copy"><span class="nav-label">Projects</span><span class="nav-description">Move each idea</span></span></button>
     <button class="nav-button" type="button" data-view-target="briefing" data-requires-access><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-copy"><span class="nav-label">Review</span><span class="nav-description">Discuss &amp; decide</span></span></button>
     <button class="nav-button" type="button" data-view-target="operations" data-requires-admin hidden><span class="nav-icon" aria-hidden="true">⚙</span><span class="nav-copy"><span class="nav-label">Admin</span><span class="nav-description">Coordinator tools</span></span></button>
@@ -1361,7 +1276,7 @@
     (function () {
       'use strict';
 
-      var VIEWS = ['home', 'tasks', 'projects', 'briefing', 'operations'];
+      var VIEWS = ['tasks', 'projects', 'briefing', 'operations'];
       var TASK_FILTERS = ['mine', 'open', 'attention', 'completed', 'all'];
       var PROJECT_STAGES = ['Idea', 'Validation', 'School Review', 'Active', 'Completed', 'Paused', 'Rejected'];
 
@@ -1391,7 +1306,6 @@
         projects: [],
         metrics: [],
         updates: [],
-        summary: {},
         decisionComparison: {},
         reporting: {},
         todayMachine: '',
@@ -1406,7 +1320,6 @@
         selectedProjectKey: '',
         projectSecondaryVisible: false,
         projectFocusStage: '',
-        generatedAt: '',
         slowOperationVisible: false
       };
 
@@ -1421,7 +1334,8 @@
 
       function viewFromHash() {
         var candidate = String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
-        return VIEWS.indexOf(candidate) >= 0 ? candidate : 'home';
+        if (candidate === 'home') return 'tasks';
+        return VIEWS.indexOf(candidate) >= 0 ? candidate : 'tasks';
       }
 
       function text(value) {
@@ -1704,7 +1618,6 @@
           var rightTime = new Date(right.timestamp).getTime();
           return (Number.isFinite(rightTime) ? rightTime : 0) - (Number.isFinite(leftTime) ? leftTime : 0);
         });
-        state.summary = state.canRead && payload.summary && typeof payload.summary === 'object' ? payload.summary : {};
         state.decisionComparison = state.canRead && first(payload, ['decisionComparison', 'projectDecisionComparison']) && typeof first(payload, ['decisionComparison', 'projectDecisionComparison']) === 'object'
           ? first(payload, ['decisionComparison', 'projectDecisionComparison']) : {};
         state.reporting = state.canRead && first(payload, ['reporting', 'reportingData', 'meetingReport']) && typeof first(payload, ['reporting', 'reportingData', 'meetingReport']) === 'object'
@@ -1713,16 +1626,15 @@
         state.projectWorkflow = state.canRead && payload.projectWorkflow && typeof payload.projectWorkflow === 'object' ? payload.projectWorkflow : {};
         state.projectWorkflowSetupNeeded = state.canRead && bool(first(payload, ['projectWorkflowSetupNeeded'], ''),
           bool(first(state.projectWorkflow, ['setupNeeded'], false), false));
-        state.generatedAt = first(payload, ['generatedAt'], '');
         if (!state.canRead) {
           state.taskDrafts = {};
           state.projectDrafts = {};
           state.projectScreen = 'board';
           state.selectedProjectKey = '';
         }
-        if ((!state.canRead && state.view !== 'home' && state.view !== 'operations') || (state.view === 'operations' && !state.isAdmin)) {
-          state.view = 'home';
-          if (window.location.hash !== '#home') window.history.replaceState(null, '', '#home');
+        if ((!state.canRead && state.view !== 'tasks' && state.view !== 'operations') || (state.view === 'operations' && !state.isAdmin)) {
+          state.view = 'tasks';
+          if (window.location.hash !== '#tasks') window.history.replaceState(null, '', '#tasks');
         }
         if (!state.isAdmin) {
           state.operations = null;
@@ -1745,19 +1657,6 @@
         if (value === 'duplicate_member') return 'Your Google account appears more than once in Members. Ask the deployment owner to remove the duplicate.';
         if (value === 'members_not_ready') return 'The approved member directory is not ready. Ask the deployment owner to finish Members setup.';
         return text(reason);
-      }
-
-      function summaryCount(key, fallback) {
-        return Math.max(0, number(state.summary[key], fallback));
-      }
-
-      function counts() {
-        var open = state.tasks.filter(function (task) { return task.isOpen; }).length;
-        var mine = state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; }).length;
-        return {
-          open: summaryCount('openTasks', open),
-          mine: mine
-        };
       }
 
       function serverCall(method, args) {
@@ -2121,7 +2020,6 @@
         renderNavigation();
         renderHeader();
         renderIdentity();
-        renderHome();
         renderTasks();
         renderProjects();
         renderBriefing();
@@ -2129,9 +2027,9 @@
       }
 
       function renderNavigation() {
-        if ((!state.canRead && !state.loading && state.view !== 'home' && state.view !== 'operations') || (state.view === 'operations' && !state.isAdmin)) {
-          state.view = 'home';
-          if (window.location.hash !== '#home') window.history.replaceState(null, '', '#home');
+        if ((!state.canRead && !state.loading && state.view !== 'tasks' && state.view !== 'operations') || (state.view === 'operations' && !state.isAdmin)) {
+          state.view = 'tasks';
+          if (window.location.hash !== '#tasks') window.history.replaceState(null, '', '#tasks');
         }
         document.querySelectorAll('[data-requires-access]').forEach(function (button) {
           button.hidden = !state.loading && !state.canRead;
@@ -2159,8 +2057,7 @@
 
       function renderHeader() {
         var copy = {
-          home: ['Today', 'Start with your own next task'],
-          tasks: ['Tasks', 'Claim, update, unblock, finish'],
+          tasks: ['Tasks', 'Start, claim, update, unblock, finish'],
           projects: ['Projects', 'Move each idea through the START workflow'],
           briefing: ['Review', 'Discuss decisions, unblock work, acknowledge progress'],
           operations: ['Operations', 'Approved-member management and bounded readiness checks']
@@ -2207,62 +2104,6 @@
             : 'This signed-in account has read-only access.') + (state.isAdmin ? ' Coordinator tools are available.' : '') + '</p></div>';
       }
 
-      function renderHome() {
-        var target = document.getElementById('home-content');
-        document.getElementById('home-generated').textContent = state.generatedAt ? 'Updated ' + formatDate(state.generatedAt, true) : '';
-        if (state.loading) { target.innerHTML = loadingState(); return; }
-        if (state.error) { target.innerHTML = errorState(); return; }
-        if (!state.canRead) { target.innerHTML = accessState(); return; }
-
-        var tally = counts();
-        var mine = sortTasks(state.tasks.filter(function (task) { return task.isMine && task.status !== 'Done'; }));
-        var focus = mine.filter(function (task) { return task.status === 'Doing'; })[0] ||
-          mine.filter(function (task) { return task.status === 'Blocked'; })[0] || mine[0] || null;
-        var remaining = mine.filter(function (task) { return task !== focus; }).slice(0, 4);
-        var attention = state.tasks.filter(needsTaskAttention).length;
-        var html = '<div class="today-shell">' + renderTodayFocus(focus, tally.open) +
-          '<div class="today-signals" aria-label="Task shortcuts">' +
-          renderTodaySignal('My work', tally.mine, 'mine', false) +
-          renderTodaySignal('Available', tally.open, 'open', false) +
-          renderTodaySignal('Needs help', attention, 'attention', attention > 0) + '</div>';
-        if (remaining.length) {
-          html += '<section class="today-queue" aria-labelledby="today-queue-title"><div class="today-queue-header"><div><h2 id="today-queue-title">After that</h2>' +
-            '<p>Your remaining claimed work, ordered by due date</p></div><button class="text-button" type="button" data-view-target="tasks" data-set-task-filter="mine">View all my work →</button></div>' +
-            '<ul class="today-list">' + remaining.map(renderQueueItem).join('') + '</ul></section>';
-        }
-        target.innerHTML = html + '</div>';
-      }
-
-      function renderTodayFocus(task, openCount) {
-        if (task) {
-          var due = dueInfo(task.dueDate, task.dueDateMachine, false);
-          var blocked = task.status === 'Blocked';
-          var detail = blocked
-            ? 'Waiting for: ' + (task.blocker || 'No blocker reason has been recorded yet.')
-            : (task.lastUpdate || 'Open the task to add progress, flag a blocker, finish it, or release it.');
-          var meta = ['<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>'];
-          if (task.relatedProject) meta.push('<span>Project: ' + h(task.relatedProject) + '</span>');
-          if (due) meta.push('<span class="' + h(due.className.trim()) + '">' + h(due.label) + '</span>');
-          return '<section class="today-focus" aria-labelledby="today-focus-title"><div class="today-focus-copy"><p class="today-focus-kicker">' + (blocked ? 'Resolve before continuing' : 'Next up') + '</p>' +
-            '<h2 id="today-focus-title">' + h(task.title) + '</h2><p class="today-focus-detail">' + h(detail) + '</p>' +
-            '<div class="today-focus-meta">' + meta.join('') + '</div></div>' +
-            '<button class="button button-primary today-focus-action" type="button" data-open-task="' + h(task.key || task.id) + '">' + (blocked ? 'Review blocker' : 'Continue task') + '</button></section>';
-        }
-        if (openCount) {
-          return '<section class="today-focus" aria-labelledby="today-focus-title"><div class="today-focus-copy"><p class="today-focus-kicker">Choose your next contribution</p>' +
-            '<h2 id="today-focus-title">' + h(openCount) + ' ' + (openCount === 1 ? 'task is' : 'tasks are') + ' ready to claim</h2>' +
-            '<p class="today-focus-detail">Pick something practical that matches your time and interests. Claiming it makes the next owner clear.</p></div>' +
-            '<button class="button button-primary today-focus-action" type="button" data-view-target="tasks" data-set-task-filter="open">Browse available tasks</button></section>';
-        }
-        return '<section class="today-focus" aria-labelledby="today-focus-title"><div class="today-focus-copy"><p class="today-focus-kicker">All clear</p>' +
-          '<h2 id="today-focus-title">You’re caught up</h2><p class="today-focus-detail">There is no claimed or available task right now. Check the project lifecycle for the next useful committee step.</p></div>' +
-          '<button class="button button-primary today-focus-action" type="button" data-view-target="projects">View projects</button></section>';
-      }
-
-      function renderTodaySignal(label, value, filter, attention) {
-        return '<button class="today-signal' + (attention ? ' is-attention' : '') + '" type="button" data-view-target="tasks" data-set-task-filter="' + h(filter) + '"><span>' + h(label) + '</span><strong>' + h(value) + '</strong></button>';
-      }
-
       function sortTasks(tasks) {
         return tasks.slice().sort(function (left, right) {
           var leftDate = machineDateKey(left.dueDateMachine) || '9999-12-31';
@@ -2273,14 +2114,6 @@
 
       function needsTaskAttention(task) {
         return task.status === 'Blocked' || isTaskOverdue(task);
-      }
-
-      function renderQueueItem(task) {
-        var due = dueInfo(task.dueDate, task.dueDateMachine, task.status === 'Done');
-        return '<li class="queue-item"><div class="queue-row"><div><p class="queue-title">' + h(task.title) + '</p><div class="queue-meta">' +
-          '<span class="status-badge ' + h(statusClass(task.status)) + '">' + h(task.status) + '</span>' +
-          (task.relatedProject ? '<span>' + h(task.relatedProject) + '</span>' : '') + (due ? '<span>' + h(due.label) + '</span>' : '') +
-          '</div></div><button class="button button-subtle queue-action" type="button" data-open-task="' + h(task.key || task.id) + '">Open</button></div></li>';
       }
 
       function renderTasks() {
@@ -3689,6 +3522,10 @@
 
       window.addEventListener('hashchange', function () {
         var hashValue = String(window.location.hash || '').replace(/^#\/?/, '').toLowerCase();
+        if (hashValue === 'home') {
+          hashValue = 'tasks';
+          window.history.replaceState(null, '', '#tasks');
+        }
         if (VIEWS.indexOf(hashValue) < 0) return;
         var next = hashValue;
         if (next !== state.view) {
@@ -3698,7 +3535,7 @@
         }
       });
 
-      if (!window.location.hash) window.history.replaceState(null, '', '#home');
+      if (window.location.hash !== '#' + state.view) window.history.replaceState(null, '', '#' + state.view);
       render();
       loadDashboard();
     }());
